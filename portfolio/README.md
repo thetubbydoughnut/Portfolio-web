@@ -1,8 +1,43 @@
-# React + Vite
+# Personal Portfolio Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive portfolio website built with React and Vite.
 
-Currently, two official plugins are available:
+## Tech Stack
+- React.js (Vite)
+- CSS3 with modern features
+- Vercel for deployment
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+## Deployment
+This project is configured for deployment on Vercel. To deploy:
+
+1. Push your code to GitHub
+2. Import your repository on Vercel
+3. Vercel will automatically detect the configuration and deploy
+
+## Project Structure
+```
+src/
+├── components/     # React components
+├── assets/        # Static assets
+├── App.jsx        # Main application component
+└── main.jsx       # Application entry point
+```
+
+## Environment Variables
+No environment variables are required for the initial deployment.
+
+## License
+MIT
