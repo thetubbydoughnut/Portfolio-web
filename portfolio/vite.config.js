@@ -18,6 +18,9 @@ export default defineConfig({
         },
       },
     },
+    sourcemap: true,
+    // Ensure index.html is copied to dist
+    copyPublicDir: true,
   },
   server: {
     port: 3000,
