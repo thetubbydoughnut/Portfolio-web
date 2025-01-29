@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import NET from 'vanta/dist/vanta.net.min';
 import * as THREE from 'three';
 import '../styles/HeroSection.css';
@@ -56,7 +57,7 @@ const HeroSection = () => {
             </div>
             <div className="scroll-indicator">
               <div className="arrow-button-container">
-                <a href="#projects" className="arrow-button">
+                <Link to="/projects" className="arrow-button">
                   <svg
                     stroke="currentColor"
                     strokeWidth="2"
@@ -70,10 +71,10 @@ const HeroSection = () => {
                       strokeLinecap="round"
                     ></path>
                   </svg>
-                </a>
+                </Link>
               </div>
               <div className="arrow-button-container">
-                <a href="#contact" className="arrow-button">
+                <Link to="/contact" className="arrow-button">
                   <svg
                     stroke="currentColor"
                     strokeWidth="2"
@@ -87,12 +88,12 @@ const HeroSection = () => {
                       strokeLinecap="round"
                     ></path>
                   </svg>
-                </a>
+                </Link>
               </div>
             </div>
             <div className="hero-buttons">
-              <a href="#projects" className="btn btn-primary">View Projects</a>
-              <a href="#contact" className="btn btn-secondary">Contact Me</a>
+              <Link to="/projects" className="btn btn-primary">View Projects</Link>
+              <Link to="/contact" className="btn btn-secondary">Contact Me</Link>
             </div>
           </div>
         </div>
