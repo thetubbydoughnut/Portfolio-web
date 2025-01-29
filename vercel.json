@@ -5,18 +5,16 @@
       "src": "portfolio/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "portfolio/dist",
+        "distDir": "dist",
         "buildCommand": "cd portfolio && npm install && npm run build"
       }
     }
   ],
+  "outputDirectory": "portfolio/dist",
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/portfolio/dist/index.html",
-      "headers": {
-        "cache-control": "public, max-age=0, must-revalidate"
-      }
+      "dest": "/index.html"
     }
   ]
 } 
