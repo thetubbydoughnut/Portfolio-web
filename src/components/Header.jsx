@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import '../styles/Header.css';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,7 +20,13 @@ const Header = () => {
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="header-content">
         <div className="logo">
-          <h1>CG</h1>
+          <Link to="/">
+            <img 
+              src="https://avatars.githubusercontent.com/u/36056681?v=4" 
+              alt="Logo" 
+              className="logo-image"
+            />
+          </Link>
         </div>
         
         <button 
@@ -33,10 +41,26 @@ const Header = () => {
 
         <nav className={`navigation ${isMenuOpen ? 'active' : ''}`}>
           <ul>
-            <li><a href="#home" onClick={() => setIsMenuOpen(false)}>Home</a></li>
-            <li><a href="#projects" onClick={() => setIsMenuOpen(false)}>Projects</a></li>
-            <li><a href="#skills" onClick={() => setIsMenuOpen(false)}>Skills</a></li>
-            <li><a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a></li>
+            <li>
+              <Link to="/" onClick={() => setIsMenuOpen(false)} className={location.pathname === '/' ? 'active' : ''}>
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/projects" onClick={() => setIsMenuOpen(false)} className={location.pathname === '/projects' ? 'active' : ''}>
+                Projects
+              </Link>
+            </li>
+            <li>
+              <Link to="/skills" onClick={() => setIsMenuOpen(false)} className={location.pathname === '/skills' ? 'active' : ''}>
+                Skills
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact" onClick={() => setIsMenuOpen(false)} className={location.pathname === '/contact' ? 'active' : ''}>
+                Contact
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>

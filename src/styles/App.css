@@ -1,0 +1,61 @@
+:root {
+  --color-primary: #2C3E50;      /* Dark Blue */
+  --color-secondary: #34495E;    /* Grayish Blue */
+  --color-gray: #7F8C8D;         /* Gray */
+  --color-light-gray: #BDC3C7;   /* Light Gray */
+  --color-off-white: #ECF0F1;    /* Off White */
+  
+  --header-height: 80px;
+  --border-radius: 8px;
+  --transition-speed: 0.3s;
+  
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background-color: var(--color-primary);
+  color: var(--color-off-white);
+}
+
+.app {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+}
+
+.section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 6rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(236, 240, 241, 0.1);
+  background-color: var(--color-primary);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+#projects, #skills, #contact {
+  scroll-margin-top: var(--header-height);
+}
+
+/* Rest of the CSS remains the same */ 
