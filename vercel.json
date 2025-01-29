@@ -2,11 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "portfolio/package.json",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "portfolio/dist",
-        "buildCommand": "cd portfolio && npm install && npm run build"
+        "distDir": "dist",
+        "buildCommand": "npm install && npm run build"
       }
     }
   ],
@@ -14,7 +14,7 @@
     { "handle": "filesystem" },
     {
       "src": "/.*",
-      "dest": "/portfolio/dist/index.html"
+      "dest": "/index.html"
     }
   ]
 } 

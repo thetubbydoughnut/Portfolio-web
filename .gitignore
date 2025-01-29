@@ -1,48 +1,91 @@
 # Dependencies
-node_modules/
-**/node_modules/
-package-lock.json
-yarn.lock
+node_modules
+.pnp
+.pnp.js
 
-# Build outputs
-dist/
-**/dist/
-build/
-**/build/
+# Testing
+coverage
+/coverage
+*.lcov
 
-# Environment and secrets
+# Production
+build
+dist
+dist-ssr
+*.local
+
+# Environment Variables
 .env
-.env.*
-**/.env
-**/.env.*
-*.key
-*.pem
-**/config.js
-**/secrets.json
-**/credentials.*
+.env.local
+.env.development
+.env.test
+.env.production
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
 
-# IDE and editors
-.vscode/
-.idea/
-*.swp
-*.swo
-.DS_Store
-Thumbs.db
-
-# Logs and debugging
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-debug.log
-*.log
+pnpm-debug.log*
+lerna-debug.log*
 
-# Cache and temp files
-.cache/
-.temp/
-.tmp/
-coverage/
-.nyc_output/
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Vercel
+# Cache
+.cache
+.parcel-cache
+.npm
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+.next
+.nuxt
+.nitro
+.output
+.gen
+
+# Build output
 .vercel
-.now
+.netlify
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vite
+
+# Misc
+.DS_Store
+Thumbs.db
+*.pem
+.vercel
+*.bak
+*.tmp
+*.temp
+.history
+
+# Optional
+# Uncomment if using these features
+#.contentlayer
+#storybook-static
+#*.tgz
+#.yarn/cache
+#.yarn/unplugged
+#.yarn/build-state.yml
+#.yarn/install-state.gz
+#.docusaurus
