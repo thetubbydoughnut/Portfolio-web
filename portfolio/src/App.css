@@ -63,6 +63,32 @@ body {
   color: var(--primary-color);
 }
 
+/* Section Styles */
+section {
+  padding: 5rem 0;
+  min-height: 50vh;
+}
+
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero-section p {
+  font-size: 1.25rem;
+  color: #4b5563;
+}
+
 /* Main Content */
 main {
   margin-top: 4rem;
@@ -70,6 +96,22 @@ main {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Section Headings */
+h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Grid Layouts */
+.projects-grid,
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
 }
 
 /* Responsive Design */
@@ -80,6 +122,14 @@ main {
   
   main {
     padding: 1rem;
+  }
+  
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-section p {
+    font-size: 1rem;
   }
 }
 
