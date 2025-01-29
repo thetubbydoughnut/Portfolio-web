@@ -1,0 +1,11 @@
+{
+  "name": "portfolio-web",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "portfolio"
+  ],
+  "scripts": {
+    "build": "cd portfolio && npm install && npm run build"
+  }
+} 
