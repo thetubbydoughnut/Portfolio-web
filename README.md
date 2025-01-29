@@ -98,13 +98,6 @@ The website is deployed on Vercel with:
 - Environment variable management
 - Edge network distribution
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## 📄 License
 
@@ -112,7 +105,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-Your Name - [thetubbydoughnut@gmail.com](mailto:thetubbydoughnut@gmail.com)
+Cameron Graham - [thetubbydoughnut@gmail.com](mailto:thetubbydoughnut@gmail.com)
 
 Project Link: [https://github.com/thetubbydoughnut/Portfolio-web](https://github.com/thetubbydoughnut/Portfolio-web)
 
