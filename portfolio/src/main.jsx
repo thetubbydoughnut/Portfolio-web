@@ -5,7 +5,13 @@ import { BrowserRouter } from 'react-router-dom'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter basename="/portfolio">
+    <BrowserRouter 
+      basename={import.meta.env.PROD ? '/portfolio' : '/'}
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }}
+    >
       <App />
     </BrowserRouter>
   </React.StrictMode>
