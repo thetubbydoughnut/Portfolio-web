@@ -1,9 +1,38 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import '../styles/Skills.css';
 
 const Skills = () => {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [debug, setDebug] = useState('');
   const linkedInUrl = import.meta.env.VITE_LINKEDIN_URL;
+  const isProd = import.meta.env.PROD;
+
+  // Debug function to check environment variables
+  useEffect(() => {
+    if (isProd) {
+      const envStatus = {
+        frontend: !!import.meta.env.VITE_SKILLS_FRONTEND,
+        backend: !!import.meta.env.VITE_SKILLS_BACKEND,
+        tools: !!import.meta.env.VITE_SKILLS_TOOLS,
+        core: !!import.meta.env.VITE_SKILLS_CORE,
+        testing: !!import.meta.env.VITE_SKILLS_TESTING,
+        soft: !!import.meta.env.VITE_SKILLS_SOFT,
+        linkedin: !!import.meta.env.VITE_LINKEDIN_URL,
+        github: !!import.meta.env.VITE_GITHUB_URL
+      };
+
+      const missingVars = Object.entries(envStatus)
+        .filter(([_, exists]) => !exists)
+        .map(([name]) => name);
+
+      if (missingVars.length > 0) {
+        console.warn('Missing environment variables:', missingVars);
+        setDebug(`Missing variables: ${missingVars.join(', ')}`);
+      } else {
+        console.log('All environment variables loaded successfully');
+      }
+    }
+  }, [isProd]);
 
   const skillExamples = {
     // Frontend
@@ -68,25 +97,51 @@ const Skills = () => {
 
   // Parse skills from environment variables
   const parseSkills = (envString) => {
-    if (!envString) return [];
-    return envString.split(',').map(skill => {
-      const [name, level] = skill.split(':');
-      return { 
-        name, 
-        level: parseInt(level, 10),
-        example: skillExamples[name] || 'Examples coming soon...'
-      };
-    });
+    if (!envString) {
+      console.warn(`No skills found for category with string: ${envString}`);
+      return [];
+    }
+    try {
+      return envString.split(',').map(skill => {
+        const [name, level] = skill.split(':');
+        if (!name || !level) {
+          console.warn(`Invalid skill format: ${skill}`);
+          return null;
+        }
+        return { 
+          name, 
+          level: parseInt(level, 10),
+          example: skillExamples[name] || 'Examples coming soon...'
+        };
+      }).filter(Boolean); // Remove any null values
+    } catch (error) {
+      console.error('Error parsing skills:', error);
+      return [];
+    }
   };
 
-  const skillsData = useMemo(() => ({
-    frontend: parseSkills(import.meta.env.VITE_SKILLS_FRONTEND),
-    backend: parseSkills(import.meta.env.VITE_SKILLS_BACKEND),
-    tools: parseSkills(import.meta.env.VITE_SKILLS_TOOLS),
-    core: parseSkills(import.meta.env.VITE_SKILLS_CORE),
-    testing: parseSkills(import.meta.env.VITE_SKILLS_TESTING),
-    soft: parseSkills(import.meta.env.VITE_SKILLS_SOFT)
-  }), []);
+  // Get environment variables based on environment
+  const getEnvSkills = (category) => {
+    const envVar = `VITE_SKILLS_${category.toUpperCase()}`;
+    const value = import.meta.env[envVar];
+    if (!value && isProd) {
+      console.warn(`Missing environment variable: ${envVar}`);
+    }
+    return value || '';
+  };
+
+  const skillsData = useMemo(() => {
+    const categories = ['frontend', 'backend', 'tools', 'core', 'testing', 'soft'];
+    
+    return categories.reduce((acc, category) => {
+      const skills = parseSkills(getEnvSkills(category));
+      if (skills.length === 0 && isProd) {
+        console.warn(`No skills found for category: ${category}`);
+      }
+      acc[category] = skills;
+      return acc;
+    }, {});
+  }, [isProd]);
 
   const categories = [
     { id: 'all', name: 'All Skills' },
@@ -104,8 +159,30 @@ const Skills = () => {
         skills.map(skill => ({ ...skill, category }))
       );
     }
-    return skillsData[activeCategory].map(skill => ({ ...skill, category: activeCategory }));
+    return skillsData[activeCategory]?.map(skill => ({ 
+      ...skill, 
+      category: activeCategory 
+    })) || [];
   };
+
+  // If no skills data is available, show a message
+  if (Object.values(skillsData).every(skills => skills.length === 0)) {
+    return (
+      <section className="section skills-section">
+        <div className="skills-container">
+          <h2 className="section-title">Skills & Expertise</h2>
+          <p className="section-subtitle error-message">
+            Unable to load skills data. Please try again later.
+            {isProd && debug && (
+              <small style={{ display: 'block', marginTop: '0.5rem', fontSize: '0.8rem' }}>
+                {debug}
+              </small>
+            )}
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section skills-section">
