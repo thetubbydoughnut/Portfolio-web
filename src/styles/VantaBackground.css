@@ -1,0 +1,13 @@
+.vanta-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+}
+
+.vanta-background > * {
+  position: relative;
+  z-index: 1;
+} 
