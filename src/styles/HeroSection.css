@@ -430,26 +430,11 @@
   }
 
   .scroll-indicator {
-    flex-direction: row;
-    gap: 1rem;
-    width: 100%;
-    max-width: none;
-    margin: 1.5rem auto 1rem;
+    display: none;
   }
 
   .arrow-button-container {
-    max-width: 150px;
-  }
-
-  .arrow-button {
-    width: 2.5rem;
-    height: 2.5rem;
-    padding: 0.5rem;
-  }
-
-  .arrow-button svg {
-    width: 1.2rem;
-    height: 1.2rem;
+    display: none;
   }
 
   .hero-buttons {

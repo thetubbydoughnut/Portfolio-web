@@ -148,6 +148,10 @@
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
   }
+
+  .arrow-button-container {
+    display: none; /* Hide arrow buttons on mobile */
+  }
 }
 
 @media (max-width: 480px) {
