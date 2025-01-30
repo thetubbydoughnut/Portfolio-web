@@ -14,11 +14,14 @@
   --section-padding: 5rem 2rem;
   --transition-speed: 0.3s;
   --border-radius: 8px;
+  --header-height: 80px;
 }
 
-html {
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
   scroll-behavior: smooth;
-  scroll-padding-top: 80px;
 }
 
 body {
@@ -26,6 +29,7 @@ body {
   line-height: 1.6;
   color: var(--color-off-white);
   background-color: var(--color-primary);
+  overflow-y: auto;
 }
 
 .app {
@@ -403,6 +407,9 @@ h2 {
 }
 
 #root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;

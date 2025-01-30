@@ -1,0 +1,42 @@
+.layout {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-primary);
+}
+
+.main-content {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding-top: var(--header-height, 80px);
+  z-index: 1;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(189, 195, 199, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(189, 195, 199, 0.4);
+}
+
+/* Ensure content is properly spaced */
+.main-content > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: calc(var(--header-height, 80px) - 20px);
+  }
+} 

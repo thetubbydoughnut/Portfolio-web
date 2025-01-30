@@ -9,7 +9,7 @@ const HeroSection = () => {
   const vantaRef = useRef(null);
 
   useEffect(() => {
-    if (!vantaEffect) {
+    if (!vantaEffect && vantaRef.current) {
       setVantaEffect(
         NET({
           el: vantaRef.current,
@@ -30,19 +30,23 @@ const HeroSection = () => {
           speed: 0.3
         })
       );
-
-      // Handle window resize
-      const handleResize = () => {
-        if (vantaEffect) {
-          vantaEffect.resize();
-        }
-      };
-      window.addEventListener('resize', handleResize);
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        if (vantaEffect) vantaEffect.destroy();
-      };
     }
+
+    // Handle window resize
+    const handleResize = () => {
+      if (vantaEffect) {
+        vantaEffect.resize();
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup function
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (vantaEffect) {
+        vantaEffect.destroy();
+      }
+    };
   }, [vantaEffect]);
 
   return (
