@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-01-30T02:27:26.069Z",
+  "totalSkills": 63,
+  "missingLogos": [
+    {
+      "skill": "Yup",
+      "error": "Failed to download https://raw.githubusercontent.com/devicons/devicon/master/icons/yup/yup-original.svg: 404"
+    },
+    {
+      "skill": "Knex.js",
+      "error": "Failed to download https://raw.githubusercontent.com/devicons/devicon/master/icons/knex/knex-original.svg: 404"
+    },
+    {
+      "skill": "Ableton",
+      "error": "Failed to download https://raw.githubusercontent.com/devicons/devicon/master/icons/ableton/ableton-original.svg: 404"
+    }
+  ],
+  "successfulDownloads": 60
+}

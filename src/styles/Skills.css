@@ -96,7 +96,7 @@
 .skill-card {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 15px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   transition: all 0.3s ease;
   animation: fadeIn 0.5s ease forwards;
   opacity: 0;
@@ -163,10 +163,32 @@
   gap: 1rem;
 }
 
+.skill-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.skill-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  transition: transform 0.3s ease;
+}
+
+.skill-card:hover .skill-logo {
+  transform: scale(1.1);
+}
+
 .skill-name {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--text-primary);
   margin: 0;
+  flex: 1;
 }
 
 .skill-level-container {
@@ -260,5 +282,20 @@
 
   .skill-card {
     padding: 1.2rem;
+  }
+
+  .skill-logo {
+    width: 20px;
+    height: 20px;
+    padding: 3px;
+  }
+
+  .skill-name {
+    font-size: 1rem;
+  }
+
+  .skill-header {
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 }
