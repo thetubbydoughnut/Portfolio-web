@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useState } from 'react';
 import '../styles/Contact.css';
 import PageLoader from '../components/PageLoader';
 

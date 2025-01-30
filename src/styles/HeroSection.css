@@ -80,8 +80,8 @@
 
 .subtitle {
   font-size: clamp(1.4rem, 3vw, 2rem);
-  font-weight: 600;
-  color: var(--color-light-gray);
+  font-weight: 700;
+  color: var(--color-off-white);
   letter-spacing: 3px;
   position: relative;
   animation: subtitleSlide 0.5s ease-out forwards;
@@ -91,7 +91,18 @@
   text-transform: uppercase;
   text-shadow: 
     0 2px 4px rgba(0, 0, 0, 0.5),
-    0 4px 8px rgba(0, 0, 0, 0.3);
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    0 8px 16px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(
+    to right,
+    var(--color-off-white) 0%,
+    #e0e0e0 50%,
+    var(--color-off-white) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .subtitle-underline {
@@ -100,11 +111,13 @@
   left: 50%;
   transform: translateX(-50%);
   width: 0;
-  height: 2px;
-  background: var(--color-light-gray);
+  height: 3px;
+  background: var(--color-off-white);
   animation: underlineExpand 0.8s ease-out forwards;
   animation-delay: 1.5s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .scroll-indicator {

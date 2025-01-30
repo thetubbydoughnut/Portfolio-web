@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import '../styles/Header.css';
 
 const Header = () => {
@@ -75,6 +76,35 @@ const Header = () => {
           >
             Contact
           </NavLink>
+          <div className="social-links">
+            <a
+              href="https://github.com/thetubbydoughnut"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-link"
+              aria-label="GitHub Profile"
+            >
+              <FaGithub />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/thetubbydoughnut/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-link"
+              aria-label="LinkedIn Profile"
+            >
+              <FaLinkedin />
+            </a>
+            <a
+              href="https://x.com/thetubbydonut"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-link"
+              aria-label="Twitter Profile"
+            >
+              <FaTwitter />
+            </a>
+          </div>
         </nav>
       </div>
     </header>
