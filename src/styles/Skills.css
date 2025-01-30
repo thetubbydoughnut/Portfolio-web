@@ -112,49 +112,98 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-/* Tooltip styles */
+/* New tooltip styles */
+.skill-description {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--text-primary);
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  width: 280px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.skill-description.mobile {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 320px;
+  padding: 1.2rem;
+  opacity: 1;
+  pointer-events: auto;
+  animation: fadeIn 0.2s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+.close-description {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.close-description:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Add overlay for mobile descriptions */
+.skill-description.mobile::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+  backdrop-filter: blur(3px);
+}
+
+.skill-description::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(0, 0, 0, 0.9);
+}
+
+.skill-card:hover .skill-description {
+  opacity: 1;
+  transform: translateX(-50%) translateY(calc(-100% - 10px));
+}
+
+/* Remove old tooltip styles */
 .skill-card::before,
 .skill-card::after {
-  --scale: 0;
-  --arrow-size: 10px;
-  --tooltip-color: rgba(0, 0, 0, 0.9);
-
-  position: absolute;
-  top: -.25rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(var(--translate-y, 0)) scale(var(--scale));
-  transition: 150ms transform;
-  transform-origin: bottom center;
-}
-
-.skill-card::before {
-  --translate-y: calc(-100% - var(--arrow-size));
-  
-  content: attr(data-tooltip);
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  text-align: center;
-  width: max-content;
-  max-width: 300px;
-  background: var(--tooltip-color);
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 400;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-.skill-card::after {
-  --translate-y: calc(-1 * var(--arrow-size));
-
-  content: '';
-  border: var(--arrow-size) solid transparent;
-  border-top-color: var(--tooltip-color);
-  transform-origin: top center;
-}
-
-.skill-card:hover::before,
-.skill-card:hover::after {
-  --scale: 1;
+  display: none;
 }
 
 .skill-info {
@@ -247,10 +296,20 @@
     grid-template-columns: 1fr;
   }
 
-  .skill-card::before {
-    max-width: 250px;
-    font-size: 0.85rem;
-    padding: 0.5rem;
+  .skill-description {
+    width: 90%;
+    max-width: 320px;
+    font-size: 0.9rem;
+    padding: 1.2rem;
+    text-align: left;
+  }
+
+  .skill-description::before {
+    display: none;
+  }
+
+  .skill-card {
+    cursor: pointer;
   }
 }
 
@@ -297,5 +356,19 @@
   .skill-header {
     gap: 0.5rem;
     margin-bottom: 0.5rem;
+  }
+
+  .skill-description {
+    max-width: 280px;
+    font-size: 0.85rem;
+    padding: 1rem;
+  }
+
+  .close-description {
+    top: 6px;
+    right: 6px;
+    width: 20px;
+    height: 20px;
+    font-size: 1rem;
   }
 }

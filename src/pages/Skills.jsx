@@ -117,6 +117,73 @@ function getLogoPath(skillName) {
   return skillLogos.default;
 }
 
+const skillDescriptions = {
+  'React.js': 'Developed dynamic and interactive user interfaces using React.js with component-based architecture.',
+  'Redux': 'Managed complex application state efficiently using Redux for scalable front-end applications.',
+  'Hooks': 'Utilized React Hooks to manage state and side effects in functional components.',
+  'Context API': 'Implemented Context API to provide global state management without prop drilling.',
+  'JavaScript': 'Built high-performance, interactive web applications with modern JavaScript ES6+.',
+  'HTML': 'Crafted semantic and accessible HTML structures for well-optimized web pages.',
+  'CSS': 'Designed responsive and visually appealing layouts using modern CSS techniques.',
+  'Jest': 'Wrote unit and integration tests using Jest to ensure code reliability and maintainability.',
+  'Cypress': 'Automated end-to-end testing with Cypress for seamless UI interactions.',
+  'Yup': 'Validated form inputs and data structures using Yup for a better user experience.',
+  'Axios': 'Integrated RESTful APIs efficiently with Axios for seamless data fetching.',
+  'styled-components': 'Styled React applications with dynamic and reusable CSS-in-JS solutions.',
+  'Single Page Applications': 'Developed fast and efficient SPAs with client-side routing and state management.',
+  'Front-end Development': 'Created modern and scalable front-end solutions using React and best practices.',
+  'Responsive Web Design': 'Designed mobile-friendly and adaptable interfaces with CSS media queries.',
+  'State Management': 'Utilized various state management techniques like Redux and Context API for scalable apps.',
+  'Java': 'Developed robust backend solutions using Java for enterprise-grade applications.',
+  'Node.js': 'Built scalable server-side applications with Node.js and asynchronous programming.',
+  'Express': 'Developed RESTful APIs and middleware with Express for efficient backend services.',
+  'SQL': 'Designed and optimized database queries for efficient data retrieval and management.',
+  'SQLite': 'Implemented lightweight and embedded database solutions using SQLite.',
+  'Git CLI': 'Managed version control workflows using Git commands for collaborative development.',
+  'GitHub': 'Hosted and collaborated on repositories with GitHub for streamlined version control.',
+  'VS Code': 'Developed and debugged applications efficiently using VS Code and extensions.',
+  'Vercel': 'Deployed and managed front-end applications with Vercel for seamless CI/CD.',
+  'Heroku': 'Deployed and maintained full-stack applications using Heroku\'s cloud platform.',
+  'RESTful APIs': 'Designed and consumed RESTful APIs for efficient client-server communication.',
+  'Authentication': 'Implemented secure authentication systems using JWT, bcrypt, and OAuth.',
+  'Knex.js': 'Created and managed SQL database schemas and queries with Knex.js.',
+  'Back-End Development': 'Built scalable backend architectures with Node.js, Express, and databases.',
+  'JWT': 'Secured user authentication and authorization using JSON Web Tokens.',
+  'bcrypt': 'Implemented password hashing and security mechanisms with bcrypt.',
+  'Git': 'Maintained version control and collaborated on projects using Git.',
+  'Postman API': 'Tested and debugged API endpoints effectively using Postman.',
+  'npm': 'Managed project dependencies and scripts using npm.',
+  'Webpack': 'Optimized front-end build processes using Webpack for better performance.',
+  'Git BASH': 'Navigated and executed Git commands efficiently using Git BASH.',
+  'Babel.js': 'Transpiled modern JavaScript code for cross-browser compatibility using Babel.js.',
+  'Algorithms': 'Implemented and optimized algorithms for efficient problem-solving.',
+  'Data Structures': 'Utilized data structures like arrays, linked lists, and hash maps for optimized solutions.',
+  'Architecture': 'Designed scalable and maintainable software architectures for complex applications.',
+  'Software Development': 'Built high-quality software solutions following best development practices.',
+  'Computer Science': 'Applied computer science principles to solve real-world programming challenges.',
+  'Big-O Notation': 'Analyzed and optimized code efficiency using Big-O complexity analysis.',
+  'Debugging': 'Identified and resolved software issues using debugging tools and techniques.',
+  'Test Automation': 'Automated software testing processes to ensure application reliability.',
+  'Agile Project Management': 'Managed software development using Agile methodologies for iterative progress.',
+  'Deployment': 'Deployed and managed applications on cloud platforms for production use.',
+  'Unit Testing': 'Ensured code functionality with robust unit test coverage.',
+  'Integration Testing': 'Validated system integrations to ensure seamless component interactions.',
+  'Software Testing': 'Conducted various software testing methodologies for quality assurance.',
+  'End-to-end Testing': 'Simulated real user interactions with E2E tests for complete workflow validation.',
+  'Automated Unit Testing': 'Implemented automated unit tests to catch bugs early in development.',
+  'Teamwork & Collaboration': 'Worked closely with cross-functional teams to deliver high-quality projects.',
+  'Time Management': 'Prioritized and managed tasks efficiently to meet project deadlines.',
+  'Attention to Detail': 'Ensured code quality and UI precision through meticulous attention to detail.',
+  'Problem Solving': 'Applied analytical thinking to debug and optimize complex systems.',
+  'Unreal Engine': 'Developed interactive experiences using Unreal Engine\'s robust game engine.',
+  'Blender': 'Created 3D models and animations using Blender\'s powerful modeling tools.',
+  'Gaea': 'Designed realistic terrain and landscapes using Gaea procedural generation.',
+  '3D Modeling': 'Built detailed 3D assets for digital and interactive applications.',
+  'Ableton': 'Produced and mixed music using Ableton\'s advanced audio production tools.',
+  'Sound Design': 'Created immersive audio experiences through professional sound design techniques.',
+  'Music Production': 'Composed and arranged music using digital audio workstations and plugins.'
+};
+
 const Skills = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [debug, setDebug] = useState('');
@@ -127,6 +194,30 @@ const Skills = () => {
   const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
   const isProd = import.meta.env.PROD;
   const [loading, setLoading] = useState(true);
+  const [showDescription, setShowDescription] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Add useEffect to detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleSkillInteraction = (skillName) => {
+    if (isMobile) {
+      // On mobile, toggle the description
+      setShowDescription(prev => prev === skillName ? null : skillName);
+    } else {
+      // On desktop, show on hover
+      setShowDescription(skillName);
+    }
+  };
 
   // Parse categories from environment variable
   const parseCategories = () => {
@@ -476,7 +567,9 @@ const Skills = () => {
               style={{
                 animationDelay: `${index * 0.1}s`
               }}
-              data-tooltip={`${skillExamples[skill.name] || 'Examples coming soon...'}`}
+              onClick={() => isMobile && handleSkillInteraction(skill.name)}
+              onMouseEnter={() => !isMobile && handleSkillInteraction(skill.name)}
+              onMouseLeave={() => !isMobile && setShowDescription(null)}
             >
               <div className="skill-info">
                 <div className="skill-header">
@@ -502,6 +595,22 @@ const Skills = () => {
                   <span className="skill-level-text">{skill.level}%</span>
                 </div>
               </div>
+              {showDescription === skill.name && skillDescriptions[skill.name] && (
+                <div className={`skill-description ${isMobile ? 'mobile' : ''}`}>
+                  {skillDescriptions[skill.name]}
+                  {isMobile && (
+                    <button 
+                      className="close-description" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowDescription(null);
+                      }}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
