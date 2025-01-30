@@ -10,6 +10,7 @@ const HeroSection = lazy(() => import('./components/HeroSection'));
 const Projects = lazy(() => import('./pages/Projects'));
 const Skills = lazy(() => import('./pages/Skills'));
 const Contact = lazy(() => import('./pages/Contact'));
+const Certifications = lazy(() => import('./pages/Certifications'));
 
 // Loading component
 const Loading = () => (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/" element={<HeroSection />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/skills" element={<Skills />} />
+            <Route path="/certifications" element={<Certifications />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </Suspense>
