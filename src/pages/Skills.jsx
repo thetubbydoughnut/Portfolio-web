@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Skills.css';
+import PageLoader from '../components/PageLoader';
 
 // Skill logos mapping
 const skillLogos = {
@@ -125,6 +126,7 @@ const Skills = () => {
   const githubUrl = import.meta.env.VITE_GITHUB_URL;
   const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
   const isProd = import.meta.env.PROD;
+  const [loading, setLoading] = useState(true);
 
   // Parse categories from environment variable
   const parseCategories = () => {
@@ -258,6 +260,8 @@ const Skills = () => {
       } catch (error) {
         console.error('Error initializing skills:', error);
         setDebug(`Error loading skills: ${error.message}`);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -390,6 +394,10 @@ const Skills = () => {
       category: activeCategory 
     })) || [];
   };
+
+  if (loading) {
+    return <PageLoader />;
+  }
 
   // Show loading state while fetching skills
   if (categories.length === 0) {

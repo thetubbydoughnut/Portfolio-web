@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Loader from '../components/Loader';
+import PageLoader from '../components/PageLoader';
 import '../styles/Projects.css';
 
 const Projects = () => {
@@ -149,13 +149,7 @@ const Projects = () => {
   }, []);
 
   if (loading) {
-    return (
-      <section className="section projects-section">
-        <div className="loading">
-          <Loader />
-        </div>
-      </section>
-    );
+    return <PageLoader />;
   }
 
   if (error) {

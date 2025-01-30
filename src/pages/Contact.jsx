@@ -1,9 +1,12 @@
+import React, { useState, useEffect } from 'react';
 import { useState } from 'react';
 import '../styles/Contact.css';
+import PageLoader from '../components/PageLoader';
 
 const Contact = () => {
   const [copied, setCopied] = useState(false);
   const [copiedItem, setCopiedItem] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const contactInfo = {
     email: 'thetubbydoughnut@gmail.com',
@@ -11,6 +14,18 @@ const Contact = () => {
     github: 'https://github.com/thetubbydoughnut',
     linkedin: 'https://www.linkedin.com/in/thetubbydoughnut/'
   };
+
+  useEffect(() => {
+    // Simulate loading time for smooth transition
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <PageLoader />;
+  }
 
   const handleCopy = (text, item) => {
     navigator.clipboard.writeText(text).then(() => {
