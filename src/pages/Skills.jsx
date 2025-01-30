@@ -210,6 +210,7 @@ const Skills = () => {
   }, []);
 
   const handleSkillInteraction = (skillName) => {
+    console.log('Skill interaction:', skillName, 'Description:', skillDescriptions[skillName]);
     if (isMobile) {
       // On mobile, toggle the description
       setShowDescription(prev => prev === skillName ? null : skillName);
@@ -401,9 +402,7 @@ const Skills = () => {
     'Algorithms': 'Data structures, optimization, problem-solving',
     'Architecture': 'System design, scalability, best practices',
     'Debugging': 'Chrome DevTools, logging, error tracking, testing',
-    'Deployment': 'CI/CD, environment setup, monitoring, maintenance',
-
-    // ... keep existing skill examples ...
+    'Deployment': 'CI/CD, environment setup, monitoring, maintenance'
   };
 
   // Parse skills from environment variables
@@ -595,9 +594,9 @@ const Skills = () => {
                   <span className="skill-level-text">{skill.level}%</span>
                 </div>
               </div>
-              {showDescription === skill.name && skillDescriptions[skill.name] && (
+              {showDescription === skill.name && (
                 <div className={`skill-description ${isMobile ? 'mobile' : ''}`}>
-                  {skillDescriptions[skill.name]}
+                  {skillDescriptions[skill.name] || skillExamples[skill.name] || 'Description coming soon...'}
                   {isMobile && (
                     <button 
                       className="close-description" 
