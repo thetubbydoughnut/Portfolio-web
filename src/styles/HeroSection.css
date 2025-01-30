@@ -179,15 +179,16 @@
   animation: fadeIn 0.5s ease-out forwards;
   animation-delay: 1.5s;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
+  padding: 0 2rem;
 }
 
 .btn {
   flex: 1;
-  max-width: 200px;
-  padding: 1em 2.5em;
+  max-width: 250px;
+  padding: 1em 1.8em;
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: var(--border-radius);
   text-decoration: none;
   transition: all var(--transition-speed) ease;
@@ -197,6 +198,10 @@
   backdrop-filter: blur(4px);
   letter-spacing: 1px;
   text-align: center;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn::before {
@@ -403,31 +408,163 @@
 
 @media (max-width: 768px) {
   .hero-text {
-    margin-bottom: 10vh;
-    padding: 2rem;
-    width: 95%;
+    margin-bottom: 5vh;
+    padding: 1.5rem;
+    width: 92%;
+    margin-top: -40px;
   }
 
-  .scroll-indicator,
-  .hero-buttons {
-    flex-direction: column;
-    gap: 1rem;
-    width: 90%;
-    max-width: none;
-  }
-
-  .arrow-button-container {
-    max-width: none;
-  }
-
-  .arrow-button,
-  .btn {
-    width: 100%;
-    max-width: none;
+  .glitch-text {
+    font-size: clamp(2rem, 6vw, 3rem);
+    margin-bottom: 0.5rem;
   }
 
   .subtitle {
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
     letter-spacing: 2px;
+  }
+
+  .subtitle-container {
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .scroll-indicator {
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+    max-width: none;
+    margin: 1.5rem auto 1rem;
+  }
+
+  .arrow-button-container {
+    max-width: 150px;
+  }
+
+  .arrow-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+  }
+
+  .arrow-button svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 400px;
+    padding: 0 1.5rem;
+    margin: 0 auto;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: none;
+    padding: 0.9em 1.5em;
+    font-size: 1rem;
+    min-height: 48px;
+  }
+
+  .hero-content {
+    padding-top: calc(var(--header-height) - 1rem);
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-text {
+    padding: 1rem;
+    margin-top: -20px;
+  }
+
+  .glitch-text {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+  }
+
+  .subtitle {
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    letter-spacing: 1.5px;
+  }
+
+  .hero-buttons {
+    padding: 0 1rem;
+    gap: 0.8rem;
+  }
+
+  .btn {
+    padding: 0.8em 1.2em;
+    font-size: 0.95rem;
+    min-height: 44px;
+  }
+
+  .scroll-indicator {
+    margin: 1rem auto 0.8rem;
+  }
+
+  .arrow-button {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  .arrow-button svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+@media (max-height: 600px) {
+  .hero-text {
+    margin-bottom: 3vh;
+    padding: 1rem;
+  }
+
+  .subtitle-container {
+    margin-bottom: 1rem;
+  }
+
+  .scroll-indicator {
+    margin: 1rem auto;
+  }
+
+  .hero-buttons {
+    gap: 0.6rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .hero-text {
+    margin-top: 0;
+    padding: 1rem;
+  }
+
+  .glitch-text {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: 0.3rem;
+  }
+
+  .subtitle {
+    font-size: clamp(0.8rem, 1.8vw, 1rem);
+  }
+
+  .scroll-indicator {
+    display: none;
+  }
+
+  .hero-buttons {
+    flex-direction: row;
+    gap: 1rem;
+    padding: 0 1rem;
+    margin-top: 1rem;
+    max-width: 500px;
+  }
+
+  .btn {
+    padding: 0.6em 1.2em;
+    font-size: 0.9rem;
+    min-height: 40px;
   }
 } 
