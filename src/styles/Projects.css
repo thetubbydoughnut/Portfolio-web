@@ -5,12 +5,14 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  padding-bottom: 6rem;
 }
 
 .projects-container {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .section-title {
@@ -129,6 +131,16 @@
 .view-more {
   text-align: center;
   margin-top: 3rem;
+  padding-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.view-more .btn {
+  display: inline-block;
+  padding: 0.8em 2em;
+  font-size: 1rem;
+  min-width: 200px;
 }
 
 .error {
@@ -140,43 +152,84 @@
 
 @media (max-width: 768px) {
   .projects-section {
-    padding: 3rem 1.5rem;
+    padding: 2rem 1rem 4rem;
   }
 
-  .section-title {
-    font-size: 2rem;
-  }
-
-  .section-subtitle {
-    font-size: 1rem;
-    margin-bottom: 2rem;
+  .projects-container {
+    padding: 0;
   }
 
   .projects-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
-    padding: 0 1rem;
+    margin-bottom: 2rem;
   }
 
-  .arrow-button-container {
-    display: none; /* Hide arrow buttons on mobile */
+  .project-card {
+    margin: 0 auto;
+    max-width: 500px;
+  }
+
+  .view-more {
+    margin-top: 2rem;
+    padding: 0 1rem 1rem;
+  }
+
+  .view-more .btn {
+    width: 100%;
+    max-width: 300px;
   }
 }
 
 @media (max-width: 480px) {
   .projects-section {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.8rem 3rem;
   }
 
   .section-title {
     font-size: 1.8rem;
   }
 
+  .section-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
   .projects-grid {
-    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .project-card {
+    margin: 0 0.5rem;
+  }
+
+  .project-content {
+    padding: 1.2rem;
+  }
+
+  .project-title {
+    font-size: 1.2rem;
+  }
+
+  .project-description {
+    font-size: 0.9rem;
   }
 
   .project-links {
     flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .project-link {
+    padding: 0.7em 1em;
+  }
+
+  .view-more {
+    margin-top: 1.5rem;
+  }
+
+  .view-more .btn {
+    font-size: 0.9rem;
+    padding: 0.7em 1.5em;
   }
 } 
