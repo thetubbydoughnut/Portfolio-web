@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Loader from '../components/Loader';
 import '../styles/Projects.css';
 
 const Projects = () => {
@@ -150,7 +151,9 @@ const Projects = () => {
   if (loading) {
     return (
       <section className="section projects-section">
-        <div className="loading">Loading projects...</div>
+        <div className="loading">
+          <Loader />
+        </div>
       </section>
     );
   }

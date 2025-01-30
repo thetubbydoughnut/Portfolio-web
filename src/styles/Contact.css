@@ -1,6 +1,7 @@
 .contact-section {
   position: relative;
-  padding: 4rem 2rem;
+  padding: 2rem;
+  background: rgba(44, 62, 80, 0.5);
   min-height: 100vh;
   display: flex;
   align-items: center;
