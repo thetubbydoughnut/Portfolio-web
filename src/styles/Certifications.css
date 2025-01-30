@@ -31,9 +31,12 @@
 
 .certifications-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 2rem;
   margin-bottom: 3rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .certification-card {
@@ -48,6 +51,7 @@
   flex-direction: column;
   animation: fadeIn 0.5s ease-out forwards;
   opacity: 0;
+  min-height: 500px;
 }
 
 .certification-card:hover {
@@ -56,7 +60,7 @@
 }
 
 .certification-content {
-  padding: 1.5rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -87,26 +91,33 @@
 
 .certification-description {
   color: var(--color-light-gray);
-  font-size: 0.95rem;
-  margin-bottom: 1.2rem;
-  line-height: 1.5;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
   flex: 1;
 }
 
 .certification-skills {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.2rem;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
 }
 
 .certification-skill {
-  padding: 0.3rem 0.8rem;
+  padding: 0.4rem 1rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 15px;
-  font-size: 0.85rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
   color: var(--color-light-gray);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.certification-skill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .certification-link {
@@ -244,13 +255,16 @@
   }
 
   .certifications-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    padding: 0 1rem;
   }
 
   .certification-card {
     margin: 0 auto;
     max-width: 500px;
+  }
+
+  .certification-content {
+    padding: 1.5rem;
   }
 }
 
@@ -269,7 +283,7 @@
   }
 
   .certification-content {
-    padding: 1.2rem;
+    padding: 1.25rem;
   }
 
   .certification-title {
@@ -277,7 +291,8 @@
   }
 
   .certification-description {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
   }
 
   .certification-skills {
