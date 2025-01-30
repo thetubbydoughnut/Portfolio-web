@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Layout from './components/Layout';
-import Navigation from './components/Navigation';
+import Header from './components/Header';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
@@ -22,7 +22,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Layout>
-        <Navigation />
+        <Header />
         <Suspense fallback={<Loading />}>
           <Routes>
             <Route path="/" element={<HeroSection />} />

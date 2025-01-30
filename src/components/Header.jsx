@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import '../styles/Header.css';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,14 +18,22 @@ const Header = () => {
   return (
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="header-content">
-        <div className="logo">
-          <Link to="/">
+        <div className="logo-container">
+          <a 
+            href="https://github.com/thetubbydoughnut" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="logo-image-link"
+          >
             <img 
               src="https://avatars.githubusercontent.com/u/36056681?v=4" 
-              alt="Logo" 
+              alt="GitHub Profile" 
               className="logo-image"
             />
-          </Link>
+          </a>
+          <NavLink to="/" className="logo-text-link">
+            <span className="logo-text">Portfolio</span>
+          </NavLink>
         </div>
         
         <button 
@@ -39,29 +46,35 @@ const Header = () => {
           <span></span>
         </button>
 
-        <nav className={`navigation ${isMenuOpen ? 'active' : ''}`}>
-          <ul>
-            <li>
-              <Link to="/" onClick={() => setIsMenuOpen(false)} className={location.pathname === '/' ? 'active' : ''}>
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/projects" onClick={() => setIsMenuOpen(false)} className={location.pathname === '/projects' ? 'active' : ''}>
-                Projects
-              </Link>
-            </li>
-            <li>
-              <Link to="/skills" onClick={() => setIsMenuOpen(false)} className={location.pathname === '/skills' ? 'active' : ''}>
-                Skills
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" onClick={() => setIsMenuOpen(false)} className={location.pathname === '/contact' ? 'active' : ''}>
-                Contact
-              </Link>
-            </li>
-          </ul>
+        <nav className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+          <NavLink 
+            to="/" 
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Home
+          </NavLink>
+          <NavLink 
+            to="/projects" 
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Projects
+          </NavLink>
+          <NavLink 
+            to="/skills" 
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Skills
+          </NavLink>
+          <NavLink 
+            to="/contact" 
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Contact
+          </NavLink>
         </nav>
       </div>
     </header>

@@ -1,15 +1,25 @@
 .layout {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   background-color: var(--color-primary);
+  z-index: 0;
 }
 
 .main-content {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
-  min-height: 100vh;
-  padding-top: var(--header-height, 80px);
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: var(--header-height, 60px);
   z-index: 1;
 }
 
@@ -37,6 +47,6 @@
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .main-content {
-    padding-top: calc(var(--header-height, 80px) - 20px);
+    padding-top: calc(var(--header-height, 50px));
   }
 } 
