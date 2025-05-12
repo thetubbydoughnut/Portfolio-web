@@ -77,6 +77,13 @@ const Header = () => {
             Certifications
           </NavLink>
           <NavLink 
+            to="/freelancing" 
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Freelancing
+          </NavLink>
+          <NavLink 
             to="/contact" 
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setIsMenuOpen(false)}

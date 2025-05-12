@@ -27,7 +27,8 @@ const HeroSection = () => {
           maxDistance: 25.00,
           spacing: 20.00,
           showDots: false,
-          speed: 0.3
+          speed: 0.3,
+          vertexColors: false
         })
       );
     }
