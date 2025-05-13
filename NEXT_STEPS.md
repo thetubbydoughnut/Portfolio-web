@@ -1,12 +1,10 @@
 # Next Steps
 
-1.  **Content:** Populate `HireMe.jsx` with specific content from your resume (`05-12-2025 Cameron Graham Full Stack Web Developer Resume.webp`).
-2.  **Review:** Conduct a code review of recent changes (`Certifications.jsx`, `HireMe.jsx`, `App.jsx`, `Header.jsx`, related CSS) for quality and adherence to best practices.
-3.  **SEO:** Review `index.html` meta tags again to ensure they align with the "Hire Me" focus and target relevant keywords.
-4.  **`.gitignore`:** Check `.gitignore` file to ensure `node_modules`, `.env` (if used), and other unnecessary files/folders are excluded.
-5.  **Resume Link:** Verify the resume download link (`/cameron-graham-resume.pdf`) on the `Hire Me` page works correctly (ensure the file is in the `public` directory).
-6.  **Testing:** Test all navigation links, page rendering, certificate link, and resume download.
-7.  **Console Errors:** Monitor the browser console for any persistent errors, especially the Vanta `vertexColors` warning, although it might be benign.
+1.  **Review Codebase for Improvements**: Examine components for adherence to best practices, potential refactoring, and accessibility improvements.
+2.  **Address CSS Import Warning**: Investigate the `[vite:css] @import must precede all other statements` warning during build, although the build currently succeeds.
+3.  **Enhance Responsiveness**: Further test and refine responsiveness across various screen sizes.
+4.  **Add Tests**: Implement unit or integration tests for key components.
+5.  **Update README**: Ensure the README reflects the current state and setup instructions.
 
 ## Next Steps for Portfolio Website
 

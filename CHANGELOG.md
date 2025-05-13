@@ -1,16 +1,10 @@
 # Changelog
 
-## 2025-05-12
+## 2025-05-12 - Code Review and Error Investigation
 
-- **Fix:** Resolved certificate display issue on `Certifications` page by replacing PDF iframe with an image preview linked to the Google Drive URL (`Certifications.jsx`, `Certifications.css`).
-- **Feat:** Created new `Hire Me` page (`HireMe.jsx`, `HireMe.css`) with placeholder content for professional summary, key skills, and call to action.
-- **Feat:** Added routing for `/hire-me` page (`App.jsx`).
-- **Feat:** Added "Hire Me" link to main navigation (`Header.jsx`).
-- **Fix:** Adjusted mobile menu transition delays to accommodate new "Hire Me" link (`Header.css`).
-- **Fix:** Removed unused PDF import from `Certifications.jsx` to resolve dynamic import error (500 Internal Server Error).
-- **Chore:** Verified `vertexColors: false` setting in Vanta.js configurations (`Layout.jsx`, `HeroSection.jsx`) in response to console warning.
-- **FIX**: Resolved CSS build error by moving `@import './VantaBackground.css';` to the top of `src/styles/Contact.css`.
-- **FIX**: Corrected import path for `bloomtech-certificate-preview.webp` in `src/pages/Certifications.jsx` after assets were moved to `src/assets/Certs and resume/`.
-- **REFACTOR**: Updated `src/pages/Projects.jsx` to use `VITE_GITHUB_USERNAME` environment variable instead of hardcoded username for API calls and links.
-- **REFACTOR**: Updated `src/components/Header.jsx` to use `VITE_GITHUB_USERNAME` environment variable for the GitHub social link.
-- **FEAT**: Added a "Download Resume" link to `src/components/Header.jsx`, linking to the `.webp` resume file located in `src/assets/Certs and resume/`. 
+- **Fixed**: Added missing dependencies (`framer-motion`, `react-intersection-observer`) to `package.json` and ran `npm install` to resolve import errors in `Certifications.jsx`.
+- **Fixed**: Updated the import path for `bloomtech-certificate-preview.webp` in `src/pages/Certifications.jsx` to resolve an import error.
+- **Investigated**: Looked into the `[vite:css] @import must precede all other statements` warning. The import in `src/styles/Contact.css` is correctly placed; the warning might be a build process nuance. The build currently completes successfully.
+- **Investigated**: Examined the `THREE.Material: parameter 'vertexColors' has value of undefined` error originating from `Layout.jsx`. Confirmed that `vertexColors: false` is already correctly set in the Vanta NET configuration, aligning with Three.js best practices. The error might stem from the Vanta library itself or its internal Three.js interaction.
+- **Next Steps**: Proceed with general codebase review, responsiveness enhancements, and test implementation. Monitor the `vertexColors` console error.
+- **Fix:** Resolved certificate display issue on `Certifications`

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import PageLoader from '../components/PageLoader';
 import '../styles/Certifications.css';
 // Remove the unused PDF import
@@ -7,7 +9,7 @@ import '../styles/Certifications.css';
 import bloomTechCertificatePreview from '../assets/Certs and resume/bloomtech-certificate-preview.webp';
 
 const Certifications = () => {
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const certifications = [
     {
@@ -32,12 +34,12 @@ const Certifications = () => {
   useEffect(() => {
     // Simulate loading time for smooth transition
     const timer = setTimeout(() => {
-      setLoading(false);
+      setIsLoading(false);
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return <PageLoader />;
   }
 
