@@ -49,7 +49,6 @@ body {
 main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0;
 }
 
 .section {
@@ -370,8 +369,7 @@ section {
 
 /* Main Content */
 main {
-  margin-top: 4rem;
-  padding: 2rem;
+  margin-top: var(--header-height);
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
@@ -397,10 +395,6 @@ h2 {
 @media (max-width: 768px) {
   .nav-links {
     gap: 1rem;
-  }
-  
-  main {
-    padding: 1rem;
   }
   
   .hero-section h1 {

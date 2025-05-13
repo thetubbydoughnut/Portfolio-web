@@ -1,5 +1,32 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+## 2025-05-12
+
+- Ensured full-page Vanta canvas:
+  - Set `.hero-section` height to `100vh` in `HeroSection.css`.
+  - Added `height: 100%` to `html` rule in `App.css`.
+- Corrected Vanta canvas positioning:
+  - Removed global `padding-top` from `body` in `App.css`.
+  - Re-applied `padding-top: calc(var(--header-height) + 4rem)` to `.hero-content` in `HeroSection.css`.
+  - Ensures Vanta canvas fills the viewport behind the header, while hero content starts below it.
+- Fixed Hero section alignment gap:
+  - Removed `var(--header-height)` from `.hero-content` top padding in `HeroSection.css`.
+  - Relied on body padding for header offset and used standard `4rem` top padding for `.hero-content` internal spacing.
+- Adjusted Hero section alignment:
+  - Corrected `--header-height` variable in `App.css` to `60px`.
+  - Modified `.hero-content` top padding in `HeroSection.css` to use only `var(--header-height)` to align it directly below the fixed header.
+- Corrected text visibility in `HeroSection.css`:
+  - Set `color: #FFFFFF` for `.hero-name`, `.hero-title`, and `.hero-summary` to ensure pure white text.
+  - Increased `font-weight` for `.hero-title` for better prominence.
+- Updated `HeroSection.css`:
+  - Changed `.hero-summary` text color to `var(--color-off-white)` for better contrast.
+  - Added a translucent background, `backdrop-filter: blur()`, padding, and border-radius to `.hero-text` to enhance text legibility over the animated background.
+- Consolidated `NEXT_STEPS.md` into `TODO.md` for a single task tracking file.
+- Adjusted `HeroSection.css`: Removed CSS `background-color` from `.hero-section` to ensure the Vanta.js animated background is displayed correctly.
+- Refactored Vanta.js initialization:
+
 ## 2025-05-12 - Fixes, Refactoring, and Styling
 
 - **Style**: Improved text contrast in `HeroSection.css` by changing colors for `.hero-title` and `.hero-summary`.

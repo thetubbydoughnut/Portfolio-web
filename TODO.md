@@ -1,4 +1,4 @@
-# Next Steps
+# TODO / Next Steps
 
 1.  **Review Codebase for Improvements**: Examine components for adherence to best practices, potential refactoring, and accessibility improvements.
 2.  **Address CSS Import Warning**: Investigate the `[vite:css] @import must precede all other statements` warning during build, although the build currently succeeds.
@@ -6,9 +6,9 @@
 4.  **Add Tests**: Implement unit or integration tests for key components.
 5.  **Update README**: Ensure the README reflects the current state and setup instructions.
 
-## Next Steps for Portfolio Website
+## Detailed Review Items (from 2025-05-12)
 
-Based on the recent review (2025-05-12), here are potential areas for improvement and further review:
+Here are potential areas for improvement and further review:
 
 1.  **Performance Optimization**: 
     *   Address the Vite build warning: `Some chunks are larger than 500 kB after minification.` Investigate code splitting (dynamic `import()`) or manual chunk configuration in `vite.config.js` to reduce initial load size, particularly for the large vendor chunk.
