@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import NET from 'vanta/dist/vanta.net.min';
 import * as THREE from 'three';
 import '../styles/HeroSection.css';
+// import { FaGithub, FaLinkedin, FaEnvelope, FaFilePdf } from 'react-icons/fa'; // Removed unused icons
+import profileImage from '../assets/images/cameron-profile.webp';
+import { motion } from 'framer-motion';
 
 const HeroSection = () => {
   const [vantaEffect, setVantaEffect] = useState(null);
@@ -54,53 +57,35 @@ const HeroSection = () => {
     <div className="hero-wrapper">
       <section id="home" className="hero-section" ref={vantaRef}>
         <div className="hero-content">
-          <div className="hero-text">
-            <h1 className="glitch-text">Cameron Graham</h1>
-            <div className="subtitle-container">
-              <p className="subtitle">Full Stack Developer</p>
-              <div className="subtitle-underline"></div>
-            </div>
-            <div className="scroll-indicator">
-              <div className="arrow-button-container">
-                <Link to="/projects" className="arrow-button">
-                  <svg
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                    ></path>
-                  </svg>
-                </Link>
-              </div>
-              <div className="arrow-button-container">
-                <Link to="/contact" className="arrow-button">
-                  <svg
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                    ></path>
-                  </svg>
-                </Link>
-              </div>
-            </div>
-            <div className="hero-buttons">
+          <motion.div 
+            className="hero-image-container"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <img src={profileImage} alt="Cameron Graham" className="hero-image" />
+          </motion.div>
+          <motion.div 
+            className="hero-text"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          >
+            <h1 className="hero-name">Cameron Graham</h1>
+            <p className="hero-title">Full Stack Web Developer</p>
+            <p className="hero-summary">
+              Full Stack Web Developer with BloomTech training (960+ hours) in React, Node.js, and secure application development. Proven ability to integrate APIs and manage authentication. Seeking to contribute to innovative web solutions.
+            </p>
+            <motion.div 
+              className="hero-buttons"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+            >
               <Link to="/projects" className="btn btn-primary">View Projects</Link>
               <Link to="/contact" className="btn btn-secondary">Contact Me</Link>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
     </div>

@@ -87,13 +87,6 @@ const Header = () => {
           >
             Contact
           </NavLink>
-          <NavLink 
-            to="/hire-me"
-            className={({ isActive }) => `nav-link nav-link-hire ${isActive ? 'active' : ''}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Hire Me
-          </NavLink>
           <a 
             href={resumeWebpPath} 
             download="Cameron_Graham_Resume.webp"

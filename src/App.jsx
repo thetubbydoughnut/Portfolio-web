@@ -9,10 +9,10 @@ import './App.css';
 const HeroSection = lazy(() => import('./components/HeroSection'));
 const Projects = lazy(() => import('./pages/Projects'));
 const Skills = lazy(() => import('./pages/Skills'));
-const Contact = lazy(() => import('./pages/Contact'));
 const Certifications = lazy(() => import('./pages/Certifications'));
 const Freelancing = lazy(() => import('./pages/Freelancing'));
-const HireMe = lazy(() => import('./pages/HireMe'));
+const Contact = lazy(() => import('./pages/Contact'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Loading component
 const Loading = () => (
@@ -34,7 +34,7 @@ function App() {
             <Route path="/certifications" element={<Certifications />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/freelancing" element={<Freelancing />} />
-            <Route path="/hire-me" element={<HireMe />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </Layout>
