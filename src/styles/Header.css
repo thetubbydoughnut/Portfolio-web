@@ -222,6 +222,7 @@
   .nav-links.active .nav-link:nth-child(4) { transition-delay: 0.35s; }
   .nav-links.active .nav-link:nth-child(5) { transition-delay: 0.4s; }
   .nav-links.active .nav-link:nth-child(6) { transition-delay: 0.45s; }
+  .nav-links.active .nav-link:nth-child(7) { transition-delay: 0.5s; }
 
   .social-links {
     margin: 2rem 0 0 0;
@@ -244,7 +245,7 @@
   .nav-links.active .social-links {
     opacity: 1;
     transform: translateY(0);
-    transition-delay: 0.5s;
+    transition-delay: 0.55s;
   }
 
   .social-link {

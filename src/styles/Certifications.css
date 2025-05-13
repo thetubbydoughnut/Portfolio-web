@@ -97,17 +97,17 @@
 }
 
 .certification-skills {
+  margin-top: 15px;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: 8px;
 }
 
 .certification-skill {
-  background-color: var(--background-light);
+  background-color: var(--secondary-color-light);
   color: var(--primary-color);
-  padding: 0.25rem 0.75rem;
-  border-radius: var(--border-radius-small);
+  padding: 3px 8px;
+  border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 500;
 }
@@ -340,4 +340,23 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   border: none;
+}
+
+/* Styles for the new preview image */
+.certification-preview-container {
+  margin-top: 20px;
+  text-align: center; /* Center the image */
+}
+
+.certification-preview-image {
+  max-width: 100%; /* Ensure image fits within the card */
+  height: auto; /* Maintain aspect ratio */
+  border: 1px solid var(--border-color); /* Optional border */
+  border-radius: 4px; /* Match card radius */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add hover effect */
+}
+
+.certification-preview-image:hover {
+  transform: scale(1.03); /* Slight zoom on hover */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Add shadow on hover */
 } 

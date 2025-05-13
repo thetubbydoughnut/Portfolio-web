@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import profileImage from '../assets/images/cameron-profile.webp';
+import resumeWebpPath from '../assets/Certs and resume/05-12-2025 Cameron Graham Full Stack Web Developer Resume.webp';
 import '../styles/Header.css';
 
 const Header = () => {
@@ -86,9 +87,26 @@ const Header = () => {
           >
             Contact
           </NavLink>
+          <NavLink 
+            to="/hire-me"
+            className={({ isActive }) => `nav-link nav-link-hire ${isActive ? 'active' : ''}`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Hire Me
+          </NavLink>
+          <a 
+            href={resumeWebpPath} 
+            download="Cameron_Graham_Resume.webp"
+            className="nav-link resume-download"
+            onClick={() => setIsMenuOpen(false)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Download Resume
+          </a>
           <div className="social-links">
             <a
-              href="https://github.com/thetubbydoughnut"
+              href={`https://github.com/${import.meta.env.VITE_GITHUB_USERNAME}`}
               target="_blank"
               rel="noopener noreferrer"
               className="social-link"

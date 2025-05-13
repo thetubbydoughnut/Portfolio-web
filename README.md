@@ -57,6 +57,7 @@ A modern, responsive portfolio website built with React and Vite, showcasing my 
 1. Create a `.env` file in the root directory
 2. Add necessary environment variables:
    ```env
+   VITE_GITHUB_USERNAME=your_github_username
    VITE_GITHUB_TOKEN=your_github_token
    ```
 

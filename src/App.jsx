@@ -12,6 +12,7 @@ const Skills = lazy(() => import('./pages/Skills'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Certifications = lazy(() => import('./pages/Certifications'));
 const Freelancing = lazy(() => import('./pages/Freelancing'));
+const HireMe = lazy(() => import('./pages/HireMe'));
 
 // Loading component
 const Loading = () => (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/certifications" element={<Certifications />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/freelancing" element={<Freelancing />} />
+            <Route path="/hire-me" element={<HireMe />} />
           </Routes>
         </Suspense>
       </Layout>

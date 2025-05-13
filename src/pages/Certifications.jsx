@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import PageLoader from '../components/PageLoader';
 import '../styles/Certifications.css';
-// Import the local PDF file
-import bloomTechCertificate from '../assets/BloomTech Certificate of Completion - Cameron Graham (Full Stack Web Development).pdf';
+// Remove the unused PDF import
+// import bloomTechCertificatePath from '../assets/Certs and resume/BloomTech Certificate of Completion - Cameron Graham (Full Stack Web Development).pdf'; 
+// Import the preview image
+import bloomTechCertificatePreview from '../assets/Certs and resume/bloomtech-certificate-preview.webp';
 
 const Certifications = () => {
   const [loading, setLoading] = useState(true);
@@ -13,9 +15,9 @@ const Certifications = () => {
       title: "Full Stack Web Development + Technical Interviewing",
       issuer: "BloomTech",
       date: "2025",
-      // Use the imported PDF path for the iframe source
-      credentialPreviewUrl: bloomTechCertificate, 
-      // Keep the Google Drive link as a fallback or external link if needed
+      // Use the imported image for the preview source
+      credentialPreviewUrl: bloomTechCertificatePreview, 
+      // Keep the Google Drive link for the actual verification link
       credentialUrl: "https://drive.google.com/file/d/118YvczGUNXpa1yL06cVlXeEwb6_x8LKU/view?usp=sharing", 
       description: "A comprehensive certification demonstrating mastery in modern web development technologies and technical interview proficiency. Achieved through rigorous technical assessments, development of full-stack applications, advanced computer science curriculum completion, and successful participation in BloomTech Labs working on complex real-world projects. Demonstrates expertise in front-end (React, HTML5, CSS3), back-end (Node.js, Express, SQL), testing methodologies, and professional development practices.",
       skills: [
@@ -64,15 +66,16 @@ const Certifications = () => {
                     </span>
                   ))}
                 </div>
-                {cert.credentialPreviewUrl && (
-                  <div className="certification-iframe-container">
-                    <iframe 
-                      src={cert.credentialPreviewUrl} 
-                      title={`${cert.title} Preview`} 
-                      width="100%" 
-                      className="certification-iframe"
-                      allowFullScreen
-                    ></iframe>
+                {/* Replace iframe with linked image */}
+                {cert.credentialPreviewUrl && cert.credentialUrl && (
+                  <div className="certification-preview-container">
+                    <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer" title={`View ${cert.title} Certificate (opens in new tab)`}>
+                      <img 
+                        src={cert.credentialPreviewUrl} 
+                        alt={`${cert.title} Preview`} 
+                        className="certification-preview-image"
+                      />
+                    </a>
                   </div>
                 )}
               </div>

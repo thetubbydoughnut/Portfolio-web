@@ -1,3 +1,5 @@
+@import './VantaBackground.css';
+
 .contact-section {
   position: relative;
   padding: 2rem;
@@ -8,9 +10,6 @@
   justify-content: center;
   width: 100%;
 }
-
-/* Import VantaBackground styles */
-@import './VantaBackground.css';
 
 .contact-container {
   max-width: 1200px;

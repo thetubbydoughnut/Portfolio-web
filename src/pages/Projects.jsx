@@ -59,17 +59,15 @@ const Projects = () => {
     return score;
   };
 
-  const fetchPinnedRepos = async () => {
+  const fetchPinnedRepos = async (username) => {
     try {
-      // Check if GitHub token is available
       const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
       if (!githubToken) {
-        console.warn('GitHub token not found in environment variables');
+        console.warn('GitHub token not found in environment variables. Pinned repositories will not be fetched.');
         setPinnedRepos([]);
         return;
       }
 
-      // Using the GraphQL API to fetch pinned repositories
       const response = await fetch('https://api.github.com/graphql', {
         method: 'POST',
         headers: {
@@ -78,7 +76,7 @@ const Projects = () => {
         },
         body: JSON.stringify({
           query: `{
-            user(login: "thetubbydoughnut") {
+            user(login: "${username}") {
               pinnedItems(first: 6, types: REPOSITORY) {
                 nodes {
                   ... on Repository {
@@ -98,19 +96,18 @@ const Projects = () => {
         throw new Error(data.errors[0].message);
       }
       
-      // Extract pinned repository names
       const pinnedNames = data.data.user.pinnedItems.nodes.map(node => node.name);
       setPinnedRepos(pinnedNames);
     } catch (err) {
       console.error('Error fetching pinned repos:', err);
-      setPinnedRepos([]); // Set empty array on error
+      setPinnedRepos([]);
     }
   };
 
-  const fetchRepos = async () => {
+  const fetchRepos = async (username) => {
     try {
       const response = await fetch(
-        'https://api.github.com/users/thetubbydoughnut/repos?type=public&sort=updated&per_page=100',
+        `https://api.github.com/users/${username}/repos?type=public&sort=updated&per_page=100`,
         {
           headers: {
             Accept: 'application/vnd.github.mercy-preview+json'
@@ -140,10 +137,17 @@ const Projects = () => {
   };
 
   useEffect(() => {
+    const githubUsername = import.meta.env.VITE_GITHUB_USERNAME;
+    if (!githubUsername) {
+      console.error("GitHub username not found in environment variables. Please set VITE_GITHUB_USERNAME in your .env file.");
+      setError("Application configuration error: GitHub username is missing.");
+      setLoading(false);
+      return;
+    }
     // Fetch pinned repos first, then fetch all repos
-    fetchPinnedRepos().then(fetchRepos);
+    fetchPinnedRepos(githubUsername).then(() => fetchRepos(githubUsername));
     const pollInterval = setInterval(() => {
-      fetchPinnedRepos().then(fetchRepos);
+      fetchPinnedRepos(githubUsername).then(() => fetchRepos(githubUsername));
     }, 5 * 60 * 1000);
     return () => clearInterval(pollInterval);
   }, []);
@@ -214,7 +218,7 @@ const Projects = () => {
         
         <div className="view-more">
           <a 
-            href="https://github.com/thetubbydoughnut?tab=repositories" 
+            href={`https://github.com/${import.meta.env.VITE_GITHUB_USERNAME}?tab=repositories`} 
             target="_blank" 
             rel="noopener noreferrer"
             className="btn btn-secondary"
