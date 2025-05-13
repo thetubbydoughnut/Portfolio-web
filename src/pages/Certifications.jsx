@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import PageLoader from '../components/PageLoader';
 import '../styles/Certifications.css';
+// Import the local PDF file
+import bloomTechCertificate from '../assets/BloomTech Certificate of Completion - Cameron Graham (Full Stack Web Development).pdf';
 
 const Certifications = () => {
   const [loading, setLoading] = useState(true);
-  const [previewUrl, setPreviewUrl] = useState(null);
 
   const certifications = [
     {
@@ -12,8 +13,10 @@ const Certifications = () => {
       title: "Full Stack Web Development + Technical Interviewing",
       issuer: "BloomTech",
       date: "2025",
-      credentialUrl: "https://drive.google.com/file/d/118YvczGUNXpa1yL06cVlXeEwb6_x8LKU/view?usp=sharing",
-      previewUrl: "https://drive.google.com/thumbnail?id=118YvczGUNXpa1yL06cVlXeEwb6_x8LKU",
+      // Use the imported PDF path for the iframe source
+      credentialPreviewUrl: bloomTechCertificate, 
+      // Keep the Google Drive link as a fallback or external link if needed
+      credentialUrl: "https://drive.google.com/file/d/118YvczGUNXpa1yL06cVlXeEwb6_x8LKU/view?usp=sharing", 
       description: "A comprehensive certification demonstrating mastery in modern web development technologies and technical interview proficiency. Achieved through rigorous technical assessments, development of full-stack applications, advanced computer science curriculum completion, and successful participation in BloomTech Labs working on complex real-world projects. Demonstrates expertise in front-end (React, HTML5, CSS3), back-end (Node.js, Express, SQL), testing methodologies, and professional development practices.",
       skills: [
         "React", "Node.js", "Express", "SQL", "RESTful APIs", 
@@ -31,10 +34,6 @@ const Certifications = () => {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
-
-  const handlePreviewClick = (url) => {
-    setPreviewUrl(url === previewUrl ? null : url);
-  };
 
   if (loading) {
     return <PageLoader />;
@@ -65,43 +64,15 @@ const Certifications = () => {
                     </span>
                   ))}
                 </div>
-                <div className="certification-actions">
-                  {cert.previewUrl && (
-                    <button 
-                      onClick={() => handlePreviewClick(cert.previewUrl)}
-                      className="preview-button"
-                    >
-                      {previewUrl === cert.previewUrl ? 'Hide Preview' : 'Show Preview'}
-                    </button>
-                  )}
-                  {cert.credentialUrl && (
-                    <a 
-                      href={cert.credentialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="certification-link"
-                    >
-                      View Credential
-                    </a>
-                  )}
-                </div>
-                {previewUrl === cert.previewUrl && (
-                  <div className="preview-container">
-                    <a 
-                      href={cert.credentialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="preview-link"
-                    >
-                      <img 
-                        src={cert.previewUrl} 
-                        alt={`${cert.title} Preview`} 
-                        className="credential-preview"
-                      />
-                      <div className="preview-overlay">
-                        <span>Click to view full credential</span>
-                      </div>
-                    </a>
+                {cert.credentialPreviewUrl && (
+                  <div className="certification-iframe-container">
+                    <iframe 
+                      src={cert.credentialPreviewUrl} 
+                      title={`${cert.title} Preview`} 
+                      width="100%" 
+                      className="certification-iframe"
+                      allowFullScreen
+                    ></iframe>
                   </div>
                 )}
               </div>

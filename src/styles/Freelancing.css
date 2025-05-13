@@ -1,16 +1,17 @@
 .freelancing-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 4rem 2rem;
   min-height: calc(100vh - var(--header-height));
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .freelancing-container h1 {
   font-size: 2.5rem;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
   text-align: center;
   color: var(--text-primary);
   position: relative;
@@ -28,85 +29,139 @@
   border-radius: 2px;
 }
 
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  width: 100%;
-  max-width: 1000px;
+.freelancing-intro {
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 700px;
+  line-height: 1.7;
+  font-size: 1.1rem;
 }
 
-.service-card {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 2rem;
-  text-align: center;
+/* Styles for the new single card */
+.single-service-card {
+  background: rgba(52, 73, 94, 0.8);
+  border-radius: 16px;
+  padding: 2.5rem;
+  text-align: left;
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-top: 1rem;
 }
 
-.service-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  border-color: var(--accent);
+.single-service-card:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(var(--accent-rgb), 0.5);
 }
 
-.service-icon {
-  font-size: 3rem;
-  margin-bottom: 1.5rem;
-  color: var(--accent);
-}
-
-.service-card h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-}
-
-.service-card p {
-  color: var(--text-secondary);
+.freelance-service-thumbnail {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
   margin-bottom: 2rem;
-  line-height: 1.6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: block;
+}
+
+.single-service-card h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.service-description {
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.service-description p {
+  margin-bottom: 1em;
+}
+
+.service-description p:last-child {
+  margin-bottom: 0;
+}
+
+.freelance-buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
 }
 
 .service-link {
   display: inline-block;
-  padding: 0.8rem 1.5rem;
+  padding: 0.9rem 1.8rem;
   background: var(--accent);
   color: var(--text-primary);
   text-decoration: none;
-  border-radius: 6px;
-  font-weight: 500;
+  border-radius: 8px;
+  font-weight: 600;
   transition: all 0.3s ease;
+  text-align: center;
+  border: 2px solid transparent;
 }
 
 .service-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+  border-color: var(--accent-hover);
   background: var(--accent-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Optional: Slight visual distinction for buttons */
+.fiverr-link {
+  /* background-color: #1dbf73; */
+}
+
+.upwork-link {
+  /* background-color: #6fda44; */
 }
 
 @media (max-width: 768px) {
   .freelancing-container {
-    padding: 1rem;
+    padding: 2rem 1rem;
   }
 
   .freelancing-container h1 {
     font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .freelancing-intro {
+    font-size: 1rem;
     margin-bottom: 2rem;
   }
 
-  .services-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .service-card {
+  .single-service-card {
     padding: 1.5rem;
   }
+  
+  .single-service-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  .service-description {
+    font-size: 0.95rem;
+  }
 
-  .service-icon {
-    font-size: 2.5rem;
+  .freelance-buttons-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .service-link {
+    width: 100%;
+    max-width: 300px;
   }
 } 

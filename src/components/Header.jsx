@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
+import profileImage from '../assets/images/cameron-profile.webp';
 import '../styles/Header.css';
 
 const Header = () => {
@@ -20,20 +21,15 @@ const Header = () => {
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="header-content">
         <div className="logo-container">
-          <a 
-            href="https://github.com/thetubbydoughnut" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="logo-image-link"
-          >
+          <NavLink to="/" className="logo-image-link">
             <img 
-              src="https://avatars.githubusercontent.com/u/36056681?v=4" 
-              alt="GitHub Profile" 
+              src={profileImage}
+              alt="Cameron Graham Profile Picture" 
               className="logo-image"
             />
-          </a>
+          </NavLink>
           <NavLink to="/" className="logo-text-link">
-            <span className="logo-text">Portfolio</span>
+            <span className="logo-text">PixelPerfectDev</span>
           </NavLink>
         </div>
         
