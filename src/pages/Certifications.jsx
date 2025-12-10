@@ -6,7 +6,7 @@ import '../styles/Certifications.css';
 // Remove the unused PDF import
 // import bloomTechCertificatePath from '../assets/Certs and resume/BloomTech Certificate of Completion - Cameron Graham (Full Stack Web Development).pdf'; 
 // Import the preview image
-import bloomTechCertificatePreview from '../assets/Certs and resume/bloomtech-certificate-preview.webp';
+import bloomTechCertificatePreview from '../assets/certs-and-resume/bloomtech-certificate-preview.webp';
 
 const Certifications = () => {
   const [isLoading, setIsLoading] = useState(true);

@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import profileImage from '../assets/images/cameron-profile.webp';
 import { resumeData } from '../data/resume';
+import resumePreview from '../assets/certs-and-resume/Cameron-Graham-Resume.webp';
 import '../styles/Header.css';
 
 const Header = () => {
@@ -94,15 +95,23 @@ const Header = () => {
           >
             Contact
           </NavLink>
-          <a
-            href={resumeData?.profile?.links?.resume}
-            className="nav-link resume-download"
-            onClick={() => setIsMenuOpen(false)}
-            target="_blank"
-            rel="noopener noreferrer"
+          <div
+            className="resume-download-container"
+            onMouseEnter={() => setIsMenuOpen(false)} // Close menu if hovering on desktop
           >
-            Download Resume
-          </a>
+            <a
+              href={resumeData?.profile?.links?.resume}
+              className="nav-link resume-download"
+              onClick={() => setIsMenuOpen(false)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Download Resume
+            </a>
+            <div className="resume-preview">
+              <img src={resumePreview} alt="Resume Preview" />
+            </div>
+          </div>
           <div className="social-links">
             <a
               href={resumeData?.profile?.links?.github}

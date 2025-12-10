@@ -367,3 +367,49 @@
   background: rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+/* Resume Preview Styles */
+.resume-download-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.resume-preview {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  background: var(--bg-card);
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.resume-download-container:hover .resume-preview {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(15px);
+}
+
+.resume-preview img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  display: block;
+}
+
+/* Hide preview on mobile */
+@media (max-width: 768px) {
+  .resume-preview {
+    display: none;
+  }
+}
