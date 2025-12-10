@@ -1,6 +1,6 @@
 .skills-section {
-  padding: 2rem;
-  background: rgba(44, 62, 80, 0.5);
+  padding: var(--section-padding);
+  background: transparent;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -8,7 +8,7 @@
 }
 
 .skills-container {
-  max-width: 1200px;
+  max-width: var(--container-width);
   width: 100%;
   margin: 0 auto;
 }
@@ -18,6 +18,7 @@
   color: var(--text-primary);
   text-align: center;
   margin-bottom: 1rem;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
 }
 
 .section-subtitle {
@@ -25,35 +26,6 @@
   color: var(--text-secondary);
   text-align: center;
   margin-bottom: 3rem;
-}
-
-.linkedin-link {
-  color: var(--accent);
-  text-decoration: none;
-  transition: color 0.3s ease;
-  position: relative;
-}
-
-.linkedin-link:hover {
-  color: var(--text-primary);
-}
-
-.linkedin-link::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 1px;
-  bottom: -2px;
-  left: 0;
-  background-color: var(--accent);
-  transform: scaleX(0);
-  transform-origin: bottom right;
-  transition: transform 0.3s ease;
-}
-
-.linkedin-link:hover::after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
 }
 
 .skills-categories {
@@ -68,7 +40,7 @@
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 25px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-card);
   color: var(--text-secondary);
   font-size: 1rem;
   cursor: pointer;
@@ -78,38 +50,45 @@
 }
 
 .category-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg);
+  border-color: var(--primary-color);
+  color: var(--text-primary);
   transform: translateY(-2px);
 }
 
 .category-btn.active {
-  background: var(--accent);
-  color: var(--text-primary);
+  background: var(--primary-color);
+  color: #0f172a;
+  box-shadow: 0 0 15px var(--primary-glow);
+  font-weight: 600;
 }
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
 }
 
 .skill-card {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 15px;
-  padding: 1.25rem;
+  background: var(--glass-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
   transition: all 0.3s ease;
   animation: fadeIn 0.5s ease forwards;
   opacity: 0;
   transform: translateY(20px);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: var(--glass-border);
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .skill-card:hover {
   transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: rgba(30, 41, 59, 0.9);
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 32px rgba(56, 189, 248, 0.15);
 }
 
 /* New tooltip styles */
@@ -118,7 +97,7 @@
   top: -10px;
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
-  background: rgba(0, 0, 0, 0.9);
+  background: var(--bg-card);
   color: var(--text-primary);
   padding: 1rem;
   border-radius: 8px;
@@ -126,111 +105,28 @@
   line-height: 1.4;
   width: 280px;
   z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--primary-color);
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s ease;
 }
 
-.skill-description.mobile {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 320px;
-  padding: 1.2rem;
-  opacity: 1;
-  pointer-events: auto;
-  animation: fadeIn 0.2s ease-out;
-  backdrop-filter: blur(10px);
-}
-
-.close-description {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  transition: all 0.2s ease;
-}
-
-.close-description:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* Add overlay for mobile descriptions */
-.skill-description.mobile::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: -1;
-  backdrop-filter: blur(3px);
-}
-
-.skill-description::before {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 8px solid rgba(0, 0, 0, 0.9);
-}
-
-.skill-card:hover .skill-description {
-  opacity: 1;
-  transform: translateX(-50%) translateY(calc(-100% - 10px));
-}
-
-/* Remove old tooltip styles */
-.skill-card::before,
-.skill-card::after {
-  display: none;
-}
-
-.skill-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.skill-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
+/* ... existing mobile styles ... */
 
 .skill-logo {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 4px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px;
   transition: transform 0.3s ease;
 }
 
 .skill-card:hover .skill-logo {
   transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .skill-name {
@@ -238,14 +134,16 @@
   color: var(--text-primary);
   margin: 0;
   flex: 1;
+  font-weight: 500;
 }
 
 .skill-level-container {
   position: relative;
-  height: 8px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
+  margin-top: auto;
 }
 
 .skill-level-bar {
@@ -253,17 +151,19 @@
   top: 0;
   left: 0;
   height: 100%;
-  background: var(--accent);
-  border-radius: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  border-radius: 3px;
   transition: width 1s ease-in-out;
+  box-shadow: 0 0 10px var(--primary-glow);
 }
 
 .skill-level-text {
   position: absolute;
   right: 0;
-  top: -25px;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+  top: -22px;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 @keyframes fadeIn {

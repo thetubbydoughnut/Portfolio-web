@@ -1,18 +1,16 @@
 .certifications-section {
-  padding: 2rem;
-  background: rgba(44, 62, 80, 0.5);
+  padding: var(--section-padding);
+  background: transparent;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-bottom: 6rem;
 }
 
 .certifications-container {
-  max-width: 1200px;
+  max-width: var(--container-width);
   width: 100%;
   margin: 0 auto;
-  padding: 0 1rem;
 }
 
 .section-title {
@@ -231,6 +229,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -345,18 +344,26 @@
 /* Styles for the new preview image */
 .certification-preview-container {
   margin-top: 20px;
-  text-align: center; /* Center the image */
+  text-align: center;
+  /* Center the image */
 }
 
 .certification-preview-image {
-  max-width: 100%; /* Ensure image fits within the card */
-  height: auto; /* Maintain aspect ratio */
-  border: 1px solid var(--border-color); /* Optional border */
-  border-radius: 4px; /* Match card radius */
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add hover effect */
+  max-width: 100%;
+  /* Ensure image fits within the card */
+  height: auto;
+  /* Maintain aspect ratio */
+  border: 1px solid var(--border-color);
+  /* Optional border */
+  border-radius: 4px;
+  /* Match card radius */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Add hover effect */
 }
 
 .certification-preview-image:hover {
-  transform: scale(1.03); /* Slight zoom on hover */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Add shadow on hover */
-} 
+  transform: scale(1.03);
+  /* Slight zoom on hover */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  /* Add shadow on hover */
+}

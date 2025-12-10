@@ -1,7 +1,7 @@
 .freelancing-container {
-  max-width: 1200px;
+  max-width: var(--container-width);
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: var(--section-padding);
   min-height: calc(100vh - var(--header-height));
   display: flex;
   flex-direction: column;
@@ -25,8 +25,9 @@
   transform: translateX(-50%);
   width: 100px;
   height: 3px;
-  background: var(--accent);
+  background: var(--primary-color);
   border-radius: 2px;
+  box-shadow: 0 0 10px var(--primary-glow);
 }
 
 .freelancing-intro {
@@ -40,22 +41,22 @@
 
 /* Styles for the new single card */
 .single-service-card {
-  background: rgba(52, 73, 94, 0.8);
+  background: var(--glass-bg);
   border-radius: 16px;
   padding: 2.5rem;
   text-align: left;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: var(--glass-border);
   backdrop-filter: blur(10px);
   width: 100%;
   max-width: 900px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--glass-shadow);
   margin-top: 1rem;
 }
 
 .single-service-card:hover {
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  border-color: rgba(var(--accent-rgb), 0.5);
+  box-shadow: 0 15px 40px rgba(56, 189, 248, 0.2);
+  border-color: var(--primary-color);
 }
 
 .freelance-service-thumbnail {
@@ -64,7 +65,7 @@
   height: auto;
   border-radius: 8px;
   margin-bottom: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: var(--glass-border);
   display: block;
 }
 
@@ -101,31 +102,26 @@
 .service-link {
   display: inline-block;
   padding: 0.9rem 1.8rem;
-  background: var(--accent);
+  background: var(--bg-card);
   color: var(--text-primary);
   text-decoration: none;
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.3s ease;
   text-align: center;
-  border: 2px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .service-link:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-  border-color: var(--accent-hover);
-  background: var(--accent-hover);
+  box-shadow: 0 6px 15px rgba(56, 189, 248, 0.25);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
-/* Optional: Slight visual distinction for buttons */
-.fiverr-link {
-  /* background-color: #1dbf73; */
-}
 
-.upwork-link {
-  /* background-color: #6fda44; */
-}
+/* Optional: Slight visual distinction for buttons can be added here if needed */
+
 
 @media (max-width: 768px) {
   .freelancing-container {
@@ -136,7 +132,7 @@
     font-size: 2rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .freelancing-intro {
     font-size: 1rem;
     margin-bottom: 2rem;
@@ -145,11 +141,11 @@
   .single-service-card {
     padding: 1.5rem;
   }
-  
+
   .single-service-card h2 {
     font-size: 1.5rem;
   }
-  
+
   .service-description {
     font-size: 0.95rem;
   }
@@ -159,9 +155,9 @@
     align-items: center;
     gap: 1rem;
   }
-  
+
   .service-link {
     width: 100%;
     max-width: 300px;
   }
-} 
+}

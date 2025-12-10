@@ -22,7 +22,7 @@
 }
 
 .header-content {
-  max-width: 1200px;
+  max-width: var(--container-width);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -49,12 +49,11 @@
 
 .logo-text-link {
   text-decoration: none;
-  color: var(--text-primary);
-  transition: color 0.3s ease;
+  color: var(--primary-color);
 }
 
 .logo-text-link:hover {
-  color: var(--accent);
+  color: var(--accent-color);
 }
 
 .logo-image {
@@ -94,7 +93,7 @@
   transform: translateX(-50%) scaleX(0);
   width: calc(100% - 2rem);
   height: 2px;
-  background-color: var(--accent);
+  background-color: var(--primary-color);
   transition: transform 0.3s ease;
 }
 
@@ -108,8 +107,8 @@
 }
 
 .nav-link.active {
-  color: var(--accent);
-  background: rgba(var(--accent-rgb), 0.1);
+  color: var(--primary-color);
+  background: var(--glass-bg);
 }
 
 .nav-link.active::after {
@@ -217,12 +216,29 @@
     transition-delay: 0.2s;
   }
 
-  .nav-links.active .nav-link:nth-child(2) { transition-delay: 0.25s; }
-  .nav-links.active .nav-link:nth-child(3) { transition-delay: 0.3s; }
-  .nav-links.active .nav-link:nth-child(4) { transition-delay: 0.35s; }
-  .nav-links.active .nav-link:nth-child(5) { transition-delay: 0.4s; }
-  .nav-links.active .nav-link:nth-child(6) { transition-delay: 0.45s; }
-  .nav-links.active .nav-link:nth-child(7) { transition-delay: 0.5s; }
+  .nav-links.active .nav-link:nth-child(2) {
+    transition-delay: 0.25s;
+  }
+
+  .nav-links.active .nav-link:nth-child(3) {
+    transition-delay: 0.3s;
+  }
+
+  .nav-links.active .nav-link:nth-child(4) {
+    transition-delay: 0.35s;
+  }
+
+  .nav-links.active .nav-link:nth-child(5) {
+    transition-delay: 0.4s;
+  }
+
+  .nav-links.active .nav-link:nth-child(6) {
+    transition-delay: 0.45s;
+  }
+
+  .nav-links.active .nav-link:nth-child(7) {
+    transition-delay: 0.5s;
+  }
 
   .social-links {
     margin: 2rem 0 0 0;
@@ -310,9 +326,11 @@
   0% {
     box-shadow: 0 0 5px rgba(var(--accent-rgb), 0.2);
   }
+
   50% {
     box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.4);
   }
+
   100% {
     box-shadow: 0 0 5px rgba(var(--accent-rgb), 0.2);
   }
@@ -348,4 +366,4 @@
   transform: translateY(-2px);
   background: rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-} 
+}

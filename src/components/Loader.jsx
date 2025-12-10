@@ -13,38 +13,26 @@ const Loader = () => {
 
 const StyledWrapper = styled.div`
   .spinner {
-    width: 3em;
-    height: 3em;
-    cursor: not-allowed;
+    width: 3.5em;
+    height: 3.5em;
     border-radius: 50%;
-    border: 2px solid #444;
-    box-shadow: -10px -10px 10px #6359f8, 0px -10px 10px 0px #9c32e2, 10px -10px 10px #f36896, 10px 0 10px #ff0b0b, 10px 10px 10px 0px#ff5500, 0 10px 10px 0px #ff9500, -10px 10px 10px 0px #ffb700;
-    animation: pulse 1.5s ease-in-out infinite;
+    border: 3px solid transparent;
+    border-top-color: #38bdf8; /* var(--color-accent) hardcoded for styled-comp safety if global not ready */
+    border-right-color: #8b5cf6; /* Purple nuance */
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
   }
 
   .spinnerin {
-    border: 2px solid #444;
-    width: 1.5em;
-    height: 1.5em;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    display: none; /* Remove inner dot for cleaner look */
   }
 
-  @keyframes pulse {
+  @keyframes spin {
     0% {
-      transform: scale(1);
-      box-shadow: -10px -10px 10px #6359f8, 0px -10px 10px 0px #9c32e2, 10px -10px 10px #f36896, 10px 0 10px #ff0b0b, 10px 10px 10px 0px#ff5500, 0 10px 10px 0px #ff9500, -10px 10px 10px 0px #ffb700;
-    }
-    50% {
-      transform: scale(1.1);
-      box-shadow: -15px -15px 15px #6359f8, 0px -15px 15px 0px #9c32e2, 15px -15px 15px #f36896, 15px 0 15px #ff0b0b, 15px 15px 15px 0px#ff5500, 0 15px 15px 0px #ff9500, -15px 15px 15px 0px #ffb700;
+      transform: rotate(0deg);
     }
     100% {
-      transform: scale(1);
-      box-shadow: -10px -10px 10px #6359f8, 0px -10px 10px 0px #9c32e2, 10px -10px 10px #f36896, 10px 0 10px #ff0b0b, 10px 10px 10px 0px#ff5500, 0 10px 10px 0px #ff9500, -10px 10px 10px 0px #ffb700;
+      transform: rotate(360deg);
     }
   }
 `;

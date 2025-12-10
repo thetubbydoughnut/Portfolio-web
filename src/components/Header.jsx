@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import profileImage from '../assets/images/cameron-profile.webp';
-import resumeWebpPath from '../assets/Certs and resume/05-12-2025 Cameron Graham Full Stack Web Developer Resume.webp';
+import { resumeData } from '../data/resume';
 import '../styles/Header.css';
 
 const Header = () => {
@@ -23,9 +23,9 @@ const Header = () => {
       <div className="header-content">
         <div className="logo-container">
           <NavLink to="/" className="logo-image-link">
-            <img 
+            <img
               src={profileImage}
-              alt="Cameron Graham Profile Picture" 
+              alt={`${resumeData.profile.name} Profile`}
               className="logo-image"
             />
           </NavLink>
@@ -33,8 +33,8 @@ const Header = () => {
             <span className="logo-text">PixelPerfectDev</span>
           </NavLink>
         </div>
-        
-        <button 
+
+        <button
           className={`menu-toggle ${isMenuOpen ? 'active' : ''}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle navigation menu"
@@ -45,51 +45,57 @@ const Header = () => {
         </button>
 
         <nav className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
-          <NavLink 
-            to="/" 
+          <NavLink
+            to="/"
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setIsMenuOpen(false)}
           >
             Home
           </NavLink>
-          <NavLink 
-            to="/projects" 
+          <NavLink
+            to="/projects"
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setIsMenuOpen(false)}
           >
             Projects
           </NavLink>
-          <NavLink 
-            to="/skills" 
+          <NavLink
+            to="/skills"
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setIsMenuOpen(false)}
           >
             Skills
           </NavLink>
-          <NavLink 
-            to="/certifications" 
+          <NavLink
+            to="/experience"
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Experience
+          </NavLink>
+          <NavLink
+            to="/certifications"
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setIsMenuOpen(false)}
           >
             Certifications
           </NavLink>
-          <NavLink 
-            to="/freelancing" 
+          <NavLink
+            to="/freelancing"
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setIsMenuOpen(false)}
           >
             Freelancing
           </NavLink>
-          <NavLink 
-            to="/contact" 
+          <NavLink
+            to="/contact"
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             onClick={() => setIsMenuOpen(false)}
           >
             Contact
           </NavLink>
-          <a 
-            href={resumeWebpPath} 
-            download="Cameron_Graham_Resume.webp"
+          <a
+            href={resumeData?.profile?.links?.resume}
             className="nav-link resume-download"
             onClick={() => setIsMenuOpen(false)}
             target="_blank"
@@ -99,7 +105,7 @@ const Header = () => {
           </a>
           <div className="social-links">
             <a
-              href={`https://github.com/${import.meta.env.VITE_GITHUB_USERNAME}`}
+              href={resumeData?.profile?.links?.github}
               target="_blank"
               rel="noopener noreferrer"
               className="social-link"
@@ -108,7 +114,7 @@ const Header = () => {
               <FaGithub />
             </a>
             <a
-              href="https://www.linkedin.com/in/thetubbydoughnut/"
+              href={resumeData?.profile?.links?.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               className="social-link"

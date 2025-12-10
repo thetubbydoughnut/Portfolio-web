@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import PageLoader from '../components/PageLoader';
 import { skillLogos, skillDescriptions, skillExamples, getLogoPath } from '../data/skillsData';
 import '../styles/Skills.css';
@@ -8,6 +9,7 @@ const SKILL_CATEGORIES = [
   { id: 'backend', name: 'Backend' },
   { id: 'development', name: 'Development Tools' },
   { id: 'core', name: 'Core Development' },
+  { id: 'ai', name: 'AI & Automation' },
   { id: 'testing', name: 'Testing' },
   { id: 'soft', name: 'Soft Skills' },
   { id: 'game', name: 'Game Development' },
@@ -26,10 +28,10 @@ const Skills = () => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -47,24 +49,26 @@ const Skills = () => {
   useEffect(() => {
     // Create skills object based on descriptions
     const skillsData = {};
-    
+
     // Group skills by category based on the skillDescriptions
     Object.entries(skillDescriptions).forEach(([skillName, description]) => {
       // Determine category based on skill name or default to 'frontend'
       let category = 'frontend';
-      
+
       if (skillName.includes('Test')) category = 'testing';
       else if (['Node.js', 'Express', 'SQL', 'SQLite', 'Authentication', 'JWT', 'bcrypt'].includes(skillName)) category = 'backend';
       else if (['Git', 'GitHub', 'VS Code', 'npm', 'Webpack', 'Babel.js'].includes(skillName)) category = 'development';
       else if (['Algorithms', 'Data Structures', 'Architecture', 'Computer Science'].includes(skillName)) category = 'core';
+      else if (['Allows', 'Algorithms', 'Data Structures', 'Architecture', 'Computer Science'].includes(skillName)) category = 'core';
+      else if (['Cursor', 'Google Antigravity', 'n8n', 'Gemini', 'Meta Prompting', 'BMAD Method'].includes(skillName)) category = 'ai';
       else if (['Teamwork', 'Time Management', 'Attention to Detail', 'Problem Solving'].some(term => skillName.includes(term))) category = 'soft';
       else if (['Unreal Engine', 'Blender', 'Gaea', '3D Modeling'].includes(skillName)) category = 'game';
       else if (['Ableton', 'Sound Design', 'Music Production'].includes(skillName)) category = 'audio';
-      
+
       if (!skillsData[category]) {
         skillsData[category] = [];
       }
-      
+
       skillsData[category].push({
         name: skillName,
         level: 85, // Default level, you can adjust this as needed
@@ -79,13 +83,13 @@ const Skills = () => {
 
   const getSkillsToShow = () => {
     if (activeCategory === 'all') {
-      return Object.entries(skills).flatMap(([category, categorySkills]) => 
+      return Object.entries(skills).flatMap(([category, categorySkills]) =>
         categorySkills.map(skill => ({ ...skill, category }))
       );
     }
-    return skills[activeCategory]?.map(skill => ({ 
-      ...skill, 
-      category: activeCategory 
+    return skills[activeCategory]?.map(skill => ({
+      ...skill,
+      category: activeCategory
     })) || [];
   };
 
@@ -120,21 +124,36 @@ const Skills = () => {
           ))}
         </div>
 
-        <div className="skills-grid">
+        <motion.div
+          className="skills-grid"
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.05
+              }
+            }
+          }}
+          initial="hidden"
+          animate="show"
+        >
           {getSkillsToShow().map((skill, index) => (
-            <div 
+            <motion.div
               key={`${skill.category}-${skill.name}-${index}`}
               className="skill-card"
-              style={{
-                animationDelay: `${index * 0.1}s`
+              variants={{
+                hidden: { opacity: 0, scale: 0.9 },
+                show: { opacity: 1, scale: 1 }
               }}
+              whileHover={{ scale: 1.05 }}
               onClick={() => isMobile && handleSkillInteraction(skill.name)}
               onMouseEnter={() => !isMobile && handleSkillInteraction(skill.name)}
               onMouseLeave={() => !isMobile && setShowDescription(null)}
             >
               <div className="skill-info">
                 <div className="skill-header">
-                  <img 
+                  <img
                     src={getLogoPath(skill.name)}
                     alt={`${skill.name} logo`}
                     className="skill-logo"
@@ -149,7 +168,7 @@ const Skills = () => {
                   <h3 className="skill-name">{skill.name}</h3>
                 </div>
                 <div className="skill-level-container">
-                  <div 
+                  <div
                     className="skill-level-bar"
                     style={{ width: `${skill.level}%` }}
                   />
@@ -160,8 +179,8 @@ const Skills = () => {
                 <div className={`skill-description ${isMobile ? 'mobile' : ''}`}>
                   {skill.description || skill.example || 'Description coming soon...'}
                   {isMobile && (
-                    <button 
-                      className="close-description" 
+                    <button
+                      className="close-description"
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowDescription(null);
@@ -172,9 +191,9 @@ const Skills = () => {
                   )}
                 </div>
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

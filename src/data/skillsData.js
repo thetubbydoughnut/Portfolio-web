@@ -42,6 +42,14 @@ export const skillLogos = {
   'npm': '/images/skills/npm.svg',
   'Webpack': '/images/skills/webpack.svg',
   'Babel.js': '/images/skills/babel.js.svg',
+  
+  // AI & Automation (New)
+  'Cursor': '/images/skills/vs-code.svg', // Fallback to VS Code icon
+  'Google Antigravity': '/images/skills/default-tools.svg',
+  'n8n': '/images/skills/default-backend.svg',
+  'Gemini': '/images/skills/default-tools.svg',
+  'Meta Prompting': '/images/skills/default-soft.svg',
+  'BMAD Method': '/images/skills/default-soft.svg',
 
   // Core Development
   'Algorithms': '/images/skills/algorithms.svg',
@@ -141,6 +149,12 @@ export const skillDescriptions = {
   'Test Automation': 'Automated software testing processes to ensure application reliability.',
   'Agile Project Management': 'Managed software development using Agile methodologies for iterative progress.',
   'Deployment': 'Deployed and managed applications on cloud platforms for production use.',
+  'Cursor': 'Daily driver IDE for AI-augmented development, accelerating code generation and refactoring.',
+  'Google Antigravity': 'Leveraged advanced AI IDE for full-stack architecture and automated workflows.',
+  'n8n': 'Engineered complex automated logistics pipelines and business logic workflows.',
+  'Gemini': 'Utilized advanced LLMs for code generation, reasoning, and problem solving.',
+  'Meta Prompting': 'Applied advanced prompting strategies to optimize AI output quality.',
+  'BMAD Method': 'Implemented structured prompting methodologies for consistent AI results.',
   'Unit Testing': 'Ensured code functionality with robust unit test coverage.',
   'Integration Testing': 'Validated system integrations to ensure seamless component interactions.',
   'Software Testing': 'Conducted various software testing methodologies for quality assurance.',
@@ -199,7 +213,10 @@ export const skillExamples = {
   'Algorithms': 'Data structures, optimization, problem-solving',
   'Architecture': 'System design, scalability, best practices',
   'Debugging': 'Chrome DevTools, logging, error tracking, testing',
-  'Deployment': 'CI/CD, environment setup, monitoring, maintenance'
+  'Deployment': 'CI/CD, environment setup, monitoring, maintenance',
+  'Cursor': 'Code generation, chat debugging, codebase indexing',
+  'n8n': 'Webhook, API integrations, data transformation',
+  'Google Antigravity': 'Project scaffolding, complex refactoring, multi-file edits'
 };
 
 // Helper function to get the correct logo path
