@@ -3,16 +3,18 @@ import { motion } from 'framer-motion';
 import '../styles/Contact.css';
 import PageLoader from '../components/PageLoader';
 
+import { resumeData } from '../data/resume';
+
 const Contact = () => {
   const [copied, setCopied] = useState(false);
   const [copiedItem, setCopiedItem] = useState('');
   const [loading, setLoading] = useState(true);
 
   const contactInfo = {
-    email: 'thetubbydoughnut@gmail.com',
-    phone: '(661) 972-5200',
-    github: 'https://github.com/thetubbydoughnut',
-    linkedin: 'https://www.linkedin.com/in/thetubbydoughnut/'
+    email: resumeData.profile.email,
+    phone: resumeData.profile.phone,
+    github: resumeData.profile.links.github,
+    linkedin: resumeData.profile.links.linkedin
   };
 
   useEffect(() => {
