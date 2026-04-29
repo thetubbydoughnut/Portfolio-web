@@ -11,9 +11,7 @@ const SKILL_CATEGORIES = [
   { id: 'core', name: 'Core Development' },
   { id: 'ai', name: 'AI & Automation' },
   { id: 'testing', name: 'Testing' },
-  { id: 'soft', name: 'Soft Skills' },
-  { id: 'game', name: 'Game Development' },
-  { id: 'audio', name: 'Audio Production' }
+  { id: 'soft', name: 'Soft Skills' }
 ];
 
 const Skills = () => {
@@ -62,8 +60,6 @@ const Skills = () => {
       else if (['Allows', 'Algorithms', 'Data Structures', 'Architecture', 'Computer Science'].includes(skillName)) category = 'core';
       else if (['Cursor', 'Google Antigravity', 'n8n', 'Gemini', 'Meta Prompting', 'BMAD Method'].includes(skillName)) category = 'ai';
       else if (['Teamwork', 'Time Management', 'Attention to Detail', 'Problem Solving'].some(term => skillName.includes(term))) category = 'soft';
-      else if (['Unreal Engine', 'Blender', 'Gaea', '3D Modeling'].includes(skillName)) category = 'game';
-      else if (['Ableton', 'Sound Design', 'Music Production'].includes(skillName)) category = 'audio';
 
       if (!skillsData[category]) {
         skillsData[category] = [];

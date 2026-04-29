@@ -12,7 +12,6 @@ const HeroSection = lazy(() => import('./components/HeroSection'));
 const Projects = lazy(() => import('./pages/Projects'));
 const Skills = lazy(() => import('./pages/Skills'));
 const Certifications = lazy(() => import('./pages/Certifications'));
-const Freelancing = lazy(() => import('./pages/Freelancing'));
 const Experience = lazy(() => import('./pages/Experience'));
 const Contact = lazy(() => import('./pages/Contact'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -62,11 +61,6 @@ function App() {
               <Route path="/contact" element={
                 <PageTransition>
                   <Contact />
-                </PageTransition>
-              } />
-              <Route path="/freelancing" element={
-                <PageTransition>
-                  <Freelancing />
                 </PageTransition>
               } />
               <Route path="*" element={

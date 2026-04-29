@@ -11,7 +11,7 @@ export const resumeData = {
       portfolio: "/",
       resume: "https://docs.google.com/document/d/1d69zdOxy1qetCZDNJI_n_6T4Hs46kKo8zt1aR8ezi0Q/edit?usp=sharing"
     },
-    summary: "High-velocity Software Engineer with a proven track record of mastering new architectures to deliver production-grade solutions. Early adopter of AI-augmented development (Daily usage since 2024), leveraging Cursor, Meta Prompting, and Google Antigravity (AI IDE) to accelerate release cycles. As a Founder and Lead Engineer, I have architected scalable full-stack e-commerce platforms and automated complex business logistics using n8n. Passionate about combining full-lifecycle ownership with modern automation tools to solve critical business inefficiencies."
+    summary: "Full-Stack Software Engineer with a proven track record of architecting scalable, revenue-generating platforms. By combining modern web architectures with advanced automation, I solve complex business bottlenecks—such as my recent work building a decentralized 3D-printing ERP and logistics pipeline. I am passionate about taking full-lifecycle ownership of products from conception to production deployment."
   },
   skills: {
     languages: ["JavaScript (ES6+)", "TypeScript", "Python", "SQL", "HTML5", "CSS3"],
@@ -31,10 +31,12 @@ export const resumeData = {
       location: "Oklahoma City, OK",
       period: "October 2025 - Present",
       description: [
-        "Identified a market opportunity for a direct-to-consumer 3D printing brand but faced bottlenecks in manual inventory tracking and shipping label generation.",
-        "Leveraged Gemini 3 Pro inside Google Antigravity to accelerate full-stack development, architecting a custom e-commerce platform using React and Node.js, integrating the Stripe API to handle secure payment processing for revenue-generating transactions.",
-        "Engineered an automated logistics pipeline using n8n and EasyPost, which automatically generates shipping labels and routes order data immediately upon payment success.",
-        "Reduced manual administrative workload by 40%, allowing the business to scale order volume without increasing headcount, while maintaining 99.9% uptime."
+        "Architected and deployed a full-stack e-commerce platform using React 19, Node.js, and PostgreSQL, processing real-world transactions via Stripe and EasyPost integrations.",
+        "Engineered a 'Semi-Autonomous Factory' pipeline using n8n and Webhooks to automatically slice and route 3D print jobs to local hardware immediately upon Stripe payment confirmation.",
+        "Built a comprehensive 14-module enterprise resource planning (ERP) admin dashboard to manage inventory, production queues, and fulfillment.",
+        "Optimized backend performance by refactoring N+1 database queries into batch operations using Knex.js, significantly reducing API latency.",
+        "Hardened application security by implementing the Synchronizer Token Pattern for CSRF protection, JWT-based authentication, and automated role-based access control (RBAC) guards.",
+        "Designed a zero-egress media storage pipeline using Cloudflare R2 and automated deployment workflows using Docker and GitHub Actions on Oracle Cloud infrastructure."
       ]
     },
     {

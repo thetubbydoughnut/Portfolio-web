@@ -76,24 +76,11 @@ export const skillLogos = {
   'Attention to Detail': '/images/skills/attention-to-detail.svg',
   'Problem Solving': '/images/skills/problem-solving.svg',
 
-  // Game Development
-  'Unreal Engine': '/images/skills/unreal-engine.svg',
-  'Blender': '/images/skills/blender.svg',
-  'Gaea': '/images/skills/gaea.svg',
-  '3D Modeling': '/images/skills/3d-modeling.svg',
-
-  // Audio Production
-  'Ableton': '/images/skills/ableton.svg',
-  'Sound Design': '/images/skills/sound-design.svg',
-  'Music Production': '/images/skills/music-production.svg',
-
   // Default category-specific fallbacks
   'Frontend Development': '/images/skills/default-frontend.svg',
   'Backend Development': '/images/skills/default-backend.svg',
   'Development Tools': '/images/skills/default-tools.svg',
   'Testing': '/images/skills/default-testing.svg',
-  'Game Development': '/images/skills/default-gamedev.svg',
-  'Audio Production': '/images/skills/default-audio.svg',
   'Soft Skills': '/images/skills/default-soft.svg',
 
   // Default fallback
@@ -163,14 +150,7 @@ export const skillDescriptions = {
   'Teamwork & Collaboration': 'Worked closely with cross-functional teams to deliver high-quality projects.',
   'Time Management': 'Prioritized and managed tasks efficiently to meet project deadlines.',
   'Attention to Detail': 'Ensured code quality and UI precision through meticulous attention to detail.',
-  'Problem Solving': 'Applied analytical thinking to debug and optimize complex systems.',
-  'Unreal Engine': 'Developed interactive experiences using Unreal Engine\'s robust game engine.',
-  'Blender': 'Created 3D models and animations using Blender\'s powerful modeling tools.',
-  'Gaea': 'Designed realistic terrain and landscapes using Gaea procedural generation.',
-  '3D Modeling': 'Built detailed 3D assets for digital and interactive applications.',
-  'Ableton': 'Produced and mixed music using Ableton\'s advanced audio production tools.',
-  'Sound Design': 'Created immersive audio experiences through professional sound design techniques.',
-  'Music Production': 'Composed and arranged music using digital audio workstations and plugins.'
+  'Problem Solving': 'Applied analytical thinking to debug and optimize complex systems.'
 };
 
 export const skillExamples = {
@@ -197,16 +177,6 @@ export const skillExamples = {
   'VS Code': 'Extensions, debugging, customization, integrated terminal',
   'Vercel': 'Deployment, environment variables, domain management',
   'Heroku': 'Deployment, CI/CD, add-ons, monitoring',
-
-  // Game Development
-  'Unreal Engine': '3D game development, blueprints, level design',
-  'Blender': '3D modeling, texturing, animation, rendering',
-  'Gaea': 'Terrain generation, texturing, erosion simulation',
-
-  // Music Production
-  'FL Studio': 'Music production, sound design, mixing, mastering',
-  'Sound Design': 'Sound effects, synthesis, audio processing',
-  'Music Production': 'Composition, arrangement, mixing, mastering',
 
   // Additional Skills
   'Agile Project Management': 'Scrum, sprints, backlog management, standups',

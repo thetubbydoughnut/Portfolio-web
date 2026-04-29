@@ -109,13 +109,14 @@ const Projects = () => {
     {
       id: 'legendary-loot',
       name: 'Legendary Printed Loot',
-      description: 'Custom e-commerce platform & automated logistics pipeline. reduced administrative workload by 40% via n8n & EasyPost integration.',
-      language: 'React / Node.js',
+      description: 'Premium 3D-printed gaming accessories e-commerce platform and decentralized manufacturing hub. Features a responsive React 19 storefront, 14-module ERP admin dashboard, automated print queue via n8n, Stripe checkout, and EasyPost logistics on Oracle Cloud.',
+      language: 'React / Node.js / PostgreSQL',
       stargazers_count: 50, // Mock score for sorting
-      html_url: 'https://lpl3d.com',
+      html_url: '', // Empty URL indicates no link to GitHub
       homepage: 'https://lpl3d.com',
+      private: true,
       image: 'https://via.placeholder.com/600x400', // Placeholder
-      topics: ['full-stack', 'react', 'stripe', 'n8n']
+      topics: ['react', 'node', 'postgresql', 'stripe', 'n8n', 'docker']
     },
     {
       id: 'bolt-crm',
@@ -157,12 +158,63 @@ const Projects = () => {
       // Filter and sort repositories by impression score
       const sortedRepos = finalRepos
         .filter(repo => (!repo.private && repo.visibility === 'public') || repo.id.toString().startsWith('legendary') || repo.id.toString().startsWith('bolt'))
-        .map(repo => ({
-          ...repo,
-          impressionScore: getImpressionScore(repo)
-        }))
+        .map(repo => {
+          let customDescription = repo.description;
+          
+          switch(repo.name) {
+            case 'Portfolio-web':
+              customDescription = 'My personal portfolio website (this very site!). Built with React, Vite, Framer Motion, and custom CSS to showcase my projects, experience, and technical capabilities.';
+              break;
+            case 'DogFinder':
+              customDescription = 'A React-based web application that leverages external APIs to dynamically fetch and display breed information. Features robust client-side routing and a responsive interface.';
+              break;
+            case 'Secure-Content-Management-Frontend':
+              customDescription = 'A robust frontend interface designed for secure content management, featuring robust state handling and integration with secure backend protocols.';
+              break;
+            case 'web-module-project-class-components':
+              customDescription = 'A React application demonstrating proficiency in legacy React architectures, specifically focusing on Class Components and complex lifecycle method management.';
+              break;
+            case 'React-Data-Viz-Frontend-with-Auth0':
+              customDescription = 'A full-stack data visualization dashboard featuring secure user authentication via Auth0. Built to showcase complex state management and interactive chart integration.';
+              break;
+            case 'node-testing2-project':
+              customDescription = 'A comprehensive backend testing suite utilizing Jest and Supertest to validate Node.js server endpoints, ensuring high API reliability and edge-case coverage.';
+              break;
+            case 'node-auth2-project':
+              customDescription = 'A secure backend authentication service implementing JSON Web Tokens (JWT) for robust authorization flows using Node.js, Express, and Knex.';
+              break;
+            case 'node-db3-project':
+              customDescription = 'An advanced backend architecture project focused on complex multi-table relational database schemas and complex queries using Knex and SQLite.';
+              break;
+            case 'node-db3-guided':
+              customDescription = 'An instructional backend project demonstrating the implementation of complex relational data models and optimized query structures using Node.js.';
+              break;
+            case 'node-db1-project':
+              customDescription = 'A foundational database management project showcasing schema creation, data seeding, and fundamental CRUD operations with Knex.js.';
+              break;
+            case 'node-api1-project':
+              customDescription = 'A robust RESTful API service built with Express and Node.js, highlighting clean architecture, endpoint routing, and foundational backend principles.';
+              break;
+            case 'web-module-project-testing-react':
+              customDescription = 'A frontend test engineering project utilizing React Testing Library and Jest to build comprehensive test suites for React components, mimicking real user interactions.';
+              break;
+            case 'web-module-project-lifecycle':
+              customDescription = 'A React engineering project exploring intricate component lifecycle methods, advanced state management, and side effect handling in dynamic interfaces.';
+              break;
+            default:
+              if (!customDescription) {
+                customDescription = 'A software engineering project focusing on modern web development practices and clean architecture.';
+              }
+          }
+
+          return {
+            ...repo,
+            description: customDescription,
+            impressionScore: getImpressionScore(repo)
+          };
+        })
         .sort((a, b) => b.impressionScore - a.impressionScore)
-        .slice(0, 8); // Increased slice to show more content
+        .slice(0, 15); // Increased slice to show more content
 
       setRepos(sortedRepos);
       setLoading(false);
@@ -175,10 +227,12 @@ const Projects = () => {
   };
 
   useEffect(() => {
-    const githubUsername = import.meta.env.VITE_GITHUB_USERNAME;
+    // Use environment variable or fallback to hardcoded username
+    const githubUsername = import.meta.env.VITE_GITHUB_USERNAME || 'thetubbydoughnut';
+
     if (!githubUsername) {
-      console.error("GitHub username not found in environment variables. Please set VITE_GITHUB_USERNAME in your .env file.");
-      setError("Application configuration error: GitHub username is missing.");
+      console.error("GitHub username configuration missing.");
+      setError("Configuration error: GitHub username missing.");
       setLoading(false);
       return;
     }

@@ -1,47 +1,57 @@
 import { useState, useEffect } from 'react';
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
+import { motion } from 'framer-motion';
 import PageLoader from '../components/PageLoader';
 import '../styles/Certifications.css';
-// Remove the unused PDF import
-// import bloomTechCertificatePath from '../assets/Certs and resume/BloomTech Certificate of Completion - Cameron Graham (Full Stack Web Development).pdf'; 
-// Import the preview image
 import bloomTechCertificatePreview from '../assets/certs-and-resume/bloomtech-certificate-preview.webp';
+
+const certifications = [
+  {
+    id: 1,
+    title: 'Full Stack Web Development + Technical Interviewing',
+    issuer: 'BloomTech',
+    date: '2025',
+    credentialPreviewUrl: bloomTechCertificatePreview,
+    credentialUrl: 'https://drive.google.com/file/d/118YvczGUNXpa1yL06cVlXeEwb6_x8LKU/view?usp=sharing',
+    description:
+      'A 960+ hour intensive program demonstrating mastery in modern full-stack web development and technical interview proficiency. Built real-world full-stack applications through rigorous technical assessments, BloomTech Labs, and advanced computer science curriculum.',
+    skills: [
+      'React',
+      'Node.js',
+      'Express',
+      'SQL',
+      'RESTful APIs',
+      'Data Structures',
+      'Algorithms',
+      'Testing',
+      'Git/GitHub',
+      'Technical Communication',
+    ],
+    icon: '🎓',
+  },
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+};
 
 const Certifications = () => {
   const [isLoading, setIsLoading] = useState(true);
 
-  const certifications = [
-    {
-      id: 1,
-      title: "Full Stack Web Development + Technical Interviewing",
-      issuer: "BloomTech",
-      date: "2025",
-      // Use the imported image for the preview source
-      credentialPreviewUrl: bloomTechCertificatePreview,
-      // Keep the Google Drive link for the actual verification link
-      credentialUrl: "https://drive.google.com/file/d/118YvczGUNXpa1yL06cVlXeEwb6_x8LKU/view?usp=sharing",
-      description: "A comprehensive certification demonstrating mastery in modern web development technologies and technical interview proficiency. Achieved through rigorous technical assessments, development of full-stack applications, advanced computer science curriculum completion, and successful participation in BloomTech Labs working on complex real-world projects. Demonstrates expertise in front-end (React, HTML5, CSS3), back-end (Node.js, Express, SQL), testing methodologies, and professional development practices.",
-      skills: [
-        "React", "Node.js", "Express", "SQL", "RESTful APIs",
-        "Data Structures", "Algorithms", "Testing", "Git/GitHub",
-        "Technical Communication"
-      ]
-    },
-    // Add more certifications here
-  ];
-
   useEffect(() => {
-    // Simulate loading time for smooth transition
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading) {
-    return <PageLoader />;
-  }
+  if (isLoading) return <PageLoader />;
 
   return (
     <section className="section certifications-section">
@@ -49,44 +59,82 @@ const Certifications = () => {
         <h2 className="section-title">Certifications</h2>
         <p className="section-subtitle">Professional certifications and achievements</p>
 
-        <div className="certifications-grid">
-          {certifications.map(cert => (
-            <div key={cert.id} className="certification-card">
-              <div className="certification-content">
-                <h3 className="certification-title">{cert.title}</h3>
-                <div className="certification-issuer">
-                  <span className="issuer-name">{cert.issuer}</span>
-                  <span className="certification-date">{cert.date}</span>
+        <motion.div
+          className="certifications-grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {certifications.map((cert) => (
+            <motion.div
+              key={cert.id}
+              className="certification-card"
+              variants={cardVariants}
+              whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            >
+              {/* Card Header */}
+              <div className="cert-header">
+                <span className="cert-icon">{cert.icon}</span>
+                <div className="cert-meta">
+                  <span className="cert-issuer">{cert.issuer}</span>
+                  <span className="cert-date">{cert.date}</span>
                 </div>
-                <p className="certification-description">
-                  {cert.description}
-                </p>
-                <div className="certification-skills">
-                  {cert.skills.map((skill, index) => (
-                    <span key={index} className="certification-skill">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-                {/* Replace iframe with linked image */}
-                {cert.credentialPreviewUrl && cert.credentialUrl && (
-                  <div className="certification-preview-container">
-                    <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer" title={`View ${cert.title} Certificate (opens in new tab)`}>
-                      <img
-                        src={cert.credentialPreviewUrl}
-                        alt={`${cert.title} Preview`}
-                        className="certification-preview-image"
-                      />
-                    </a>
-                  </div>
-                )}
               </div>
-            </div>
+
+              {/* Title */}
+              <h3 className="certification-title">{cert.title}</h3>
+
+              {/* Description */}
+              <p className="certification-description">{cert.description}</p>
+
+              {/* Skills */}
+              <div className="certification-skills">
+                {cert.skills.map((skill, index) => (
+                  <span key={index} className="certification-skill">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+
+              {/* Certificate Preview */}
+              {cert.credentialPreviewUrl && (
+                <div className="certification-preview-container">
+                  <a
+                    href={cert.credentialUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cert-preview-link"
+                    aria-label={`View ${cert.title} Certificate`}
+                  >
+                    <div className="cert-preview-overlay">
+                      <span>🔗 View Full Certificate</span>
+                    </div>
+                    <img
+                      src={cert.credentialPreviewUrl}
+                      alt={`${cert.title} Certificate Preview`}
+                      className="certification-preview-image"
+                    />
+                  </a>
+                </div>
+              )}
+
+              {/* CTA Button */}
+              <div className="cert-actions">
+                <a
+                  href={cert.credentialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-link live-link"
+                >
+                  View Certificate
+                </a>
+              </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 };
 
-export default Certifications; 
+export default Certifications;

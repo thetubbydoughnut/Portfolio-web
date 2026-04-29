@@ -31,7 +31,7 @@ const Header = () => {
             />
           </NavLink>
           <NavLink to="/" className="logo-text-link">
-            <span className="logo-text">PixelPerfectDev</span>
+            <span className="logo-text">&lt;Cameron Graham /&gt;</span>
           </NavLink>
         </div>
 
@@ -81,13 +81,7 @@ const Header = () => {
           >
             Certifications
           </NavLink>
-          <NavLink
-            to="/freelancing"
-            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Freelancing
-          </NavLink>
+
           <NavLink
             to="/contact"
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
