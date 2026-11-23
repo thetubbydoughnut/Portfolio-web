@@ -2,6 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
+// Migrated for Vite 8 (guides: v5→v6, v6→v7, v7→v8):
+// - esbuild transform options → oxc
+// - optimizeDeps.esbuildOptions → optimizeDeps.rolldownOptions
+// - object manualChunks removed → rolldown codeSplitting groups
 export default defineConfig({
   plugins: [react()],
   base: '/',
@@ -10,10 +14,9 @@ export default defineConfig({
     globals: true,
     setupFiles: './src/test/setup.js',
   },
-  // Allow JSX in .js/.jsx and TS in .ts/.tsx (incremental TypeScript)
-  esbuild: {
+  // Allow JSX/TSX in src (Vite 8: Oxc instead of esbuild)
+  oxc: {
     include: /src\/.*\.[jt]sx?$/,
-    loader: 'tsx',
   },
   build: {
     outDir: 'dist',
@@ -21,10 +24,16 @@ export default defineConfig({
     emptyOutDir: true,
     minify: 'terser',
     cssMinify: true,
-    rollupOptions: {
+    // Vite 8 / Rolldown: object-form manualChunks removed
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
+        codeSplitting: {
+          groups: [
+            {
+              name: 'react-vendor',
+              test: /node_modules[\\/](react|react-dom)([\\/]|$)/,
+            },
+          ],
         },
       },
     },
@@ -41,8 +50,9 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
-    esbuildOptions: {
-      loader: {
+    // Vite 8: Rolldown optimizer (was esbuildOptions.loader)
+    rolldownOptions: {
+      moduleTypes: {
         '.js': 'jsx',
       },
     },
