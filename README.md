@@ -50,7 +50,7 @@ A modern, responsive portfolio website built with React and Vite, showcasing my 
 ## 🛠️ Development
 
 ### Prerequisites
-- Node.js >= 18.0.0
+- Node.js >= 22.0.0 (required by jsdom 31 / Vitest in CI)
 - npm or yarn package manager
 
 ### Environment Setup
