@@ -1,18 +1,13 @@
-import { describe, it, expect, beforeAll } from 'vitest';
-import { execSync } from 'child_process';
-import { existsSync, readdirSync, readFileSync, rmSync } from 'fs';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { existsSync, readFileSync, rmSync } from 'fs';
 import { join } from 'path';
+import {
+  runViteBuild,
+  collectDistJs,
+} from '../src/test/ensure-dist-build.js';
 
 const TOKEN_PATTERNS = [/ghp_/, /github_pat_/, /gho_/, /VITE_GITHUB_TOKEN/, /Authorization:\s*bearer/i];
-
-function collectDistJs(distDir = join(process.cwd(), 'dist')) {
-  const assets = join(distDir, 'assets');
-  if (!existsSync(assets)) return '';
-  return readdirSync(assets)
-    .filter((f) => f.endsWith('.js'))
-    .map((f) => readFileSync(join(assets, f), 'utf8'))
-    .join('\n');
-}
+const MAIN_OUT = join(process.cwd(), 'dist-secrets-main');
 
 function assertNoSecrets(blob, label) {
   for (const pattern of TOKEN_PATTERNS) {
@@ -21,33 +16,29 @@ function assertNoSecrets(blob, label) {
 }
 
 describe('AC-6: no client secrets in built assets', () => {
-  beforeAll(() => {
-    // Always rebuild so dist reflects the current source (no stale token paths)
-    execSync('npm run build', {
-      stdio: 'pipe',
-      env: { ...process.env, VITE_GITHUB_TOKEN: undefined },
+  beforeAll(async () => {
+    await runViteBuild({
+      outDir: 'dist-secrets-main',
+      env: { VITE_GITHUB_TOKEN: undefined },
     });
   }, 120000);
 
-  it('built dist/ JS has zero token / VITE_GITHUB_TOKEN / bearer patterns', () => {
-    const blob = collectDistJs();
-    expect(blob.length).toBeGreaterThan(0);
-    assertNoSecrets(blob, 'dist');
+  afterAll(() => {
+    if (existsSync(MAIN_OUT)) {
+      rmSync(MAIN_OUT, { recursive: true, force: true });
+    }
   });
 
-  it('building with VITE_GITHUB_TOKEN=ghp_dummy_sentinel still leaves zero matches in dist/', () => {
-    const tmpDist = join(process.cwd(), 'dist-secrets-check');
-    if (existsSync(tmpDist)) {
-      rmSync(tmpDist, { recursive: true, force: true });
-    }
+  it('built dist/ JS has zero token / VITE_GITHUB_TOKEN / bearer patterns', () => {
+    const blob = collectDistJs(MAIN_OUT);
+    expect(blob.length).toBeGreaterThan(0);
+    assertNoSecrets(blob, 'dist-secrets-main');
+  });
 
-    // Build into a throwaway outDir via vite --outDir without committing the sentinel
-    execSync('npx vite build --outDir dist-secrets-check', {
-      stdio: 'pipe',
-      env: {
-        ...process.env,
-        VITE_GITHUB_TOKEN: 'ghp_dummy_sentinel',
-      },
+  it('building with VITE_GITHUB_TOKEN=ghp_dummy_sentinel still leaves zero matches in dist/', async () => {
+    const tmpDist = await runViteBuild({
+      outDir: 'dist-secrets-check',
+      env: { VITE_GITHUB_TOKEN: 'ghp_dummy_sentinel' },
     });
 
     const blob = collectDistJs(tmpDist);

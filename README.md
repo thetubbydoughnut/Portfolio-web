@@ -50,23 +50,20 @@ A modern, responsive portfolio website built with React and Vite, showcasing my 
 ## 🛠️ Development
 
 ### Prerequisites
-- Node.js >= 18.0.0
+- Node.js >= 22.0.0 (required by jsdom 31 / Vitest in CI)
 - npm or yarn package manager
 
 ### Environment Setup
-1. Create a `.env` file in the root directory
-2. Add necessary environment variables:
-   ```env
-   VITE_GITHUB_USERNAME=your_github_username
-   VITE_GITHUB_TOKEN=your_github_token
-   ```
+No client-side GitHub tokens are required. Project data is curated in `src/data/projects.js` — do not add `VITE_*` secrets for the browser bundle.
 
 ### Available Scripts
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build locally
 - `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
+- `npm test` - Run the Vitest suite
+- `npm run test:secrets` - Assert the client build has no token patterns
+- `npm run typecheck` - Run `tsc --noEmit`
 
 ## 📱 Project Structure
 

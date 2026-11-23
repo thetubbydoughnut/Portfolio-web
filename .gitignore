@@ -12,6 +12,7 @@
 /dist
 dist-ssr
 dist-secrets-check
+dist-secrets-main
 dist-skills-env-check
 *.local
 

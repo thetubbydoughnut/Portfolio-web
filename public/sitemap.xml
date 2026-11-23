@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://portfolio-web-phi-navy.vercel.app/</loc>
+  </url>
+  <url>
+    <loc>https://portfolio-web-phi-navy.vercel.app/projects</loc>
+  </url>
+  <url>
+    <loc>https://portfolio-web-phi-navy.vercel.app/skills</loc>
+  </url>
+  <url>
+    <loc>https://portfolio-web-phi-navy.vercel.app/experience</loc>
+  </url>
+  <url>
+    <loc>https://portfolio-web-phi-navy.vercel.app/certifications</loc>
+  </url>
+  <url>
+    <loc>https://portfolio-web-phi-navy.vercel.app/contact</loc>
+  </url>
+</urlset>

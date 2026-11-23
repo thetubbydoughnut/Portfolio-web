@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 // import NET from 'vanta/dist/vanta.net.min'; // Removed Vanta import
 // import * as THREE from 'three'; // Removed Three.js import

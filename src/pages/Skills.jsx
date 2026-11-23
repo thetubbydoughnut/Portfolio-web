@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import PageLoader from '../components/PageLoader';
 import { skillLogos, skillDescriptions, skillExamples, getLogoPath } from '../data/skillsData';
 import '../styles/Skills.css';
 
@@ -14,14 +13,38 @@ const SKILL_CATEGORIES = [
   { id: 'soft', name: 'Soft Skills' }
 ];
 
+function buildSkillsData() {
+  const skillsData = {};
+  Object.entries(skillDescriptions).forEach(([skillName, description]) => {
+    let category = 'frontend';
+
+    if (skillName.includes('Test') || ['Playwright', 'Vitest', 'Jest', 'Cypress', 'Pytest'].includes(skillName)) category = 'testing';
+    else if (['Node.js', 'Express', 'Express.js', 'NestJS', 'FastAPI', 'Python', 'SQL', 'SQL Server', 'PostgreSQL', 'SQLite', 'Knex.js', 'Supabase', 'Authentication', 'JWT', 'bcrypt', 'Pydantic', 'Microsoft Entra ID', 'RESTful APIs', 'Back-End Development'].includes(skillName)) category = 'backend';
+    else if (['Git', 'GitHub', 'GitHub Actions', 'VS Code', 'npm', 'Webpack', 'Babel.js', 'Azure', 'Docker', 'Vercel', 'Heroku', 'Deployment', 'Postman API', 'Git CLI', 'Git BASH'].includes(skillName)) category = 'development';
+    else if (['Algorithms', 'Data Structures', 'Architecture', 'Computer Science', 'Big-O Notation', 'Debugging', 'Software Development', 'Agile Project Management'].includes(skillName)) category = 'core';
+    else if (['Cursor', 'n8n'].includes(skillName)) category = 'ai';
+    else if (['Teamwork', 'Time Management', 'Attention to Detail', 'Problem Solving'].some(term => skillName.includes(term))) category = 'soft';
+
+    if (!skillsData[category]) {
+      skillsData[category] = [];
+    }
+
+    skillsData[category].push({
+      name: skillName,
+      level: 85,
+      description: description,
+      example: skillExamples[skillName]
+    });
+  });
+  return skillsData;
+}
+
 const Skills = () => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [loading, setLoading] = useState(true);
   const [showDescription, setShowDescription] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [skills, setSkills] = useState({});
+  const skills = useMemo(() => buildSkillsData(), []);
 
-  // Add useEffect to detect mobile devices
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -35,46 +58,11 @@ const Skills = () => {
 
   const handleSkillInteraction = (skillName) => {
     if (isMobile) {
-      // On mobile, toggle the description
       setShowDescription(prev => prev === skillName ? null : skillName);
     } else {
-      // On desktop, show on hover
       setShowDescription(skillName);
     }
   };
-
-  // Initialize skills data
-  useEffect(() => {
-    // Create skills object based on descriptions
-    const skillsData = {};
-
-    // Group skills by category based on the skillDescriptions
-    Object.entries(skillDescriptions).forEach(([skillName, description]) => {
-      // Determine category based on skill name or default to 'frontend'
-      let category = 'frontend';
-
-      if (skillName.includes('Test') || ['Playwright', 'Vitest', 'Jest', 'Cypress', 'Pytest'].includes(skillName)) category = 'testing';
-      else if (['Node.js', 'Express', 'Express.js', 'NestJS', 'FastAPI', 'Python', 'SQL', 'SQL Server', 'PostgreSQL', 'SQLite', 'Knex.js', 'Supabase', 'Authentication', 'JWT', 'bcrypt', 'Pydantic', 'Microsoft Entra ID', 'RESTful APIs', 'Back-End Development'].includes(skillName)) category = 'backend';
-      else if (['Git', 'GitHub', 'GitHub Actions', 'VS Code', 'npm', 'Webpack', 'Babel.js', 'Azure', 'Docker', 'Vercel', 'Heroku', 'Deployment', 'Postman API', 'Git CLI', 'Git BASH'].includes(skillName)) category = 'development';
-      else if (['Algorithms', 'Data Structures', 'Architecture', 'Computer Science', 'Big-O Notation', 'Debugging', 'Software Development', 'Agile Project Management'].includes(skillName)) category = 'core';
-      else if (['Cursor', 'n8n'].includes(skillName)) category = 'ai';
-      else if (['Teamwork', 'Time Management', 'Attention to Detail', 'Problem Solving'].some(term => skillName.includes(term))) category = 'soft';
-
-      if (!skillsData[category]) {
-        skillsData[category] = [];
-      }
-
-      skillsData[category].push({
-        name: skillName,
-        level: 85, // Default level, you can adjust this as needed
-        description: description,
-        example: skillExamples[skillName]
-      });
-    });
-
-    setSkills(skillsData);
-    setLoading(false);
-  }, []);
 
   const getSkillsToShow = () => {
     if (activeCategory === 'all') {
@@ -87,10 +75,6 @@ const Skills = () => {
       category: activeCategory
     })) || [];
   };
-
-  if (loading) {
-    return <PageLoader />;
-  }
 
   return (
     <section className="section skills-section">

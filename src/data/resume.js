@@ -5,7 +5,7 @@ export const resumeData = {
     location: "Oklahoma City, OK",
     email: "cameron.graham.dev@outlook.com",
     availability:
-      "Available for full-time software engineering starting January 1, 2027.",
+      "Available for full-time software engineering.",
     links: {
       github: "https://github.com/thetubbydoughnut",
       linkedin: "https://www.linkedin.com/in/CameronGraham2001/",
@@ -14,7 +14,7 @@ export const resumeData = {
       resume: "https://docs.google.com/document/d/1d69zdOxy1qetCZDNJI_n_6T4Hs46kKo8zt1aR8ezi0Q/edit?usp=sharing",
     },
     summary:
-      "Full-Stack Software Engineer in Oklahoma City, OK. Recently delivered TypeScript/NestJS monorepo modernization, Excel ingestion pipelines, and Playwright/Vitest suites at Continental Resources, and continue building Legendary Printed Loot — a React, TypeScript, Node.js, and PostgreSQL e-commerce platform with Stripe, EasyPost, and n8n automation. Available for full-time software engineering starting January 1, 2027.",
+      "Full-Stack Software Engineer in Oklahoma City, OK. Recently delivered TypeScript/NestJS monorepo modernization, Excel ingestion pipelines, and Playwright/Vitest suites at Continental Resources, and continue building Legendary Printed Loot — a React, TypeScript, Node.js, and PostgreSQL e-commerce platform with Stripe, EasyPost, and n8n automation. Available for full-time software engineering.",
   },
   skills: {
     languages: ["TypeScript", "JavaScript (ES6+)", "Python", "SQL", "HTML5", "CSS3"],

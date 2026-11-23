@@ -68,7 +68,7 @@
   flex: 2;
   text-align: center;
   background-color: var(--glass-bg);
-  border: var(--glass-border);
+  border: 1px solid var(--glass-border);
   backdrop-filter: blur(12px);
   padding: 2.5rem;
   border-radius: 16px;

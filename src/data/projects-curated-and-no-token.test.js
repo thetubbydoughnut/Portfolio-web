@@ -1,17 +1,22 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync, readdirSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join } from 'path';
 import { projects } from './projects.js';
+import {
+  ensureSharedDist,
+  collectDistJs,
+  SHARED_DIST,
+} from '../test/ensure-dist-build.js';
 
 const PROJECTS_PAGE = join(process.cwd(), 'src/pages/Projects.jsx');
 
-function readDistJs() {
-  const distAssets = join(process.cwd(), 'dist/assets');
-  if (!existsSync(distAssets)) return '';
-  return readdirSync(distAssets)
-    .filter((f) => f.endsWith('.js'))
-    .map((f) => readFileSync(join(distAssets, f), 'utf8'))
-    .join('\n');
+function assertNoTokenPatterns(blob, label) {
+  expect(blob.length, `${label}: expected JS bundles`).toBeGreaterThan(0);
+  expect(blob, label).not.toMatch(/VITE_GITHUB_TOKEN/);
+  expect(blob, label).not.toMatch(/ghp_/);
+  expect(blob, label).not.toMatch(/github_pat_/);
+  expect(blob, label).not.toMatch(/gho_/);
+  expect(blob, label).not.toMatch(/Authorization['"`:\s]*bearer/i);
 }
 
 describe('AC-3: curated projects and no client token', () => {
@@ -72,17 +77,8 @@ describe('AC-3: curated projects and no client token', () => {
     expect(projectsSrc).not.toMatch(/gho_/);
   });
 
-  it('built dist JS has no token patterns when dist exists', () => {
-    const distJs = readDistJs();
-    if (!distJs) {
-      // Build may not exist yet in fail-before; skip soft if absent
-      expect(existsSync(join(process.cwd(), 'dist'))).toBe(false);
-      return;
-    }
-    expect(distJs).not.toMatch(/VITE_GITHUB_TOKEN/);
-    expect(distJs).not.toMatch(/ghp_/);
-    expect(distJs).not.toMatch(/github_pat_/);
-    expect(distJs).not.toMatch(/gho_/);
-    expect(distJs).not.toMatch(/Authorization['"`:\s]*bearer/i);
-  });
+  it('built dist JS has no token patterns when dist exists', async () => {
+    await ensureSharedDist();
+    assertNoTokenPatterns(collectDistJs(SHARED_DIST), 'dist');
+  }, 120000);
 });
