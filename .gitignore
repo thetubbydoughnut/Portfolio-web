@@ -11,6 +11,8 @@
 /build
 /dist
 dist-ssr
+dist-secrets-check
+dist-skills-env-check
 *.local
 
 # Environment Variables

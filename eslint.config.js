@@ -35,4 +35,12 @@ export default [
       ],
     },
   },
+  {
+    files: ['**/*.test.js', 'scripts/**/*.{js,cjs,mjs}'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
 ]
