@@ -1,17 +1,43 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync, readdirSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { projects } from './projects.js';
 
 const PROJECTS_PAGE = join(process.cwd(), 'src/pages/Projects.jsx');
+const DIST_DIR = join(process.cwd(), 'dist');
 
-function readDistJs() {
-  const distAssets = join(process.cwd(), 'dist/assets');
-  if (!existsSync(distAssets)) return '';
-  return readdirSync(distAssets)
-    .filter((f) => f.endsWith('.js'))
-    .map((f) => readFileSync(join(distAssets, f), 'utf8'))
+/** Collect all .js under a dist root (Vite 8 / rolldown: dist/assets/*.js). */
+function collectJsUnder(dir, out = []) {
+  if (!existsSync(dir)) return out;
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name);
+    const st = statSync(full);
+    if (st.isDirectory()) collectJsUnder(full, out);
+    else if (name.endsWith('.js')) out.push(full);
+  }
+  return out;
+}
+
+function readDistJs(root = DIST_DIR) {
+  return collectJsUnder(root)
+    .map((f) => readFileSync(f, 'utf8'))
     .join('\n');
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** When dist/ exists but a parallel vite build emptied assets mid-read, wait briefly. */
+async function readDistJsWhenPresent(
+  root = DIST_DIR,
+  { attempts = 40, delayMs = 50 } = {}
+) {
+  if (!existsSync(root)) return { present: false, blob: '' };
+  for (let i = 0; i < attempts; i++) {
+    const blob = readDistJs(root);
+    if (blob.length > 0) return { present: true, blob };
+    await sleep(delayMs);
+  }
+  return { present: true, blob: '' };
 }
 
 describe('AC-3: curated projects and no client token', () => {
@@ -72,14 +98,14 @@ describe('AC-3: curated projects and no client token', () => {
     expect(projectsSrc).not.toMatch(/gho_/);
   });
 
-  it('built dist JS has no token patterns when dist exists', () => {
-    const distJs = readDistJs();
-    if (!distJs) {
-      // Soft skip when dist/assets JS is absent or mid-wipe from a parallel
-      // vitest file running `vite build` (emptyOutDir). Token-in-dist coverage
-      // remains in scripts/no-client-secrets.test.js.
+  it('built dist JS has no token patterns when dist exists', async () => {
+    const { present, blob: distJs } = await readDistJsWhenPresent();
+    if (!present) {
+      // Soft skip only when no dist/ at all (fail-before / no sibling build yet)
       return;
     }
+    // dist/ exists: must read real Vite 8 bundles and assert (retry covers emptyOutDir race)
+    expect(distJs.length, 'dist/ exists but no .js under dist/ after retries').toBeGreaterThan(0);
     expect(distJs).not.toMatch(/VITE_GITHUB_TOKEN/);
     expect(distJs).not.toMatch(/ghp_/);
     expect(distJs).not.toMatch(/github_pat_/);
