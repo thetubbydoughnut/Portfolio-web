@@ -1,42 +1,14 @@
-import { describe, it, expect, afterAll } from 'vitest';
-import { readFileSync, existsSync, readdirSync, statSync, rmSync } from 'fs';
+import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'fs';
 import { join } from 'path';
-import { execSync } from 'child_process';
 import { projects } from './projects.js';
+import {
+  ensureSharedDist,
+  collectDistJs,
+  SHARED_DIST,
+} from '../test/ensure-dist-build.js';
 
 const PROJECTS_PAGE = join(process.cwd(), 'src/pages/Projects.jsx');
-const SHARED_DIST = join(process.cwd(), 'dist');
-const OUT = join(process.cwd(), 'dist-projects-check');
-
-/** Collect all .js under a dist root (Vite 8 / rolldown: dist/assets/*.js). */
-function collectJsUnder(dir, out = []) {
-  if (!existsSync(dir)) return out;
-  for (const name of readdirSync(dir)) {
-    const full = join(dir, name);
-    const st = statSync(full);
-    if (st.isDirectory()) collectJsUnder(full, out);
-    else if (name.endsWith('.js')) out.push(full);
-  }
-  return out;
-}
-
-function readDistJs(root) {
-  return collectJsUnder(root)
-    .map((f) => readFileSync(f, 'utf8'))
-    .join('\n');
-}
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-/** Retry read when a parallel emptyOutDir may have wiped assets mid-check. */
-async function readDistJsWithRetry(root, { attempts = 40, delayMs = 50 } = {}) {
-  for (let i = 0; i < attempts; i++) {
-    const blob = readDistJs(root);
-    if (blob.length > 0) return blob;
-    await sleep(delayMs);
-  }
-  return '';
-}
 
 function assertNoTokenPatterns(blob, label) {
   expect(blob.length, `${label}: expected JS bundles`).toBeGreaterThan(0);
@@ -48,10 +20,6 @@ function assertNoTokenPatterns(blob, label) {
 }
 
 describe('AC-3: curated projects and no client token', () => {
-  afterAll(() => {
-    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
-  });
-
   it('exports exactly the curated projects list', () => {
     expect(Array.isArray(projects)).toBe(true);
     const names = projects.map((p) => p.name);
@@ -110,20 +78,7 @@ describe('AC-3: curated projects and no client token', () => {
   });
 
   it('built dist JS has no token patterns when dist exists', async () => {
-    // Always produce an isolated Vite 8 build so this assertion cannot soft-skip
-    // under parallel emptyOutDir races on shared dist/.
-    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
-    execSync(`npx vite build --outDir ${OUT}`, { stdio: 'pipe' });
-    assertNoTokenPatterns(readDistJs(OUT), 'dist-projects-check');
-
-    // If shared dist/ is also present, inspect it too (retry through emptyOutDir races).
-    if (existsSync(SHARED_DIST)) {
-      const sharedJs = await readDistJsWithRetry(SHARED_DIST);
-      expect(
-        sharedJs.length,
-        'dist/ exists but no .js under dist/ after retries'
-      ).toBeGreaterThan(0);
-      assertNoTokenPatterns(sharedJs, 'dist');
-    }
+    await ensureSharedDist();
+    assertNoTokenPatterns(collectDistJs(SHARED_DIST), 'dist');
   }, 120000);
 });

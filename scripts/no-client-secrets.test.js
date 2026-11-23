@@ -1,19 +1,13 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { execSync } from 'child_process';
-import { existsSync, readdirSync, readFileSync, rmSync } from 'fs';
+import { existsSync, readFileSync, rmSync } from 'fs';
 import { join } from 'path';
+import {
+  runViteBuild,
+  collectDistJs,
+} from '../src/test/ensure-dist-build.js';
 
 const TOKEN_PATTERNS = [/ghp_/, /github_pat_/, /gho_/, /VITE_GITHUB_TOKEN/, /Authorization:\s*bearer/i];
 const MAIN_OUT = join(process.cwd(), 'dist-secrets-main');
-
-function collectDistJs(distDir = MAIN_OUT) {
-  const assets = join(distDir, 'assets');
-  if (!existsSync(assets)) return '';
-  return readdirSync(assets)
-    .filter((f) => f.endsWith('.js'))
-    .map((f) => readFileSync(join(assets, f), 'utf8'))
-    .join('\n');
-}
 
 function assertNoSecrets(blob, label) {
   for (const pattern of TOKEN_PATTERNS) {
@@ -22,14 +16,10 @@ function assertNoSecrets(blob, label) {
 }
 
 describe('AC-6: no client secrets in built assets', () => {
-  beforeAll(() => {
-    // Isolated outDir so parallel vite builds do not emptyOutDir this suite
-    if (existsSync(MAIN_OUT)) {
-      rmSync(MAIN_OUT, { recursive: true, force: true });
-    }
-    execSync(`npx vite build --outDir ${MAIN_OUT}`, {
-      stdio: 'pipe',
-      env: { ...process.env, VITE_GITHUB_TOKEN: undefined },
+  beforeAll(async () => {
+    await runViteBuild({
+      outDir: 'dist-secrets-main',
+      env: { VITE_GITHUB_TOKEN: undefined },
     });
   }, 120000);
 
@@ -45,19 +35,10 @@ describe('AC-6: no client secrets in built assets', () => {
     assertNoSecrets(blob, 'dist-secrets-main');
   });
 
-  it('building with VITE_GITHUB_TOKEN=ghp_dummy_sentinel still leaves zero matches in dist/', () => {
-    const tmpDist = join(process.cwd(), 'dist-secrets-check');
-    if (existsSync(tmpDist)) {
-      rmSync(tmpDist, { recursive: true, force: true });
-    }
-
-    // Build into a throwaway outDir via vite --outDir without committing the sentinel
-    execSync('npx vite build --outDir dist-secrets-check', {
-      stdio: 'pipe',
-      env: {
-        ...process.env,
-        VITE_GITHUB_TOKEN: 'ghp_dummy_sentinel',
-      },
+  it('building with VITE_GITHUB_TOKEN=ghp_dummy_sentinel still leaves zero matches in dist/', async () => {
+    const tmpDist = await runViteBuild({
+      outDir: 'dist-secrets-check',
+      env: { VITE_GITHUB_TOKEN: 'ghp_dummy_sentinel' },
     });
 
     const blob = collectDistJs(tmpDist);

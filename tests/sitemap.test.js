@@ -1,11 +1,13 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { existsSync, readFileSync, rmSync } from 'fs';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { execSync } from 'child_process';
+import {
+  ensureSharedDist,
+  SHARED_DIST,
+} from '../src/test/ensure-dist-build.js';
 
 const ORIGIN = 'https://portfolio-web-phi-navy.vercel.app';
 const ROOT = process.cwd();
-const OUT = join(ROOT, 'dist-sitemap-check');
 const REQUIRED_PATHS = [
   '/',
   '/projects',
@@ -16,14 +18,9 @@ const REQUIRED_PATHS = [
 ];
 
 describe('AC-2: sitemap.xml', () => {
-  beforeAll(() => {
-    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
-    execSync(`npx vite build --outDir ${OUT}`, { stdio: 'pipe' });
+  beforeAll(async () => {
+    await ensureSharedDist();
   }, 120000);
-
-  afterAll(() => {
-    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
-  });
 
   it('public/sitemap.xml lists required routes on the canonical origin', () => {
     const path = join(ROOT, 'public/sitemap.xml');
@@ -43,7 +40,7 @@ describe('AC-2: sitemap.xml', () => {
   });
 
   it('dist/sitemap.xml is valid XML and includes /experience and /certifications', () => {
-    const path = join(OUT, 'sitemap.xml');
+    const path = join(SHARED_DIST, 'sitemap.xml');
     expect(existsSync(path)).toBe(true);
     const xml = readFileSync(path, 'utf8');
     expect(xml.trim().startsWith('<!DOCTYPE')).toBe(false);

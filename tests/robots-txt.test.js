@@ -1,21 +1,18 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { existsSync, readFileSync, rmSync } from 'fs';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { execSync } from 'child_process';
+import {
+  ensureSharedDist,
+  SHARED_DIST,
+} from '../src/test/ensure-dist-build.js';
 
 const ORIGIN = 'https://portfolio-web-phi-navy.vercel.app';
 const ROOT = process.cwd();
-const OUT = join(ROOT, 'dist-robots-check');
 
 describe('AC-2: robots.txt', () => {
-  beforeAll(() => {
-    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
-    execSync(`npx vite build --outDir ${OUT}`, { stdio: 'pipe' });
+  beforeAll(async () => {
+    await ensureSharedDist();
   }, 120000);
-
-  afterAll(() => {
-    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
-  });
 
   it('public/robots.txt allows the site and points at the canonical sitemap', () => {
     const path = join(ROOT, 'public/robots.txt');
@@ -30,7 +27,7 @@ describe('AC-2: robots.txt', () => {
   });
 
   it('dist/robots.txt is copied and is plain text (not the SPA shell)', () => {
-    const path = join(OUT, 'robots.txt');
+    const path = join(SHARED_DIST, 'robots.txt');
     expect(existsSync(path)).toBe(true);
     const text = readFileSync(path, 'utf8');
     expect(text.trim().startsWith('<!DOCTYPE')).toBe(false);

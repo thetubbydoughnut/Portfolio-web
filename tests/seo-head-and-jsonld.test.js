@@ -1,13 +1,14 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { existsSync, readFileSync, rmSync } from 'fs';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { execSync } from 'child_process';
 import { resumeData } from '../src/data/resume.js';
+import {
+  ensureSharedDist,
+  SHARED_DIST,
+} from '../src/test/ensure-dist-build.js';
 
 const ORIGIN = 'https://portfolio-web-phi-navy.vercel.app';
 const ROOT = process.cwd();
-// Isolated outDir so parallel vite builds do not emptyOutDir this suite's output
-const OUT = join(ROOT, 'dist-seo-check');
 
 function extractJsonLd(html) {
   const scripts = [
@@ -19,17 +20,12 @@ function extractJsonLd(html) {
 }
 
 describe('AC-2: SEO head metadata, JSON-LD, favicon, OG image', () => {
-  beforeAll(() => {
-    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
-    execSync(`npx vite build --outDir ${OUT}`, { stdio: 'pipe' });
+  beforeAll(async () => {
+    await ensureSharedDist();
   }, 120000);
 
-  afterAll(() => {
-    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
-  });
-
   it('built dist/index.html has canonical, og, twitter, JSON-LD, and non-Vite favicon', () => {
-    const htmlPath = join(OUT, 'index.html');
+    const htmlPath = join(SHARED_DIST, 'index.html');
     expect(existsSync(htmlPath)).toBe(true);
     const html = readFileSync(htmlPath, 'utf8');
 
@@ -103,7 +99,7 @@ describe('AC-2: SEO head metadata, JSON-LD, favicon, OG image', () => {
   });
 
   it('negative: og image path in dist is not HTML/404 shell', () => {
-    const html = readFileSync(join(OUT, 'index.html'), 'utf8');
+    const html = readFileSync(join(SHARED_DIST, 'index.html'), 'utf8');
     const ogImage =
       html.match(
         /property=["']og:image["'][^>]+content=["']([^"']+)["']/i
@@ -111,7 +107,7 @@ describe('AC-2: SEO head metadata, JSON-LD, favicon, OG image', () => {
       html.match(/content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
     const url = ogImage[1];
     const pathPart = url.replace(ORIGIN, '');
-    const filePath = join(OUT, pathPart.replace(/^\//, ''));
+    const filePath = join(SHARED_DIST, pathPart.replace(/^\//, ''));
     expect(existsSync(filePath)).toBe(true);
     const buf = readFileSync(filePath);
     const head = buf.slice(0, 16).toString('utf8');

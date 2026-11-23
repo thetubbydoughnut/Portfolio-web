@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { execSync } from 'child_process';
-import { existsSync, readdirSync, readFileSync, rmSync } from 'fs';
+import { readdirSync, readFileSync, rmSync } from 'fs';
 import { join } from 'path';
 import { resumeData } from './resume.js';
 import { skillDescriptions } from './skillsData.js';
+import { runViteBuild, collectDistJs } from '../test/ensure-dist-build.js';
 
 const REQUIRED_SKILLS = [
   'TypeScript',
@@ -73,15 +73,11 @@ describe('AC-2: skills inventory', () => {
     expect(src).not.toMatch(/import\.meta\.env\.VITE_SKILL/);
   });
 
-  it('build-time VITE_SKILLS_* / VITE_SKILL_CATEGORIES cannot override the inventory', () => {
-    const tmpDist = join(process.cwd(), 'dist-skills-env-check');
-    if (existsSync(tmpDist)) rmSync(tmpDist, { recursive: true, force: true });
-
+  it('build-time VITE_SKILLS_* / VITE_SKILL_CATEGORIES cannot override the inventory', async () => {
     // Poisonous env values that must NOT appear as skills if inventory is source-controlled
-    execSync('npx vite build --outDir dist-skills-env-check', {
-      stdio: 'pipe',
+    const tmpDist = await runViteBuild({
+      outDir: 'dist-skills-env-check',
       env: {
-        ...process.env,
         VITE_SKILL_CATEGORIES: 'poison:Poison Skills',
         VITE_SKILLS_POISON: 'COBOL:99,Fortran:99,Java:99',
         VITE_SKILLS_FRONTEND: 'COBOL,Fortran,Java',
@@ -95,11 +91,7 @@ describe('AC-2: skills inventory', () => {
       },
     });
 
-    const assets = join(tmpDist, 'assets');
-    const blob = readdirSync(assets)
-      .filter((f) => f.endsWith('.js'))
-      .map((f) => readFileSync(join(assets, f), 'utf8'))
-      .join('\n');
+    const blob = collectDistJs(tmpDist);
 
     expect(blob.length).toBeGreaterThan(0);
     // Required inventory still present from repo data
