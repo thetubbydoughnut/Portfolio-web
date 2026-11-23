@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import profileImage from '../assets/images/cameron-profile.webp';
-import { resumeData } from '../data/resume';
+import { resumeData, getResumeHref } from '../data/resume';
 import resumePreview from '../assets/certs-and-resume/Cameron-Graham-Resume.webp';
 import '../styles/Header.css';
 
@@ -94,13 +94,13 @@ const Header = () => {
             onMouseEnter={() => setIsMenuOpen(false)} // Close menu if hovering on desktop
           >
             <a
-              href={resumeData?.profile?.links?.resume}
+              href={getResumeHref()}
               className="nav-link resume-download"
               onClick={() => setIsMenuOpen(false)}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Download Resume
+              Resume
             </a>
             <div className="resume-preview">
               <img src={resumePreview} alt="Resume Preview" />

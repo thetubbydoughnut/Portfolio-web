@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import '../styles/Contact.css';
 import PageLoader from '../components/PageLoader';
@@ -10,15 +10,14 @@ const Contact = () => {
   const [copiedItem, setCopiedItem] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Email, GitHub, and LinkedIn only — no phone or new contact fields (AC-5)
   const contactInfo = {
     email: resumeData.profile.email,
-    phone: resumeData.profile.phone,
     github: resumeData.profile.links.github,
-    linkedin: resumeData.profile.links.linkedin
+    linkedin: resumeData.profile.links.linkedin,
   };
 
   useEffect(() => {
-    // Simulate loading time for smooth transition
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1000);
@@ -55,19 +54,18 @@ const Contact = () => {
             show: {
               opacity: 1,
               transition: {
-                staggerChildren: 0.1
-              }
-            }
+                staggerChildren: 0.1,
+              },
+            },
           }}
           initial="hidden"
           animate="show"
         >
-          {/* Email Card */}
           <motion.div
             className="contact-card"
             variants={{
               hidden: { opacity: 0, scale: 0.9 },
-              show: { opacity: 1, scale: 1 }
+              show: { opacity: 1, scale: 1 },
             }}
             whileHover={{ scale: 1.05 }}
           >
@@ -86,35 +84,11 @@ const Contact = () => {
             </div>
           </motion.div>
 
-          {/* Phone Card */}
           <motion.div
             className="contact-card"
             variants={{
               hidden: { opacity: 0, scale: 0.9 },
-              show: { opacity: 1, scale: 1 }
-            }}
-            whileHover={{ scale: 1.05 }}
-          >
-            <div className="contact-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-            </div>
-            <h3>Phone</h3>
-            <div className="contact-value" onClick={() => handleCopy(contactInfo.phone, 'phone')}>
-              {contactInfo.phone}
-              <span className={`copy-tooltip ${copied && copiedItem === 'phone' ? 'visible' : ''}`}>
-                Copied!
-              </span>
-            </div>
-          </motion.div>
-
-          {/* Social Links */}
-          <motion.div
-            className="contact-card"
-            variants={{
-              hidden: { opacity: 0, scale: 0.9 },
-              show: { opacity: 1, scale: 1 }
+              show: { opacity: 1, scale: 1 },
             }}
             whileHover={{ scale: 1.05 }}
           >
@@ -138,7 +112,7 @@ const Contact = () => {
             className="contact-card"
             variants={{
               hidden: { opacity: 0, scale: 0.9 },
-              show: { opacity: 1, scale: 1 }
+              show: { opacity: 1, scale: 1 },
             }}
             whileHover={{ scale: 1.05 }}
           >
@@ -163,8 +137,8 @@ const Contact = () => {
 
         <div className="contact-message">
           <p>
-            Whether you're interested in collaboration, have a project in mind, or just want to connect,
-            I'm always open to discussing new opportunities and ideas.
+            Whether you&apos;re interested in collaboration, have a project in mind, or just want to connect,
+            I&apos;m always open to discussing new opportunities and ideas.
           </p>
         </div>
       </div>
@@ -172,4 +146,4 @@ const Contact = () => {
   );
 };
 
-export default Contact; 
+export default Contact;

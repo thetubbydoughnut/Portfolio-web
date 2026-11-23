@@ -1,11 +1,12 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { resumeData } from '../data/resume';
+import { resumeData, getResumeHref } from '../data/resume';
 import '../styles/HeroSection.css';
 import profileImage from '../assets/images/cameron-profile.webp';
 import { motion } from 'framer-motion';
 
 const HeroSection = () => {
+  const resumeHref = getResumeHref();
+
   return (
     <div className="hero-wrapper">
       <section id="home" className="hero-section">
@@ -27,6 +28,8 @@ const HeroSection = () => {
           >
             <h1 className="hero-name">{resumeData.profile.name}</h1>
             <p className="hero-title">{resumeData.profile.title}</p>
+            <p className="hero-location">{resumeData.profile.location}</p>
+            <p className="hero-availability">{resumeData.profile.availability}</p>
             <p className="hero-summary">
               {resumeData.profile.summary}
             </p>
@@ -37,7 +40,15 @@ const HeroSection = () => {
               transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             >
               <Link to="/projects" className="btn btn-primary">View Projects</Link>
-              <Link to="/contact" className="btn btn-secondary">Contact Me</Link>
+              <a
+                href={resumeHref}
+                className="btn btn-secondary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Resume
+              </a>
+              <Link to="/contact" className="btn btn-secondary">Contact</Link>
             </motion.div>
           </motion.div>
         </div>

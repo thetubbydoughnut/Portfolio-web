@@ -53,12 +53,11 @@ const Skills = () => {
       // Determine category based on skill name or default to 'frontend'
       let category = 'frontend';
 
-      if (skillName.includes('Test')) category = 'testing';
-      else if (['Node.js', 'Express', 'SQL', 'SQLite', 'Authentication', 'JWT', 'bcrypt'].includes(skillName)) category = 'backend';
-      else if (['Git', 'GitHub', 'VS Code', 'npm', 'Webpack', 'Babel.js'].includes(skillName)) category = 'development';
-      else if (['Algorithms', 'Data Structures', 'Architecture', 'Computer Science'].includes(skillName)) category = 'core';
-      else if (['Allows', 'Algorithms', 'Data Structures', 'Architecture', 'Computer Science'].includes(skillName)) category = 'core';
-      else if (['Cursor', 'Google Antigravity', 'n8n', 'Gemini', 'Meta Prompting', 'BMAD Method'].includes(skillName)) category = 'ai';
+      if (skillName.includes('Test') || ['Playwright', 'Vitest', 'Jest', 'Cypress', 'Pytest'].includes(skillName)) category = 'testing';
+      else if (['Node.js', 'Express', 'Express.js', 'NestJS', 'FastAPI', 'Python', 'SQL', 'SQL Server', 'PostgreSQL', 'SQLite', 'Knex.js', 'Supabase', 'Authentication', 'JWT', 'bcrypt', 'Pydantic', 'Microsoft Entra ID', 'RESTful APIs', 'Back-End Development'].includes(skillName)) category = 'backend';
+      else if (['Git', 'GitHub', 'GitHub Actions', 'VS Code', 'npm', 'Webpack', 'Babel.js', 'Azure', 'Docker', 'Vercel', 'Heroku', 'Deployment', 'Postman API', 'Git CLI', 'Git BASH'].includes(skillName)) category = 'development';
+      else if (['Algorithms', 'Data Structures', 'Architecture', 'Computer Science', 'Big-O Notation', 'Debugging', 'Software Development', 'Agile Project Management'].includes(skillName)) category = 'core';
+      else if (['Cursor', 'n8n'].includes(skillName)) category = 'ai';
       else if (['Teamwork', 'Time Management', 'Attention to Detail', 'Problem Solving'].some(term => skillName.includes(term))) category = 'soft';
 
       if (!skillsData[category]) {

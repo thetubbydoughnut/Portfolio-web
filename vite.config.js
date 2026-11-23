@@ -5,6 +5,16 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/',
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/test/setup.js',
+  },
+  // Allow JSX in .js test files (AC test filenames end in .test.js)
+  esbuild: {
+    loader: 'jsx',
+    include: /src\/.*\.jsx?$/,
+  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -30,6 +40,11 @@ export default defineConfig({
     port: 3000
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
+    include: ['react', 'react-dom', 'react-router-dom'],
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx',
+      },
+    },
   }
 })

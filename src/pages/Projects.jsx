@@ -1,262 +1,13 @@
-import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import PageLoader from '../components/PageLoader';
+import { projects } from '../data/projects';
 import '../styles/Projects.css';
 
 const Projects = () => {
-  const [repos, setRepos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [pinnedRepos, setPinnedRepos] = useState([]);
-
-  // Calculate an impression score for a repository
-  const getImpressionScore = (repo) => {
-    let score = 0;
-
-    // Highest priority: Manual projects (Legendary, BOLT) and Pinned Repos
-    if (['legendary-loot', 'bolt-crm'].includes(repo.id)) score += 500; // Manual projects top priority
-    if (pinnedRepos.includes(repo.name)) score += 200;  // Pinned repos high priority
-
-    // Core project scoring
-    if (repo.name === 'Portfolio-web') score += 100;  // Your portfolio is a showcase
-    if (repo.topics && repo.topics.includes('featured')) score += 90;
-
-    // Project type scoring
-    const isFullStack = repo.topics?.includes('full-stack') ||
-      repo.description?.toLowerCase().includes('full stack') ||
-      repo.name.toLowerCase().includes('full-stack');
-    const isReact = repo.topics?.includes('react') ||
-      repo.description?.toLowerCase().includes('react') ||
-      repo.language === 'JavaScript';
-    const isWebApp = repo.topics?.includes('web-app') ||
-      repo.description?.toLowerCase().includes('web application');
-
-    if (isFullStack) score += 50;
-    if (isReact) score += 40;
-    if (isWebApp) score += 30;
-
-    // Metrics-based scoring
-    score += (repo.stargazers_count * 5);  // Stars are valuable
-    score += (repo.watchers_count * 3);    // Watchers show interest
-    score += (repo.forks_count * 4);       // Forks show utility
-
-    // Size and activity scoring
-    if (repo.size > 1000) score += 20;     // Larger projects
-    if (repo.has_pages) score += 10;       // Has GitHub Pages
-    if (repo.homepage) score += 15;        // Has deployed version
-
-    // Recent activity bonus
-    const monthsAgo = (new Date() - new Date(repo.updated_at)) / (1000 * 60 * 60 * 24 * 30);
-    if (monthsAgo < 1) score += 25;        // Updated in last month
-    else if (monthsAgo < 3) score += 15;   // Updated in last 3 months
-
-    // Important projects (based on your GitHub)
-    const significantProjects = [
-      'asylum-hrf-fe-starter',             // Human Rights First project
-      'web-sprint-challenge-advanced-web-applications',
-      'web-sprint-challenge-authentication-and-testing'
-    ];
-    if (significantProjects.includes(repo.name)) score += 60;
-
-    return score;
-  };
-
-  const fetchPinnedRepos = async (username) => {
-    try {
-      const githubToken = import.meta.env.VITE_GITHUB_TOKEN;
-      if (!githubToken) {
-        console.warn('GitHub token not found. Skipping pinned repos fetch.');
-        setPinnedRepos([]);
-        return;
-      }
-
-      const response = await fetch('https://api.github.com/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `bearer ${githubToken}`,
-        },
-        body: JSON.stringify({
-          query: `{
-            user(login: "${username}") {
-              pinnedItems(first: 6, types: REPOSITORY) {
-                nodes {
-                  ... on Repository {
-                    name
-                  }
-                }
-              }
-            }
-          }`
-        }),
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch pinned repositories');
-      const data = await response.json();
-
-      if (data.errors) {
-        throw new Error(data.errors[0].message);
-      }
-
-      setPinnedRepos(pinnedNames);
-    } catch (err) {
-      console.error('Error fetching pinned repos:', err);
-      setPinnedRepos([]);
-    }
-  };
-
-  const MANUAL_PROJECTS = [
-    {
-      id: 'legendary-loot',
-      name: 'Legendary Printed Loot',
-      description: 'Premium 3D-printed gaming accessories e-commerce platform and decentralized manufacturing hub. Features a responsive React 19 storefront, 14-module ERP admin dashboard, automated print queue via n8n, Stripe checkout, and EasyPost logistics on Oracle Cloud.',
-      language: 'React / Node.js / PostgreSQL',
-      stargazers_count: 50, // Mock score for sorting
-      html_url: '', // Empty URL indicates no link to GitHub
-      homepage: 'https://lpl3d.com',
-      private: true,
-      image: 'https://via.placeholder.com/600x400', // Placeholder
-      topics: ['react', 'node', 'postgresql', 'stripe', 'n8n', 'docker']
-    },
-    {
-      id: 'bolt-crm',
-      name: 'BOLT 2.0 (Tatco)',
-      description: 'Internal CRM for construction management. Built with FastAPI & React to centralize project tracking and analytics. (Private Internal Tool)',
-      language: 'Python / React',
-      stargazers_count: 45, // Retaining mock score for visibility
-      html_url: '', // Empty URL indicates no link
-      homepage: '',
-      private: true, // Explicit flag
-      topics: ['crm', 'fastapi', 'typescript', 'internal-tool']
-    }
-  ];
-
-  const fetchRepos = async (username) => {
-    try {
-      const response = await fetch(
-        `https://api.github.com/users/${username}/repos?type=public&sort=updated&per_page=100`,
-        {
-          headers: {
-            Accept: 'application/vnd.github.mercy-preview+json'
-            // Authorization header removed to allow public access without token if limit permits, 
-            // or handled via try/catch for 403/401
-          }
-        }
-      );
-
-      let fetchedRepos = [];
-      if (response.ok) {
-        fetchedRepos = await response.json();
-      } else {
-        console.warn('GitHub API failed, using manual/fallback data only.');
-      }
-
-      // Combine manual projects with fetched repos
-      // Manual projects should be treated as "Repositories" for the UI
-      const finalRepos = [...MANUAL_PROJECTS, ...fetchedRepos];
-
-      // Filter and sort repositories by impression score
-      const sortedRepos = finalRepos
-        .filter(repo => (!repo.private && repo.visibility === 'public') || repo.id.toString().startsWith('legendary') || repo.id.toString().startsWith('bolt'))
-        .map(repo => {
-          let customDescription = repo.description;
-          
-          switch(repo.name) {
-            case 'Portfolio-web':
-              customDescription = 'My personal portfolio website (this very site!). Built with React, Vite, Framer Motion, and custom CSS to showcase my projects, experience, and technical capabilities.';
-              break;
-            case 'DogFinder':
-              customDescription = 'A React-based web application that leverages external APIs to dynamically fetch and display breed information. Features robust client-side routing and a responsive interface.';
-              break;
-            case 'Secure-Content-Management-Frontend':
-              customDescription = 'A robust frontend interface designed for secure content management, featuring robust state handling and integration with secure backend protocols.';
-              break;
-            case 'web-module-project-class-components':
-              customDescription = 'A React application demonstrating proficiency in legacy React architectures, specifically focusing on Class Components and complex lifecycle method management.';
-              break;
-            case 'React-Data-Viz-Frontend-with-Auth0':
-              customDescription = 'A full-stack data visualization dashboard featuring secure user authentication via Auth0. Built to showcase complex state management and interactive chart integration.';
-              break;
-            case 'node-testing2-project':
-              customDescription = 'A comprehensive backend testing suite utilizing Jest and Supertest to validate Node.js server endpoints, ensuring high API reliability and edge-case coverage.';
-              break;
-            case 'node-auth2-project':
-              customDescription = 'A secure backend authentication service implementing JSON Web Tokens (JWT) for robust authorization flows using Node.js, Express, and Knex.';
-              break;
-            case 'node-db3-project':
-              customDescription = 'An advanced backend architecture project focused on complex multi-table relational database schemas and complex queries using Knex and SQLite.';
-              break;
-            case 'node-db3-guided':
-              customDescription = 'An instructional backend project demonstrating the implementation of complex relational data models and optimized query structures using Node.js.';
-              break;
-            case 'node-db1-project':
-              customDescription = 'A foundational database management project showcasing schema creation, data seeding, and fundamental CRUD operations with Knex.js.';
-              break;
-            case 'node-api1-project':
-              customDescription = 'A robust RESTful API service built with Express and Node.js, highlighting clean architecture, endpoint routing, and foundational backend principles.';
-              break;
-            case 'web-module-project-testing-react':
-              customDescription = 'A frontend test engineering project utilizing React Testing Library and Jest to build comprehensive test suites for React components, mimicking real user interactions.';
-              break;
-            case 'web-module-project-lifecycle':
-              customDescription = 'A React engineering project exploring intricate component lifecycle methods, advanced state management, and side effect handling in dynamic interfaces.';
-              break;
-            default:
-              if (!customDescription) {
-                customDescription = 'A software engineering project focusing on modern web development practices and clean architecture.';
-              }
-          }
-
-          return {
-            ...repo,
-            description: customDescription,
-            impressionScore: getImpressionScore(repo)
-          };
-        })
-        .sort((a, b) => b.impressionScore - a.impressionScore)
-        .slice(0, 15); // Increased slice to show more content
-
-      setRepos(sortedRepos);
-      setLoading(false);
-    } catch (err) {
-      console.error("Repo fetch error:", err);
-      // Fallback to just manual projects on hard error
-      setRepos(MANUAL_PROJECTS);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // Use environment variable or fallback to hardcoded username
-    const githubUsername = import.meta.env.VITE_GITHUB_USERNAME || 'thetubbydoughnut';
-
-    if (!githubUsername) {
-      console.error("GitHub username configuration missing.");
-      setError("Configuration error: GitHub username missing.");
-      setLoading(false);
-      return;
-    }
-    // Fetch pinned repos first, then fetch all repos
-    fetchPinnedRepos(githubUsername).then(() => fetchRepos(githubUsername));
-  }, []);
-
-  if (loading) {
-    return <PageLoader />;
-  }
-
-  if (error) {
-    return (
-      <section className="section projects-section">
-        <div className="error">Error: {error}</div>
-      </section>
-    );
-  }
-
   return (
     <section className="section projects-section">
       <div className="projects-container">
         <h2 className="section-title">My Projects</h2>
-        <p className="section-subtitle">Check out some of my recent work</p>
+        <p className="section-subtitle">Curated work from production and personal builds</p>
 
         <motion.div
           className="projects-grid"
@@ -265,45 +16,38 @@ const Projects = () => {
             show: {
               opacity: 1,
               transition: {
-                staggerChildren: 0.1
-              }
-            }
+                staggerChildren: 0.1,
+              },
+            },
           }}
           initial="hidden"
           animate="show"
         >
-          {repos.map(repo => (
+          {projects.map((project) => (
             <motion.div
-              key={repo.id}
+              key={project.id}
               className="project-card"
               variants={{
                 hidden: { opacity: 0, y: 20 },
-                show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+                show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
               }}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
               <div className="project-content">
-                <h3 className="project-title">{repo.name}</h3>
-                <p className="project-description">
-                  {repo.description || 'No description available'}
-                </p>
+                <h3 className="project-title">{project.name}</h3>
+                <p className="project-description">{project.description}</p>
                 <div className="project-meta">
-                  {repo.language && (
+                  {project.stack && (
                     <span className="project-language">
                       <span className="language-dot"></span>
-                      {repo.language}
-                    </span>
-                  )}
-                  {repo.stargazers_count > 0 && (
-                    <span className="project-stars">
-                      ⭐ {repo.stargazers_count}
+                      {project.stack}
                     </span>
                   )}
                 </div>
                 <div className="project-links">
-                  {repo.html_url ? (
+                  {project.html_url ? (
                     <a
-                      href={repo.html_url}
+                      href={project.html_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="project-link"
@@ -311,18 +55,30 @@ const Projects = () => {
                       View on GitHub
                     </a>
                   ) : (
-                    <span className="project-link btn-disabled" style={{ opacity: 0.6, cursor: 'not-allowed', background: 'rgba(255,255,255,0.1)' }}>
+                    <span
+                      className="project-link btn-disabled"
+                      style={{
+                        opacity: 0.6,
+                        cursor: 'not-allowed',
+                        background: 'rgba(255,255,255,0.1)',
+                      }}
+                    >
                       Private Code
                     </span>
                   )}
-                  {repo.homepage && (
+                  {project.homepage && project.homepage !== '/' && (
                     <a
-                      href={repo.homepage}
+                      href={project.homepage}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="project-link live-link"
                     >
                       Live Demo
+                    </a>
+                  )}
+                  {project.homepage === '/' && (
+                    <a href="/" className="project-link live-link">
+                      This Site
                     </a>
                   )}
                 </div>
@@ -333,7 +89,7 @@ const Projects = () => {
 
         <div className="view-more">
           <a
-            href={`https://github.com/${import.meta.env.VITE_GITHUB_USERNAME}?tab=repositories`}
+            href="https://github.com/thetubbydoughnut?tab=repositories"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-secondary"
@@ -342,8 +98,8 @@ const Projects = () => {
           </a>
         </div>
       </div>
-    </section >
+    </section>
   );
 };
 
-export default Projects; 
+export default Projects;
