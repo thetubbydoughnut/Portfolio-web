@@ -1,11 +1,12 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { execSync } from 'child_process';
 import { existsSync, readdirSync, readFileSync, rmSync } from 'fs';
 import { join } from 'path';
 
 const TOKEN_PATTERNS = [/ghp_/, /github_pat_/, /gho_/, /VITE_GITHUB_TOKEN/, /Authorization:\s*bearer/i];
+const MAIN_OUT = join(process.cwd(), 'dist-secrets-main');
 
-function collectDistJs(distDir = join(process.cwd(), 'dist')) {
+function collectDistJs(distDir = MAIN_OUT) {
   const assets = join(distDir, 'assets');
   if (!existsSync(assets)) return '';
   return readdirSync(assets)
@@ -22,17 +23,26 @@ function assertNoSecrets(blob, label) {
 
 describe('AC-6: no client secrets in built assets', () => {
   beforeAll(() => {
-    // Always rebuild so dist reflects the current source (no stale token paths)
-    execSync('npm run build', {
+    // Isolated outDir so parallel vite builds do not emptyOutDir this suite
+    if (existsSync(MAIN_OUT)) {
+      rmSync(MAIN_OUT, { recursive: true, force: true });
+    }
+    execSync(`npx vite build --outDir ${MAIN_OUT}`, {
       stdio: 'pipe',
       env: { ...process.env, VITE_GITHUB_TOKEN: undefined },
     });
   }, 120000);
 
+  afterAll(() => {
+    if (existsSync(MAIN_OUT)) {
+      rmSync(MAIN_OUT, { recursive: true, force: true });
+    }
+  });
+
   it('built dist/ JS has zero token / VITE_GITHUB_TOKEN / bearer patterns', () => {
-    const blob = collectDistJs();
+    const blob = collectDistJs(MAIN_OUT);
     expect(blob.length).toBeGreaterThan(0);
-    assertNoSecrets(blob, 'dist');
+    assertNoSecrets(blob, 'dist-secrets-main');
   });
 
   it('building with VITE_GITHUB_TOKEN=ghp_dummy_sentinel still leaves zero matches in dist/', () => {

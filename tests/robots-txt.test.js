@@ -1,15 +1,21 @@
-import { describe, it, expect, beforeAll } from 'vitest';
-import { existsSync, readFileSync } from 'fs';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { existsSync, readFileSync, rmSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
 
 const ORIGIN = 'https://portfolio-web-phi-navy.vercel.app';
 const ROOT = process.cwd();
+const OUT = join(ROOT, 'dist-robots-check');
 
 describe('AC-2: robots.txt', () => {
   beforeAll(() => {
-    execSync('npm run build', { stdio: 'pipe' });
+    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
+    execSync(`npx vite build --outDir ${OUT}`, { stdio: 'pipe' });
   }, 120000);
+
+  afterAll(() => {
+    if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
+  });
 
   it('public/robots.txt allows the site and points at the canonical sitemap', () => {
     const path = join(ROOT, 'public/robots.txt');
@@ -24,7 +30,7 @@ describe('AC-2: robots.txt', () => {
   });
 
   it('dist/robots.txt is copied and is plain text (not the SPA shell)', () => {
-    const path = join(ROOT, 'dist/robots.txt');
+    const path = join(OUT, 'robots.txt');
     expect(existsSync(path)).toBe(true);
     const text = readFileSync(path, 'utf8');
     expect(text.trim().startsWith('<!DOCTYPE')).toBe(false);

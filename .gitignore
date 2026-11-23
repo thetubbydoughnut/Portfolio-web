@@ -12,6 +12,11 @@
 /dist
 dist-ssr
 dist-secrets-check
+dist-secrets-main
+dist-seo-check
+dist-robots-check
+dist-sitemap-check
+dist-projects-check
 dist-skills-env-check
 *.local
 
