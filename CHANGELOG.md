@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-05-12 — redesign-001 PR-1 foundation
+
+- Added ink/copper design tokens (dark + light), glass tokens, Tailwind wiring, and `src/theme` helper (`data-theme` + localStorage).
+- Added SEO artifacts: `public/robots.txt`, `public/sitemap.xml`, favicon, OG image, Twitter tags, Person/WebSite JSON-LD.
+- Added incremental TypeScript (`tsconfig.json`) and GitHub Actions CI (`.github/workflows/ci.yml`).
+- Updated availability copy to “Available for full-time software engineering.” (no January 2027).
+- Removed artificial `PageLoader` timers and `styled-components`.
+- Removed client GitHub token docs from README; kept `no-client-secrets` guard.
+- Added shared motion/GPU budget helper (`src/motion/budget.ts`).
+
 ## 2025-05-12
 
 - Ensured full-page Vanta canvas:

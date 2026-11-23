@@ -10,10 +10,10 @@ export default defineConfig({
     globals: true,
     setupFiles: './src/test/setup.js',
   },
-  // Allow JSX in .js test files (AC test filenames end in .test.js)
+  // Allow JSX in .js/.jsx and TS in .ts/.tsx (incremental TypeScript)
   esbuild: {
-    loader: 'jsx',
-    include: /src\/.*\.jsx?$/,
+    include: /src\/.*\.[jt]sx?$/,
+    loader: 'tsx',
   },
   build: {
     outDir: 'dist',

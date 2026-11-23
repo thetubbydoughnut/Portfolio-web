@@ -1,4 +1,3 @@
-import React from 'react';
 import { resumeData } from '../data/resume';
 import { motion } from 'framer-motion';
 import '../styles/Experience.css'; // We'll need to ensure this exists or create it

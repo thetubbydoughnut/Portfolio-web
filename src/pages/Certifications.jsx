@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import PageLoader from '../components/PageLoader';
 import '../styles/Certifications.css';
 import bloomTechCertificatePreview from '../assets/certs-and-resume/bloomtech-certificate-preview.webp';
 
@@ -44,15 +42,6 @@ const cardVariants = {
 };
 
 const Certifications = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) return <PageLoader />;
-
   return (
     <section className="section certifications-section">
       <div className="certifications-container">
@@ -72,7 +61,6 @@ const Certifications = () => {
               variants={cardVariants}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
-              {/* Card Header */}
               <div className="cert-header">
                 <span className="cert-icon">{cert.icon}</span>
                 <div className="cert-meta">
@@ -81,13 +69,9 @@ const Certifications = () => {
                 </div>
               </div>
 
-              {/* Title */}
               <h3 className="certification-title">{cert.title}</h3>
-
-              {/* Description */}
               <p className="certification-description">{cert.description}</p>
 
-              {/* Skills */}
               <div className="certification-skills">
                 {cert.skills.map((skill, index) => (
                   <span key={index} className="certification-skill">
@@ -96,7 +80,6 @@ const Certifications = () => {
                 ))}
               </div>
 
-              {/* Certificate Preview */}
               {cert.credentialPreviewUrl && (
                 <div className="certification-preview-container">
                   <a
@@ -118,7 +101,6 @@ const Certifications = () => {
                 </div>
               )}
 
-              {/* CTA Button */}
               <div className="cert-actions">
                 <a
                   href={cert.credentialUrl}

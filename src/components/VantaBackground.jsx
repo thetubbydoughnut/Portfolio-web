@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import NET from 'vanta/dist/vanta.net.min';
 
@@ -39,6 +40,10 @@ const VantaBackground = ({ children }) => {
       {children}
     </div>
   );
+};
+
+VantaBackground.propTypes = {
+  children: PropTypes.node,
 };
 
 export default VantaBackground; 

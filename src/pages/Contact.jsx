@@ -1,32 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import '../styles/Contact.css';
-import PageLoader from '../components/PageLoader';
 
 import { resumeData } from '../data/resume';
 
 const Contact = () => {
   const [copied, setCopied] = useState(false);
   const [copiedItem, setCopiedItem] = useState('');
-  const [loading, setLoading] = useState(true);
 
-  // Email, GitHub, and LinkedIn only — no phone or new contact fields (AC-5)
+  // Email, GitHub, and LinkedIn only — no phone or new contact fields
   const contactInfo = {
     email: resumeData.profile.email,
     github: resumeData.profile.links.github,
     linkedin: resumeData.profile.links.linkedin,
   };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) {
-    return <PageLoader />;
-  }
 
   const handleCopy = (text, item) => {
     navigator.clipboard.writeText(text).then(() => {

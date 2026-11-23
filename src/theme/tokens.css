@@ -1,0 +1,142 @@
+/*
+ * Design token contract (AC-1).
+ * Source of truth: CSS custom properties on :root / [data-theme].
+ */
+
+:root {
+  --color-bg: #07080A;
+  --color-surface: #12141A;
+  --color-surface-2: #1A1D24;
+  --color-text: #F4F1EA;
+  --color-text-muted: #A8A397;
+  --color-border: #2A2D33;
+  --color-accent: #D0B07A;
+  --color-accent-hover: #E0C48C;
+  --color-focus: var(--color-accent);
+  --color-danger: #E07A6A;
+
+  --glass-bg: rgba(18, 20, 26, 0.62);
+  --glass-border: rgba(208, 176, 122, 0.28);
+  --glass-blur: 16px;
+  --lg-glass-bend: 0.35;
+  --lg-glass-dispersion: 0.2;
+  --lg-blur: 16px;
+  --lg-rim-shine: 0.12;
+
+  /* Appendix B — spacing / radius / motion */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --radius-control: 8px;
+  --radius-glass: 20px;
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-mid: 250ms;
+  --duration-slow: 400ms;
+  --duration-route: 600ms;
+
+  /* Compatibility aliases for existing stylesheets (map to new contract) */
+  --color-primary: var(--color-bg);
+  --color-secondary: var(--color-surface);
+  --color-gray: var(--color-text-muted);
+  --color-light-gray: var(--color-text-muted);
+  --color-off-white: var(--color-text);
+  --color-accent-glow: var(--color-accent);
+  --bg-dark: var(--color-bg);
+  --bg-card: var(--color-surface);
+  --text-primary: var(--color-text);
+  --text-secondary: var(--color-text-muted);
+  --text-color: var(--color-text);
+  --primary-color: var(--color-accent);
+  --accent-color: var(--color-accent);
+  --primary-glow: rgba(208, 176, 122, 0.35);
+  --accent-rgb: 208, 176, 122;
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --border-radius: var(--radius-control);
+  --transition-speed: var(--duration-mid);
+  --header-height: 60px;
+  --section-padding: 5rem 2rem;
+  --container-width: 1200px;
+  --font-main: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+[data-theme="dark"] {
+  --color-bg: #07080A;
+  --color-surface: #12141A;
+  --color-surface-2: #1A1D24;
+  --color-text: #F4F1EA;
+  --color-text-muted: #A8A397;
+  --color-border: #2A2D33;
+  --color-accent: #D0B07A;
+  --color-accent-hover: #E0C48C;
+  --color-focus: var(--color-accent);
+  --color-danger: #E07A6A;
+
+  --glass-bg: rgba(18, 20, 26, 0.62);
+  --glass-border: rgba(208, 176, 122, 0.28);
+  --glass-blur: 16px;
+  --lg-glass-bend: 0.35;
+  --lg-glass-dispersion: 0.2;
+  --lg-blur: 16px;
+  --lg-rim-shine: 0.12;
+
+  --color-primary: var(--color-bg);
+  --color-secondary: var(--color-surface);
+  --color-gray: var(--color-text-muted);
+  --color-light-gray: var(--color-text-muted);
+  --color-off-white: var(--color-text);
+  --color-accent-glow: var(--color-accent);
+  --bg-dark: var(--color-bg);
+  --bg-card: var(--color-surface);
+  --text-primary: var(--color-text);
+  --text-secondary: var(--color-text-muted);
+  --text-color: var(--color-text);
+  --primary-color: var(--color-accent);
+  --accent-color: var(--color-accent);
+  --primary-glow: rgba(208, 176, 122, 0.35);
+  --accent-rgb: 208, 176, 122;
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+[data-theme="light"] {
+  --color-bg: #F6F3EC;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #EFEBE3;
+  --color-text: #161616;
+  --color-text-muted: #5C5852;
+  --color-border: #DDD8CE;
+  --color-accent: #7A5C28;
+  --color-accent-hover: #8A6A32;
+  --color-focus: var(--color-accent);
+  --color-danger: #B04030;
+
+  --glass-bg: rgba(255, 255, 255, 0.64);
+  --glass-border: rgba(122, 92, 40, 0.22);
+  --glass-blur: 16px;
+  --lg-glass-bend: 0.25;
+  --lg-glass-dispersion: 0.12;
+  --lg-blur: 16px;
+  --lg-rim-shine: 0.08;
+
+  --color-primary: var(--color-bg);
+  --color-secondary: var(--color-surface);
+  --color-gray: var(--color-text-muted);
+  --color-light-gray: var(--color-text-muted);
+  --color-off-white: var(--color-text);
+  --color-accent-glow: var(--color-accent);
+  --bg-dark: var(--color-bg);
+  --bg-card: var(--color-surface);
+  --text-primary: var(--color-text);
+  --text-secondary: var(--color-text-muted);
+  --text-color: var(--color-text);
+  --primary-color: var(--color-accent);
+  --accent-color: var(--color-accent);
+  --primary-glow: rgba(122, 92, 40, 0.3);
+  --accent-rgb: 122, 92, 40;
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.12);
+}
