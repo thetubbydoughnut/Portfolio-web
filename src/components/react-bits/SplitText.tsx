@@ -1,5 +1,7 @@
-
-
+/**
+ * Vendored from React Bits SplitText-TS-TW (https://reactbits.dev).
+ * License: MIT + Commons Clause — use in this app; do not re-publish as a library.
+ */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
