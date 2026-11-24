@@ -42,18 +42,30 @@ class LazyErrorCatch extends Component<
 }
 
 function HeroPoster() {
-  // CSS background (not <img>) so the poster cannot become the LCP element.
+  // Paint a CSS gradient first so hero text can be LCP; attach the bitmap after.
+  const [bitmap, setBitmap] = useState(false);
+  useEffect(() => {
+    const id = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setBitmap(true));
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, []);
+
   return (
     <div
-      className="hero-stage-poster"
+      className={`hero-stage-poster${bitmap ? ' hero-stage-poster--bitmap' : ''}`}
       data-hero-stage="poster"
       data-hero-poster=""
       aria-hidden="true"
-      style={{
-        backgroundImage: `image-set(url("${posterAvif}") type("image/avif"), url("${posterWebp}") type("image/webp"))`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
+      style={
+        bitmap
+          ? {
+              backgroundImage: `image-set(url("${posterAvif}") type("image/avif"), url("${posterWebp}") type("image/webp"))`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }
+          : undefined
+      }
     />
   );
 }

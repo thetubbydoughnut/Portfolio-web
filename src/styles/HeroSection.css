@@ -37,9 +37,15 @@
   height: 100%;
 }
 
-.hero-stage-poster-img {
-  object-fit: cover;
-  display: block;
+.hero-stage-poster {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(var(--accent-rgb), 0.22), transparent 55%),
+    linear-gradient(160deg, var(--color-bg) 0%, var(--color-surface) 55%, var(--color-bg) 100%);
+}
+
+.hero-stage-poster--bitmap {
+  background-size: cover;
+  background-position: center;
 }
 
 .hero-stage-fallback {
