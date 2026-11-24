@@ -1,80 +1,104 @@
-import { useState, useEffect, useMemo } from 'react';
-import { skillLogos, skillDescriptions, skillExamples, getLogoPath } from '../data/skillsData';
+import { useMemo } from 'react';
+import { skillLogos, skillDescriptions, getLogoPath } from '../data/skillsData';
 import '../styles/Skills.css';
 import { PageFrame } from '../layout/PageFrame';
 
-const SKILL_CATEGORIES = [
-  { id: 'frontend', name: 'Frontend' },
-  { id: 'backend', name: 'Backend' },
-  { id: 'development', name: 'Development Tools' },
-  { id: 'core', name: 'Core Development' },
-  { id: 'ai', name: 'AI & Automation' },
-  { id: 'testing', name: 'Testing' },
-  { id: 'soft', name: 'Soft Skills' }
+const SKILL_GROUPS = [
+  {
+    id: 'frontend',
+    name: 'Frontend',
+    skills: [
+      'TypeScript',
+      'JavaScript',
+      'React',
+      'TanStack Query',
+      'Redux',
+      'Vite',
+      'Tailwind CSS',
+      'HTML5',
+      'CSS3',
+      'Hooks',
+      'Context API',
+      'Responsive Web Design',
+      'State Management',
+    ],
+  },
+  {
+    id: 'backend',
+    name: 'Backend',
+    skills: [
+      'NestJS',
+      'FastAPI',
+      'Node.js',
+      'Express',
+      'Python',
+      'SQL',
+      'SQL Server',
+      'PostgreSQL',
+      'SQLite',
+      'Knex.js',
+      'Supabase',
+      'RESTful APIs',
+      'Authentication',
+      'Microsoft Entra ID',
+    ],
+  },
+  {
+    id: 'testing',
+    name: 'Testing',
+    skills: ['Playwright', 'Vitest', 'Jest', 'Cypress', 'Pytest', 'Unit Testing', 'Integration Testing', 'End-to-end Testing'],
+  },
+  {
+    id: 'tools',
+    name: 'Tools & Cloud',
+    skills: [
+      'Azure',
+      'Docker',
+      'Git',
+      'GitHub',
+      'GitHub Actions',
+      'VS Code',
+      'Vercel',
+      'n8n',
+      'Cursor',
+      'Deployment',
+    ],
+  },
+  {
+    id: 'core',
+    name: 'Core',
+    skills: ['Algorithms', 'Data Structures', 'Architecture', 'Debugging', 'Problem Solving', 'Teamwork & Collaboration'],
+  },
 ];
 
-function buildSkillsData() {
-  const skillsData = {};
-  Object.entries(skillDescriptions).forEach(([skillName, description]) => {
-    let category = 'frontend';
+function buildGroupedSkills() {
+  const claimed = new Set();
+  const groups = SKILL_GROUPS.map((group) => {
+    const items = group.skills
+      .filter((name) => skillDescriptions[name])
+      .map((name) => {
+        claimed.add(name);
+        return {
+          name,
+          description: skillDescriptions[name],
+        };
+      });
+    return { ...group, items };
+  }).filter((g) => g.items.length > 0);
 
-    if (skillName.includes('Test') || ['Playwright', 'Vitest', 'Jest', 'Cypress', 'Pytest'].includes(skillName)) category = 'testing';
-    else if (['Node.js', 'Express', 'Express.js', 'NestJS', 'FastAPI', 'Python', 'SQL', 'SQL Server', 'PostgreSQL', 'SQLite', 'Knex.js', 'Supabase', 'Authentication', 'JWT', 'bcrypt', 'Pydantic', 'Microsoft Entra ID', 'RESTful APIs', 'Back-End Development'].includes(skillName)) category = 'backend';
-    else if (['Git', 'GitHub', 'GitHub Actions', 'VS Code', 'npm', 'Webpack', 'Babel.js', 'Azure', 'Docker', 'Vercel', 'Heroku', 'Deployment', 'Postman API', 'Git CLI', 'Git BASH'].includes(skillName)) category = 'development';
-    else if (['Algorithms', 'Data Structures', 'Architecture', 'Computer Science', 'Big-O Notation', 'Debugging', 'Software Development', 'Agile Project Management'].includes(skillName)) category = 'core';
-    else if (['Cursor', 'n8n'].includes(skillName)) category = 'ai';
-    else if (['Teamwork', 'Time Management', 'Attention to Detail', 'Problem Solving'].some(term => skillName.includes(term))) category = 'soft';
+  const leftovers = Object.keys(skillDescriptions)
+    .filter((name) => !claimed.has(name))
+    .map((name) => ({ name, description: skillDescriptions[name] }));
 
-    if (!skillsData[category]) {
-      skillsData[category] = [];
-    }
+  if (leftovers.length) {
+    groups.push({ id: 'more', name: 'More', items: leftovers });
+  }
 
-    skillsData[category].push({
-      name: skillName,
-      level: 85,
-      description: description,
-      example: skillExamples[skillName]
-    });
-  });
-  return skillsData;
+  return groups;
 }
 
 const Skills = () => {
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [showDescription, setShowDescription] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const skills = useMemo(() => buildSkillsData(), []);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const handleSkillInteraction = (skillName) => {
-    if (isMobile) {
-      setShowDescription(prev => prev === skillName ? null : skillName);
-    } else {
-      setShowDescription(skillName);
-    }
-  };
-
-  const getSkillsToShow = () => {
-    if (activeCategory === 'all') {
-      return Object.entries(skills).flatMap(([category, categorySkills]) =>
-        categorySkills.map(skill => ({ ...skill, category }))
-      );
-    }
-    return skills[activeCategory]?.map(skill => ({
-      ...skill,
-      category: activeCategory
-    })) || [];
-  };
+  const groups = useMemo(() => buildGroupedSkills(), []);
 
   return (
     <PageFrame
@@ -82,86 +106,41 @@ const Skills = () => {
       title="Skills"
       dek="Technical inventory grouped for recruiters."
     >
-      <section className="section skills-section page-frame-section">
-        <div className="skills-container page-frame-container">
-          <div className="skills-categories">
-            <button
-              key="all"
-              type="button"
-              className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('all')}
-            >
-              All Skills
-            </button>
-            {SKILL_CATEGORIES.map((category) => (
-              <button
-                key={category.id}
-                type="button"
-                className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
-                onClick={() => setActiveCategory(category.id)}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="skills-grid">
-            {getSkillsToShow().map((skill, index) => (
-              <div
-                key={`${skill.category}-${skill.name}-${index}`}
-                className="skill-card"
-                onClick={() => isMobile && handleSkillInteraction(skill.name)}
-                onMouseEnter={() => !isMobile && handleSkillInteraction(skill.name)}
-                onMouseLeave={() => !isMobile && setShowDescription(null)}
-              >
-                <div className="skill-info">
-                  <div className="skill-header">
-                    <img
-                      src={getLogoPath(skill.name)}
-                      alt={`${skill.name} logo`}
-                      className="skill-logo"
-                      loading="lazy"
-                      width="24"
-                      height="24"
-                      onError={(e) => {
-                        e.target.src = skillLogos.default;
-                        e.target.onerror = null;
-                      }}
-                    />
-                    <h2 className="skill-name">{skill.name}</h2>
-                  </div>
-                  <div className="skill-level-container">
-                    <div
-                      className="skill-level-bar"
-                      style={{ width: `${skill.level}%` }}
-                    />
-                    <span className="skill-level-text">{skill.level}%</span>
-                  </div>
-                </div>
-                {showDescription === skill.name && (
-                  <div className={`skill-description ${isMobile ? 'mobile' : ''}`}>
-                    {skill.description || skill.example || 'Description coming soon...'}
-                    {isMobile && (
-                      <button
-                        type="button"
-                        className="close-description"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowDescription(null);
-                        }}
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <div className="skills-groups" data-skills-groups>
+        {groups.map((group) => (
+          <section
+            key={group.id}
+            className="skills-group"
+            data-skills-group={group.id}
+            aria-labelledby={`skills-group-${group.id}`}
+          >
+            <h2 id={`skills-group-${group.id}`} className="skills-group-title">
+              {group.name}
+            </h2>
+            <ul className="skills-grid" data-skills-grid>
+              {group.items.map((skill) => (
+                <li key={skill.name} className="skill-chip glass-panel" title={skill.description}>
+                  <img
+                    src={getLogoPath(skill.name)}
+                    alt=""
+                    className="skill-logo"
+                    loading="lazy"
+                    width="24"
+                    height="24"
+                    onError={(e) => {
+                      e.target.src = skillLogos.default;
+                      e.target.onerror = null;
+                    }}
+                  />
+                  <span className="skill-name">{skill.name}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
     </PageFrame>
   );
 };
 
-export default Skills; 
+export default Skills;

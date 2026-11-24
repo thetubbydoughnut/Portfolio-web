@@ -44,7 +44,7 @@ function getSkillsFromEnv() {
 
 // Logo URLs - using official logos where possible
 const logos = {
-  'React.js': 'https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg',
+  'React': 'https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg',
   'Redux': 'https://raw.githubusercontent.com/devicons/devicon/master/icons/redux/redux-original.svg',
   'JavaScript': 'https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg',
   'HTML': 'https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg',

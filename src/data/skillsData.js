@@ -12,7 +12,6 @@ export const skillLogos = {
 
   // Frontend
   'React': '/images/skills/react.svg',
-  'React.js': '/images/skills/react.js.svg',
   'Redux': '/images/skills/redux.svg',
   'TanStack Query': '/images/skills/react.svg',
   'Vite': '/images/skills/default-frontend.svg',
@@ -112,7 +111,6 @@ export const skillDescriptions = {
   'HTML5': 'Semantic, accessible markup for production web applications.',
   'CSS3': 'Responsive layouts and modern CSS techniques for polished UIs.',
   'React': 'Component-based UIs with Hooks, Context API, and modern React patterns.',
-  'React.js': 'Dynamic interfaces using React with component-based architecture.',
   'TanStack Query': 'Server-state management that keeps async UI and API data in sync.',
   'Redux': 'Predictable client state management for complex front-end flows.',
   'Vite': 'Fast front-end tooling for React and TypeScript applications.',
