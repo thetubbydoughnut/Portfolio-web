@@ -5,32 +5,32 @@ import { join, extname } from 'path';
 const ROOT = process.cwd();
 
 const DARK_COLORS: Record<string, string> = {
-  '--color-bg': '#07080A',
-  '--color-surface': '#12141A',
-  '--color-surface-2': '#1A1D24',
-  '--color-text': '#F4F1EA',
-  '--color-text-muted': '#A8A397',
-  '--color-border': '#2A2D33',
-  '--color-accent': '#D0B07A',
-  '--color-accent-hover': '#E0C48C',
+  '--color-bg': '#0B0C0F',
+  '--color-surface': '#14161B',
+  '--color-surface-2': '#1C1F26',
+  '--color-text': '#F2EFE8',
+  '--color-text-muted': '#B3AD9F',
+  '--color-border': '#2C3038',
+  '--color-accent': '#D4A866',
+  '--color-accent-hover': '#E2BC80',
   '--color-danger': '#E07A6A',
 };
 
 const LIGHT_COLORS: Record<string, string> = {
-  '--color-bg': '#F6F3EC',
+  '--color-bg': '#F7F4EE',
   '--color-surface': '#FFFFFF',
-  '--color-surface-2': '#EFEBE3',
-  '--color-text': '#161616',
-  '--color-text-muted': '#5C5852',
-  '--color-border': '#DDD8CE',
-  '--color-accent': '#7A5C28',
-  '--color-accent-hover': '#8A6A32',
+  '--color-surface-2': '#EFEAE1',
+  '--color-text': '#17161A',
+  '--color-text-muted': '#57524B',
+  '--color-border': '#D9D2C5',
+  '--color-accent': '#8A5A1F',
+  '--color-accent-hover': '#74491A',
   '--color-danger': '#B04030',
 };
 
 const DARK_GLASS: Record<string, string> = {
-  '--glass-bg': 'rgba(18, 20, 26, 0.62)',
-  '--glass-border': 'rgba(208, 176, 122, 0.28)',
+  '--glass-bg': 'rgba(20, 22, 27, 0.72)',
+  '--glass-border': 'rgba(212, 168, 102, 0.22)',
   '--glass-blur': '16px',
   '--lg-glass-bend': '0.35',
   '--lg-glass-dispersion': '0.2',
@@ -39,8 +39,8 @@ const DARK_GLASS: Record<string, string> = {
 };
 
 const LIGHT_GLASS: Record<string, string> = {
-  '--glass-bg': 'rgba(255, 255, 255, 0.64)',
-  '--glass-border': 'rgba(122, 92, 40, 0.22)',
+  '--glass-bg': 'rgba(255, 255, 255, 0.78)',
+  '--glass-border': 'rgba(138, 90, 31, 0.18)',
   '--glass-blur': '16px',
   '--lg-glass-bend': '0.25',
   '--lg-glass-dispersion': '0.12',
@@ -115,10 +115,9 @@ describe('AC-1: design tokens, glass tokens, Tailwind, theme helper', () => {
     for (const [name, value] of Object.entries(DARK_GLASS)) {
       expectVar(darkBlock, name, value);
     }
-    // focus matches accent
-    expect(darkBlock).toMatch(
-      /--color-focus\s*:\s*(var\(--color-accent\)|#D0B07A)/i
-    );
+    // focus follows slate link (AC-30)
+    expect(darkBlock).toMatch(/--color-focus\s*:\s*var\(--color-link\)/i);
+    expect(darkBlock).toMatch(/--color-link\s*:\s*#8DB4CC/i);
 
     for (const [name, value] of Object.entries(LIGHT_COLORS)) {
       expectVar(lightBlock, name, value);
@@ -126,9 +125,9 @@ describe('AC-1: design tokens, glass tokens, Tailwind, theme helper', () => {
     for (const [name, value] of Object.entries(LIGHT_GLASS)) {
       expectVar(lightBlock, name, value);
     }
-    expect(lightBlock).toMatch(
-      /--color-focus\s*:\s*(var\(--color-accent\)|#7A5C28)/i
-    );
+    expect(lightBlock).toMatch(/--color-focus\s*:\s*var\(--color-link\)/i);
+    expect(lightBlock).toMatch(/--color-link\s*:\s*#2F5D78/i);
+    expect(lightBlock).toMatch(/--hero-scrim\s*:\s*rgba\(247,\s*244,\s*238,\s*0\.88\)/i);
   });
 
   it('includes Appendix B spacing/radius/motion tokens', () => {
@@ -262,7 +261,7 @@ describe('AC-1: design tokens, glass tokens, Tailwind, theme helper', () => {
   it('fails closed: light theme block must exist alongside dark (negative)', () => {
     const css = readAllCss();
     const hasLight = /\[data-theme=["']light["']\]/.test(css);
-    const hasDarkTokens = /--color-bg\s*:\s*#07080A/i.test(css);
+    const hasDarkTokens = /--color-bg\s*:\s*#0B0C0F/i.test(css);
     expect(hasDarkTokens && !hasLight).toBe(false);
     expect(hasLight).toBe(true);
   });

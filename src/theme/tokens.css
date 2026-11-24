@@ -1,22 +1,27 @@
 /*
- * Design token contract (AC-1).
+ * Design token contract (AC-1 / AC-30).
  * Source of truth: CSS custom properties on :root / [data-theme].
+ * Palette: Amendment 3 / A3.3 (ink + copper + slate).
  */
 
 :root {
-  --color-bg: #07080A;
-  --color-surface: #12141A;
-  --color-surface-2: #1A1D24;
-  --color-text: #F4F1EA;
-  --color-text-muted: #A8A397;
-  --color-border: #2A2D33;
-  --color-accent: #D0B07A;
-  --color-accent-hover: #E0C48C;
-  --color-focus: var(--color-accent);
+  --color-bg: #0B0C0F;
+  --color-surface: #14161B;
+  --color-surface-2: #1C1F26;
+  --color-text: #F2EFE8;
+  --color-text-muted: #B3AD9F;
+  --color-border: #2C3038;
+  --color-border-strong: #6B707B;
+  --color-accent: #D4A866;
+  --color-accent-hover: #E2BC80;
+  --color-on-accent: #1A1206;
+  --color-link: #8DB4CC;
+  --color-focus: var(--color-link);
   --color-danger: #E07A6A;
+  --hero-scrim: none;
 
-  --glass-bg: rgba(18, 20, 26, 0.62);
-  --glass-border: rgba(208, 176, 122, 0.28);
+  --glass-bg: rgba(20, 22, 27, 0.72);
+  --glass-border: rgba(212, 168, 102, 0.22);
   --glass-blur: 16px;
   --lg-glass-bend: 0.35;
   --lg-glass-dispersion: 0.2;
@@ -54,31 +59,40 @@
   --text-color: var(--color-text);
   --primary-color: var(--color-accent);
   --accent-color: var(--color-accent);
-  --primary-glow: rgba(208, 176, 122, 0.35);
-  --accent-rgb: 208, 176, 122;
+  --primary-glow: rgba(212, 168, 102, 0.35);
+  --accent-rgb: 212, 168, 102;
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   --border-radius: var(--radius-control);
   --transition-speed: var(--duration-mid);
-  --header-height: 60px;
+  --header-height: 4rem;
   --section-padding: 5rem 2rem;
-  --container-width: 1200px;
-  --font-main: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --container-width: 72rem;
+  --content-max-width: 72rem;
+  --shell-max-width: 90rem;
+  --font-sans: 'Instrument Sans', 'Instrument Sans Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Instrument Serif', 'Instrument Serif Fallback', ui-serif, Georgia, serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, monospace;
+  --font-main: var(--font-sans);
 }
 
 [data-theme="dark"] {
-  --color-bg: #07080A;
-  --color-surface: #12141A;
-  --color-surface-2: #1A1D24;
-  --color-text: #F4F1EA;
-  --color-text-muted: #A8A397;
-  --color-border: #2A2D33;
-  --color-accent: #D0B07A;
-  --color-accent-hover: #E0C48C;
-  --color-focus: var(--color-accent);
+  --color-bg: #0B0C0F;
+  --color-surface: #14161B;
+  --color-surface-2: #1C1F26;
+  --color-text: #F2EFE8;
+  --color-text-muted: #B3AD9F;
+  --color-border: #2C3038;
+  --color-border-strong: #6B707B;
+  --color-accent: #D4A866;
+  --color-accent-hover: #E2BC80;
+  --color-on-accent: #1A1206;
+  --color-link: #8DB4CC;
+  --color-focus: var(--color-link);
   --color-danger: #E07A6A;
+  --hero-scrim: none;
 
-  --glass-bg: rgba(18, 20, 26, 0.62);
-  --glass-border: rgba(208, 176, 122, 0.28);
+  --glass-bg: rgba(20, 22, 27, 0.72);
+  --glass-border: rgba(212, 168, 102, 0.22);
   --glass-blur: 16px;
   --lg-glass-bend: 0.35;
   --lg-glass-dispersion: 0.2;
@@ -98,25 +112,29 @@
   --text-color: var(--color-text);
   --primary-color: var(--color-accent);
   --accent-color: var(--color-accent);
-  --primary-glow: rgba(208, 176, 122, 0.35);
-  --accent-rgb: 208, 176, 122;
+  --primary-glow: rgba(212, 168, 102, 0.35);
+  --accent-rgb: 212, 168, 102;
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 [data-theme="light"] {
-  --color-bg: #F6F3EC;
+  --color-bg: #F7F4EE;
   --color-surface: #FFFFFF;
-  --color-surface-2: #EFEBE3;
-  --color-text: #161616;
-  --color-text-muted: #5C5852;
-  --color-border: #DDD8CE;
-  --color-accent: #7A5C28;
-  --color-accent-hover: #8A6A32;
-  --color-focus: var(--color-accent);
+  --color-surface-2: #EFEAE1;
+  --color-text: #17161A;
+  --color-text-muted: #57524B;
+  --color-border: #D9D2C5;
+  --color-border-strong: #8C8579;
+  --color-accent: #8A5A1F;
+  --color-accent-hover: #74491A;
+  --color-on-accent: #FFFFFF;
+  --color-link: #2F5D78;
+  --color-focus: var(--color-link);
   --color-danger: #B04030;
+  --hero-scrim: rgba(247, 244, 238, 0.88);
 
-  --glass-bg: rgba(255, 255, 255, 0.64);
-  --glass-border: rgba(122, 92, 40, 0.22);
+  --glass-bg: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(138, 90, 31, 0.18);
   --glass-blur: 16px;
   --lg-glass-bend: 0.25;
   --lg-glass-dispersion: 0.12;
@@ -136,7 +154,7 @@
   --text-color: var(--color-text);
   --primary-color: var(--color-accent);
   --accent-color: var(--color-accent);
-  --primary-glow: rgba(122, 92, 40, 0.3);
-  --accent-rgb: 122, 92, 40;
+  --primary-glow: rgba(138, 90, 31, 0.3);
+  --accent-rgb: 138, 90, 31;
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.12);
 }

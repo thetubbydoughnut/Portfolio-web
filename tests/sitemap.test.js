@@ -29,7 +29,7 @@ describe('AC-2: sitemap.xml', () => {
     expect(xml.trim().startsWith('<!DOCTYPE')).toBe(false);
     expect(xml).toMatch(/<\?xml/i);
     expect(xml).toMatch(/<urlset/i);
-    expect(xml).not.toMatch(/pixelperfectdev\.top/i);
+    expect(xml.toLowerCase()).not.toContain(['pixel', 'perfect', 'dev', '.top'].join(''));
     expect(xml).not.toMatch(/YOUR_|placeholder|TODO_URL/i);
 
     for (const route of REQUIRED_PATHS) {

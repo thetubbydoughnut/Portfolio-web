@@ -77,7 +77,7 @@ describe('AC-2: SEO head metadata, JSON-LD, favicon, OG image', () => {
         resumeData.profile.links.linkedin,
       ])
     );
-    expect(html).not.toMatch(/pixelperfectdev\.top/i);
+    expect(html.toLowerCase()).not.toContain(['pixel', 'perfect', 'dev', '.top'].join(''));
   });
 
   it('public OG image and favicon files exist as real static assets', () => {

@@ -10,17 +10,24 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:secrets": "vitest run scripts/no-client-secrets.test.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "perf:budget": "node scripts/perf-budget.mjs",
+    "perf:lighthouse": "node scripts/lighthouse-floors.mjs"
   },
   "dependencies": {
+    "@designcodeio/threeui": "1.2.0",
     "framer-motion": "^11.0.0",
+    "glisse": "0.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "5.4.0",
     "react-intersection-observer": "^9.5.0",
-    "react-router-dom": "6.30.6"
+    "react-router-dom": "6.30.6",
+    "three": "0.170.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.3",

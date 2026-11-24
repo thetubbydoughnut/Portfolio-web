@@ -23,13 +23,14 @@ body {
 
 a {
   font-weight: 500;
-  color: var(--color-accent);
+  color: var(--color-link);
   text-decoration: inherit;
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
 a:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-link);
+  filter: brightness(1.08);
 }
 
 h1,
@@ -58,7 +59,12 @@ button {
 
 button:hover {
   border-color: var(--color-accent);
-  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  button:hover {
+    transform: translateY(-2px);
+  }
 }
 
 button:focus-visible {

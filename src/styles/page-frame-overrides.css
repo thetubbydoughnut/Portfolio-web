@@ -1,0 +1,18 @@
+/* Inner page content sits inside PageFrame's content column — drop nested 1200px stacks. */
+.page-frame-section {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+}
+
+.page-frame-container {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.page-frame-section .section-title,
+.page-frame-section .section-subtitle {
+  display: none;
+}

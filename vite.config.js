@@ -1,5 +1,13 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+
+const rootDir = fileURLToPath(new URL('.', import.meta.url))
+const hasLocalResume = existsSync(
+  join(rootDir, 'public/documents/cameron-graham-resume.pdf')
+)
 
 // https://vitejs.dev/config/
 // Migrated for Vite 8 (guides: v5→v6, v6→v7, v7→v8):
@@ -9,10 +17,19 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/',
+  define: {
+    __HAS_LOCAL_RESUME__: JSON.stringify(hasLocalResume),
+  },
   test: {
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.js',
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/tests/e2e/**',
+      '**/.{idea,git,cache,output,temp}/**',
+    ],
   },
   // Allow JSX/TSX in src (Vite 8: Oxc instead of esbuild)
   oxc: {
@@ -24,6 +41,7 @@ export default defineConfig({
     emptyOutDir: true,
     minify: 'terser',
     cssMinify: true,
+    manifest: true,
     // Vite 8 / Rolldown: object-form manualChunks removed
     rolldownOptions: {
       output: {

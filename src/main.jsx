@@ -2,8 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
+import './styles/fonts.css'
 import './theme/tokens.css'
 import './index.css'
+import './styles/page-frame-overrides.css'
 import { initTheme } from './theme/theme'
 
 initTheme()

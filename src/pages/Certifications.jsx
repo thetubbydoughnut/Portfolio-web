@@ -1,13 +1,13 @@
-import { motion } from 'framer-motion';
 import '../styles/Certifications.css';
 import bloomTechCertificatePreview from '../assets/certs-and-resume/bloomtech-certificate-preview.webp';
+import { PageFrame } from '../layout/PageFrame';
 
 const certifications = [
   {
     id: 1,
     title: 'Full Stack Web Development + Technical Interviewing',
     issuer: 'BloomTech',
-    date: '2025',
+    date: 'November 2023 – January 2025',
     credentialPreviewUrl: bloomTechCertificatePreview,
     credentialUrl: 'https://drive.google.com/file/d/118YvczGUNXpa1yL06cVlXeEwb6_x8LKU/view?usp=sharing',
     description:
@@ -24,98 +24,87 @@ const certifications = [
       'Git/GitHub',
       'Technical Communication',
     ],
-    icon: '🎓',
+  },
+  {
+    id: 2,
+    title: 'Programming for Everybody (Python Certification)',
+    issuer: 'University of Michigan',
+    date: 'September 2025',
+    credentialPreviewUrl: null,
+    credentialUrl: null,
+    description: 'Python certification from the University of Michigan.',
+    skills: ['Python'],
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15 },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
-
 const Certifications = () => {
   return (
-    <section className="section certifications-section">
-      <div className="certifications-container">
-        <h2 className="section-title">Certifications</h2>
-        <p className="section-subtitle">Professional certifications and achievements</p>
-
-        <motion.div
-          className="certifications-grid"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-        >
-          {certifications.map((cert) => (
-            <motion.div
-              key={cert.id}
-              className="certification-card"
-              variants={cardVariants}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="cert-header">
-                <span className="cert-icon">{cert.icon}</span>
-                <div className="cert-meta">
-                  <span className="cert-issuer">{cert.issuer}</span>
-                  <span className="cert-date">{cert.date}</span>
+    <PageFrame
+      eyebrow="Credentials"
+      title="Certifications"
+      dek="BloomTech and University of Michigan."
+    >
+      <section className="section certifications-section page-frame-section">
+        <div className="certifications-container page-frame-container">
+          <div className="certifications-grid">
+            {certifications.map((cert) => (
+              <div key={cert.id} className="certification-card">
+                <div className="cert-header">
+                  <div className="cert-meta">
+                    <span className="cert-issuer">{cert.issuer}</span>
+                    <span className="cert-date">{cert.date}</span>
+                  </div>
                 </div>
-              </div>
 
-              <h3 className="certification-title">{cert.title}</h3>
-              <p className="certification-description">{cert.description}</p>
+                <h2 className="certification-title">{cert.title}</h2>
+                <p className="certification-description">{cert.description}</p>
 
-              <div className="certification-skills">
-                {cert.skills.map((skill, index) => (
-                  <span key={index} className="certification-skill">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-
-              {cert.credentialPreviewUrl && (
-                <div className="certification-preview-container">
-                  <a
-                    href={cert.credentialUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="cert-preview-link"
-                    aria-label={`View ${cert.title} Certificate`}
-                  >
-                    <div className="cert-preview-overlay">
-                      <span>🔗 View Full Certificate</span>
-                    </div>
-                    <img
-                      src={cert.credentialPreviewUrl}
-                      alt={`${cert.title} Certificate Preview`}
-                      className="certification-preview-image"
-                    />
-                  </a>
+                <div className="certification-skills">
+                  {cert.skills.map((skill) => (
+                    <span key={skill} className="certification-skill">
+                      {skill}
+                    </span>
+                  ))}
                 </div>
-              )}
 
-              <div className="cert-actions">
-                <a
-                  href={cert.credentialUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="project-link live-link"
-                >
-                  View Certificate
-                </a>
+                {cert.credentialPreviewUrl && (
+                  <div className="certification-preview-container">
+                    <a
+                      href={cert.credentialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cert-preview-link"
+                      aria-label={`View ${cert.title} Certificate`}
+                    >
+                      <img
+                        src={cert.credentialPreviewUrl}
+                        alt={`${cert.title} Certificate Preview`}
+                        className="certification-preview-image"
+                        width={600}
+                        height={400}
+                      />
+                    </a>
+                  </div>
+                )}
+
+                {cert.credentialUrl && (
+                  <div className="cert-actions">
+                    <a
+                      href={cert.credentialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="project-link live-link"
+                    >
+                      View Certificate
+                    </a>
+                  </div>
+                )}
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
+            ))}
+          </div>
+        </div>
+      </section>
+    </PageFrame>
   );
 };
 
