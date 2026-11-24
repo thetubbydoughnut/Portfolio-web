@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { motion } from 'framer-motion';
+import { LazyMotion, domAnimation, m } from 'framer-motion';
 import { useMotionBudget } from '../motion/useMotionBudget';
 
 const PageTransition = ({ children }) => {
@@ -24,18 +24,20 @@ const PageTransition = ({ children }) => {
     : { duration: 0 };
 
   return (
-    <motion.div
-      initial="initial"
-      animate="in"
-      exit="out"
-      variants={variants}
-      transition={transition}
-      style={{ width: '100%', height: '100%' }}
-      data-motion-budget={budget}
-      data-page-transition={effectsOn ? 'opacity' : 'instant'}
-    >
-      {children}
-    </motion.div>
+    <LazyMotion features={domAnimation} strict>
+      <m.div
+        initial="initial"
+        animate="in"
+        exit="out"
+        variants={variants}
+        transition={transition}
+        style={{ width: '100%', height: '100%' }}
+        data-motion-budget={budget}
+        data-page-transition={effectsOn ? 'opacity' : 'instant'}
+      >
+        {children}
+      </m.div>
+    </LazyMotion>
   );
 };
 

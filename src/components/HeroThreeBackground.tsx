@@ -42,20 +42,19 @@ class LazyErrorCatch extends Component<
 }
 
 function HeroPoster() {
+  // CSS background (not <img>) so the poster cannot become the LCP element.
   return (
-    <picture className="hero-stage-poster" data-hero-stage="poster" data-hero-poster="">
-      <source srcSet={posterAvif} type="image/avif" />
-      <img
-        src={posterWebp}
-        alt=""
-        aria-hidden="true"
-        width={1280}
-        height={720}
-        decoding="async"
-        fetchPriority="low"
-        className="hero-stage-poster-img"
-      />
-    </picture>
+    <div
+      className="hero-stage-poster"
+      data-hero-stage="poster"
+      data-hero-poster=""
+      aria-hidden="true"
+      style={{
+        backgroundImage: `image-set(url("${posterAvif}") type("image/avif"), url("${posterWebp}") type("image/webp"))`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    />
   );
 }
 
