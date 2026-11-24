@@ -5,7 +5,6 @@
 2. **PR-4** — project case studies, CLR card (AC-28), shader atmosphere, route transitions, Lighthouse floors, docs/TDD (AC-15 to AC-18, AC-23, AC-24, AC-29).
 
 ## Follow-ups noticed during PR-2 (not in scope)
-- AC-27: replace profile webps when `refs/amend-2/cameron-profile.*` arrives.
 - Migrate remaining CSS var aliases fully onto the new token names as PR-3 restyles pages.
 - Consider declaring `prop-types` as a direct dependency (currently transitive via eslint-plugin-react).
 - Large ThreeUI / image weight tuning for later Lighthouse work in PR-4.

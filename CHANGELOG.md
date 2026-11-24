@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - High-impact home hero with lazy ThreeUI `EmeraldHorizonBackground` (subpath + `React.lazy`).
 - Self-hosted Instrument Sans / Instrument Serif / Geist Mono with size-adjust fallbacks (no Google Fonts).
 - Shipped Nov 23 resume PDF at `public/documents/cameron-graham-resume.pdf`; `getResumeHref` PDF branch; “Download resume” label; regenerated 600×776 preview.
-- Display-sized profile webps (960×1280 hero, 96×96 header); AC-27 source slot pending.
+- Profile photo slot (AC-27): hero 960×1280 and header 96×96 webps from the delivered source, metadata stripped.
 - Removed repo-root resume PDFs and dead `Navigation` / `VantaBackground` / unused `Home.jsx`.
 
 ## 2025-05-12 — redesign-001 PR-1 foundation

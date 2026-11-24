@@ -1,52 +1,102 @@
 import { describe, it, expect } from 'vitest';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { createElement } from 'react';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import sharp from 'sharp';
+import HeroSection from '../components/HeroSection.jsx';
+import Header from '../components/Header.jsx';
+import { resumeData } from '../data/resume.js';
 
-const SOURCE_DIR = join(process.cwd(), 'refs/amend-2');
-const SOURCE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.heic'];
+const HERO_PATH = join(process.cwd(), 'src/assets/images/cameron-profile.webp');
+const HEADER_PATH = join(process.cwd(), 'src/assets/images/cameron-profile-header.webp');
+const HERO_MAX_BYTES = 120 * 1024;
 
-function findAmend2ProfileSource(): string | null {
-  if (!existsSync(SOURCE_DIR)) return null;
-  const files = readdirSync(SOURCE_DIR);
-  const hit = files.find((f) => {
-    const lower = f.toLowerCase();
-    return (
-      lower.startsWith('cameron-profile.') &&
-      SOURCE_EXTS.some((ext) => lower.endsWith(ext))
-    );
-  });
-  return hit ? join(SOURCE_DIR, hit) : null;
+/** WebP EXIF lives in a RIFF chunk named "EXIF"; GPS is typically inside that payload. */
+function webpHasExifChunk(buf: Buffer): boolean {
+  if (buf.length < 12) return false;
+  if (buf.toString('ascii', 0, 4) !== 'RIFF') return false;
+  if (buf.toString('ascii', 8, 12) !== 'WEBP') return false;
+  let offset = 12;
+  while (offset + 8 <= buf.length) {
+    const fourcc = buf.toString('ascii', offset, offset + 4);
+    const size = buf.readUInt32LE(offset + 4);
+    if (fourcc === 'EXIF' || fourcc === 'XMP ') return true;
+    // Chunks are padded to even sizes
+    offset += 8 + size + (size % 2);
+  }
+  return false;
 }
 
-const sourcePresent = Boolean(findAmend2ProfileSource());
-
 describe('AC-27: profile photo slot', () => {
-  it('ships display-sized hero webp (≤960×1280, 3:4) and 96×96 header webp', async () => {
-    const heroPath = join(process.cwd(), 'src/assets/images/cameron-profile.webp');
-    const headerPath = join(process.cwd(), 'src/assets/images/cameron-profile-header.webp');
-    expect(existsSync(heroPath)).toBe(true);
-    expect(existsSync(headerPath)).toBe(true);
+  it('hero webp is exactly 960×1280 (3:4), ≤120 KB, with no EXIF/GPS RIFF chunks', async () => {
+    expect(existsSync(HERO_PATH)).toBe(true);
+    const meta = await sharp(HERO_PATH).metadata();
+    expect(meta.width).toBe(960);
+    expect(meta.height).toBe(1280);
+    expect(meta.width! / meta.height!).toBeCloseTo(3 / 4, 5);
+    expect(statSync(HERO_PATH).size).toBeLessThanOrEqual(HERO_MAX_BYTES);
 
-    const hero = await sharp(heroPath).metadata();
-    expect(hero.width).toBeLessThanOrEqual(960);
-    expect(hero.height).toBeLessThanOrEqual(1280);
-    if (hero.width && hero.height) {
-      expect(hero.width / hero.height).toBeCloseTo(3 / 4, 2);
-    }
-
-    const header = await sharp(headerPath).metadata();
-    expect(header.width).toBe(96);
-    expect(header.height).toBe(96);
+    const buf = readFileSync(HERO_PATH);
+    expect(webpHasExifChunk(buf)).toBe(false);
+    expect(meta.exif).toBeFalsy();
+    expect(meta.xmp).toBeFalsy();
+    expect(meta.icc).toBeFalsy();
   });
 
-  describe.runIf(sourcePresent)('when refs/amend-2/cameron-profile.* is present', () => {
-    it('source file exists at the amend-2 slot', () => {
-      expect(findAmend2ProfileSource()).toBeTruthy();
+  it('header webp is exactly 96×96 with no EXIF/GPS RIFF chunks', async () => {
+    expect(existsSync(HEADER_PATH)).toBe(true);
+    const meta = await sharp(HEADER_PATH).metadata();
+    expect(meta.width).toBe(96);
+    expect(meta.height).toBe(96);
+    expect(webpHasExifChunk(readFileSync(HEADER_PATH))).toBe(false);
+    expect(meta.exif).toBeFalsy();
+    expect(meta.xmp).toBeFalsy();
+    expect(meta.icc).toBeFalsy();
+  });
+
+  it('hero and header imgs use explicit width/height; alt stays Cameron’s name', () => {
+    render(createElement(MemoryRouter, null, createElement(HeroSection)));
+    const heroImg = screen.getByRole('img', { name: resumeData.profile.name });
+    expect(heroImg).toHaveAttribute('width', '960');
+    expect(heroImg).toHaveAttribute('height', '1280');
+    expect(heroImg.getAttribute('alt')).toBe(resumeData.profile.name);
+
+    render(createElement(MemoryRouter, null, createElement(Header)));
+    // Header mark uses the same name as alt
+    const headerImgs = screen.getAllByRole('img', { name: resumeData.profile.name });
+    const headerMark = headerImgs.find((el) => el.getAttribute('width') === '32');
+    expect(headerMark).toBeTruthy();
+    expect(headerMark).toHaveAttribute('height', '32');
+  });
+
+  it('does not commit the raw source JPEG anywhere in the repo', () => {
+    const root = process.cwd();
+    const bannedNames = ['cameron-profile.jpg', 'cameron-profile.jpeg', 'cameron-profile_bdf8.jpg'];
+    const walk = (dir: string): string[] => {
+      const out: string[] = [];
+      for (const name of readdirSync(dir)) {
+        if (name === 'node_modules' || name === '.git' || name === 'dist') continue;
+        const full = join(dir, name);
+        const st = statSync(full);
+        if (st.isDirectory()) out.push(...walk(full));
+        else out.push(full);
+      }
+      return out;
+    };
+    const hits = walk(root).filter((p) => {
+      const base = p.split('/').pop()!.toLowerCase();
+      return bannedNames.some((b) => base === b) || /refs\/amend-2\/cameron-profile\./i.test(p);
     });
+    expect(hits).toEqual([]);
   });
 
-  describe.runIf(!sourcePresent)('pending until source file arrives', () => {
-    it.todo('replace hero/header webps from refs/amend-2/cameron-profile.* when delivered');
+  it('CSS keeps hero well at max 320×427 with aspect-ratio 3/4 and object-fit cover', () => {
+    const css = readFileSync(join(process.cwd(), 'src/styles/HeroSection.css'), 'utf8');
+    expect(css).toMatch(/aspect-ratio:\s*3\s*\/\s*4/);
+    expect(css).toMatch(/object-fit:\s*cover/);
+    expect(css).toMatch(/max-width:\s*320px/);
+    expect(css).toMatch(/max-height:\s*427px/);
   });
 });
