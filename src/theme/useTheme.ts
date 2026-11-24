@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import {
   applyTheme,
   initTheme,
@@ -10,6 +10,7 @@ import {
 /**
  * Minimal documentElement theme hook (§5a.4).
  * Defaults to the resolved theme after client init; toggling persists to localStorage.
+ * DOM attribute updates synchronously; React state follows in startTransition (AC-31 INP).
  */
 export function useTheme() {
   const [theme, setThemeState] = useState<ThemeMode>(() => {
@@ -21,17 +22,17 @@ export function useTheme() {
 
   useEffect(() => {
     const resolved = initTheme();
-    setThemeState(resolved);
+    startTransition(() => setThemeState(resolved));
   }, []);
 
   const setTheme = (next: ThemeMode) => {
     applyTheme(next);
-    setThemeState(next);
+    startTransition(() => setThemeState(next));
   };
 
   const toggleTheme = () => {
     const next = toggleThemeHelper(theme);
-    setThemeState(next);
+    startTransition(() => setThemeState(next));
     return next;
   };
 

@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 /**
- * AC-18 / AC-31: Lighthouse 12.x home-route floors (median of 3 runs).
+ * AC-18 / AC-31: Lighthouse home-route floors (median of 3 runs).
  * Requires a running preview URL as argv[2] (default http://127.0.0.1:4173/).
  *
  * Usage:
- *   node scripts/lighthouse-floors.mjs [url] [--form-factor=mobile|desktop]
+ *   node scripts/lighthouse-floors.mjs [url] [--form-factor=mobile|desktop] [--force-prefers-reduced-motion]
+ *
+ * Fallback path (A3.4): --force-prefers-reduced-motion raises the Performance
+ * floor to ≥95 on mobile and desktop.
  */
 import { spawnSync } from 'node:child_process';
 import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
@@ -31,30 +34,45 @@ export const FLOORS = {
   },
 };
 
+/** A3.4 fallback-path Performance floor (mobile and desktop). */
+export const FALLBACK_PERFORMANCE = 95;
+
 function median(nums) {
   const s = [...nums].sort((a, b) => a - b);
   const mid = Math.floor(s.length / 2);
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
 }
 
-function runOnce(url, formFactor) {
+function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
   const outDir = join(process.cwd(), 'node_modules/.cache/portfolio-lh');
   mkdirSync(outDir, { recursive: true });
-  const outPath = join(outDir, `lh-${formFactor}-${Date.now()}.json`);
+  const tag = forceReducedMotion ? 'fallback' : formFactor;
+  const outPath = join(outDir, `lh-${tag}-${Date.now()}.json`);
 
   // Use official presets so desktop does not inherit Slow-4G / 4× CPU.
   const preset = formFactor === 'desktop' ? 'desktop' : 'perf';
+  const chromeFlags = [
+    '--headless',
+    '--no-sandbox',
+    '--disable-gpu',
+    // Chromium switch used by QA fallback path.
+    forceReducedMotion ? '--force-prefers-reduced-motion' : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
+  // Pin Lighthouse 13.6.0 to match QA cycle-2.
   const args = [
-    'lighthouse',
+    '--yes',
+    'lighthouse@13.6.0',
     url,
     '--quiet',
-    '--chrome-flags=--headless --no-sandbox --disable-gpu',
+    `--chrome-flags=${chromeFlags}`,
     `--preset=${preset}`,
     `--output=json`,
     `--output-path=${outPath}`,
     '--only-categories=performance,accessibility,best-practices,seo',
   ];
-  const res = spawnSync('npx', ['--yes', ...args], {
+  const res = spawnSync('npx', args, {
     encoding: 'utf8',
     cwd: process.cwd(),
     timeout: 180_000,
@@ -76,6 +94,8 @@ function runOnce(url, formFactor) {
     lcpElement: audits['largest-contentful-paint-element']?.displayValue || '',
     throttling: report.configSettings?.throttling,
     formFactor: report.configSettings?.formFactor,
+    lighthouseVersion: report.lighthouseVersion,
+    forceReducedMotion,
   };
 }
 
@@ -91,8 +111,11 @@ export function summarizeRuns(runs) {
   };
 }
 
-export function evaluateFloors(summary, formFactor) {
-  const f = FLOORS[formFactor];
+export function evaluateFloors(summary, formFactor, { forceReducedMotion = false } = {}) {
+  const f = { ...FLOORS[formFactor] };
+  if (forceReducedMotion) {
+    f.performance = FALLBACK_PERFORMANCE;
+  }
   return [
     { id: 'performance', actual: summary.performance, budget: f.performance, pass: summary.performance >= f.performance },
     { id: 'accessibility', actual: summary.accessibility, budget: f.accessibility, pass: summary.accessibility >= f.accessibility },
@@ -110,20 +133,25 @@ function main() {
     : 'http://127.0.0.1:4173/';
   const ffArg = process.argv.find((a) => a.startsWith('--form-factor='));
   const formFactor = ffArg ? ffArg.split('=')[1] : 'mobile';
+  const forceReducedMotion = process.argv.includes('--force-prefers-reduced-motion');
   const runs = [];
   for (let i = 0; i < 3; i++) {
-    const once = runOnce(url, formFactor);
+    const once = runOnce(url, formFactor, { forceReducedMotion });
     runs.push(once);
     console.log(`run ${i + 1}:`, JSON.stringify(once));
   }
   const summary = summarizeRuns(runs);
-  const rows = evaluateFloors(summary, formFactor);
+  const rows = evaluateFloors(summary, formFactor, { forceReducedMotion });
   console.log('median:', JSON.stringify(summary));
+  if (forceReducedMotion) {
+    console.log('path: fallback (--force-prefers-reduced-motion); performance floor ≥', FALLBACK_PERFORMANCE);
+  }
   for (const row of rows) {
     console.log(`${row.pass ? 'PASS' : 'FAIL'} ${row.id}: ${row.actual} (budget ${row.id.includes('Ms') || row.id === 'cls' ? '≤' : '≥'} ${row.budget})`);
   }
-  const out = join(process.cwd(), 'node_modules/.cache/portfolio-lh', `summary-${formFactor}.json`);
-  writeFileSync(out, JSON.stringify({ runs, summary, rows }, null, 2));
+  const tag = forceReducedMotion ? `${formFactor}-fallback` : formFactor;
+  const out = join(process.cwd(), 'node_modules/.cache/portfolio-lh', `summary-${tag}.json`);
+  writeFileSync(out, JSON.stringify({ runs, summary, rows, forceReducedMotion }, null, 2));
   process.exit(rows.some((r) => !r.pass) ? 1 : 0);
 }
 

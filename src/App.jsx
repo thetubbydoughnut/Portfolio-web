@@ -4,11 +4,12 @@ import Layout from './components/Layout';
 import Header from './components/Header';
 import PageTransition from './components/PageTransition';
 import ErrorBoundary from './components/ErrorBoundary';
+import HeroSection from './components/HeroSection';
 import { useMotionBudget } from './motion/useMotionBudget';
 import './App.css';
 
-// Lazy load pages
-const HeroSection = lazy(() => import('./components/HeroSection'));
+// Home hero is eager so LCP text is in the first paint graph (AC-18 / F1).
+// Other routes stay lazy.
 const Projects = lazy(() => import('./pages/Projects'));
 const Skills = lazy(() => import('./pages/Skills'));
 const Certifications = lazy(() => import('./pages/Certifications'));
