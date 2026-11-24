@@ -7,7 +7,7 @@
  *   node scripts/lighthouse-floors.mjs [url] [--form-factor=mobile|desktop]
  */
 import { spawnSync } from 'node:child_process';
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const FLOORS = {
@@ -80,7 +80,7 @@ function runOnce(url, formFactor) {
   if (res.status !== 0) {
     throw new Error(`lighthouse failed: ${res.stderr || res.stdout}`);
   }
-  const report = JSON.parse(readSafe(outPath));
+  const report = JSON.parse(readFileSync(outPath, 'utf8'));
   const cats = report.categories || {};
   const audits = report.audits || {};
   return {
@@ -93,10 +93,6 @@ function runOnce(url, formFactor) {
     cls: audits['cumulative-layout-shift']?.numericValue ?? NaN,
     lcpElement: audits['largest-contentful-paint-element']?.displayValue || '',
   };
-}
-
-function readSafe(p) {
-  return spawnSync('cat', [p], { encoding: 'utf8' }).stdout;
 }
 
 export function summarizeRuns(runs) {
