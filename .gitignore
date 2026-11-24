@@ -101,3 +101,7 @@ LPL_Case_Studies_and_Interview_Prep.md
 
 # Broken legacy asset paths (old folder name with spaces)
 "src/assets/Certs and resume/"
+
+# Playwright
+test-results/
+playwright-report/
