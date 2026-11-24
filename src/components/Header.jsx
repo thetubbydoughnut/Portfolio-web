@@ -1,4 +1,4 @@
-import { useState, useEffect, useId } from 'react';
+import { useState, useEffect, useId, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import { Glass, Button, TabBar } from 'glisse';
@@ -27,6 +27,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const menuId = useId();
+  const menuToggleRef = useRef(null);
   const resumeHref = getResumeHref();
   const resumeLabel = getResumeCtaLabel(resumeHref);
   const effectsOn = budget === 'effects-on';
@@ -42,6 +43,18 @@ const Header = () => {
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isMenuOpen) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false);
+        menuToggleRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isMenuOpen]);
 
   const activeNav =
     NAV_ITEMS.find((item) =>
@@ -78,6 +91,7 @@ const Header = () => {
           </div>
 
           <button
+            ref={menuToggleRef}
             type="button"
             className={`menu-toggle ${isMenuOpen ? 'active' : ''}`}
             onClick={() => setIsMenuOpen((open) => !open)}
