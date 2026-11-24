@@ -1,0 +1,76 @@
+/* Self-hosted faces (AC-10). Preloaded from /fonts; size-adjust fallbacks limit swap CLS. */
+
+@font-face {
+  font-family: 'Instrument Sans Fallback';
+  src: local('Arial');
+  size-adjust: 100%;
+  ascent-override: 95%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Instrument Serif Fallback';
+  src: local('Georgia');
+  size-adjust: 105%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Geist Mono Fallback';
+  src: local('Courier New');
+  size-adjust: 100%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/instrument-sans-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('/fonts/instrument-sans-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('/fonts/instrument-sans-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('/fonts/instrument-sans-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/instrument-serif-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('/fonts/geist-mono-latin-wght-normal.woff2') format('woff2');
+}

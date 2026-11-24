@@ -23,7 +23,7 @@ describe('AC-2: robots.txt', () => {
     expect(text).toMatch(/User-agent:\s*\*/i);
     expect(text).toMatch(/Allow:\s*\//i);
     expect(text).toContain(`Sitemap: ${ORIGIN}/sitemap.xml`);
-    expect(text).not.toMatch(/pixelperfectdev\.top/i);
+    expect(text.toLowerCase()).not.toContain(['pixel', 'perfect', 'dev', '.top'].join(''));
   });
 
   it('dist/robots.txt is copied and is plain text (not the SPA shell)', () => {

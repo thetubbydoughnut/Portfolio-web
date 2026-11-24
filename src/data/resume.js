@@ -128,11 +128,26 @@ export const resumeData = {
   ],
 };
 
+export const LOCAL_RESUME_HREF = '/documents/cameron-graham-resume.pdf';
+
 /**
- * Resume CTA href. When a confirmed PDF is added at
- * public/documents/cameron-graham-resume.pdf, point links.resume there.
- * Until then, use the existing public Google Doc URL (label as "Resume", not "Download").
+ * Resume CTA href (AC-26 / R-2). When the Nov 23 PDF is present under
+ * public/documents/, prefer that path; otherwise fall back to the Google Doc.
+ * Label: "Download resume" for the PDF, "Resume" for the Doc (must not start with Download).
  */
+export function resolveResumeHref(hasLocalPdf) {
+  return hasLocalPdf ? LOCAL_RESUME_HREF : resumeData.profile.links.resume;
+}
+
 export function getResumeHref() {
-  return resumeData.profile.links.resume;
+  // Injected by vite.config.js define from public/documents presence.
+  const hasLocal =
+    typeof __HAS_LOCAL_RESUME__ !== 'undefined' ? Boolean(__HAS_LOCAL_RESUME__) : false;
+  return resolveResumeHref(hasLocal);
+}
+
+export function getResumeCtaLabel(href = getResumeHref()) {
+  return href === LOCAL_RESUME_HREF || href.endsWith('/documents/cameron-graham-resume.pdf')
+    ? 'Download resume'
+    : 'Resume';
 }

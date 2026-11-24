@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-05-12 — redesign-001 PR-2 shell + home
+
+- Shared `PageFrame` on every route (home hero band; sticky intro rail on inner routes).
+- Glisse glass shell: skip link, nav, theme toggle, resume CTA; motion-budget fallbacks.
+- High-impact home hero with lazy ThreeUI `EmeraldHorizonBackground` (subpath + `React.lazy`).
+- Self-hosted Instrument Sans / Instrument Serif / Geist Mono with size-adjust fallbacks (no Google Fonts).
+- Shipped Nov 23 resume PDF at `public/documents/cameron-graham-resume.pdf`; `getResumeHref` PDF branch; “Download resume” label; regenerated 600×776 preview.
+- Display-sized profile webps (960×1280 hero, 96×96 header); AC-27 source slot pending.
+- Removed repo-root resume PDFs and dead `Navigation` / `VantaBackground` / unused `Home.jsx`.
+
 ## 2025-05-12 — redesign-001 PR-1 foundation
 
 - Added ink/copper design tokens (dark + light), glass tokens, Tailwind wiring, and `src/theme` helper (`data-theme` + localStorage).

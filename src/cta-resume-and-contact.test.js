@@ -1,22 +1,74 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { existsSync } from 'fs';
-import { join } from 'path';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { execSync } from 'node:child_process';
+import { join, extname } from 'node:path';
 import { createElement } from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import sharp from 'sharp';
 import Header from './components/Header.jsx';
 import HeroSection from './components/HeroSection.jsx';
 import Contact from './pages/Contact.jsx';
-import { resumeData } from './data/resume.js';
+import {
+  resumeData,
+  getResumeHref,
+  getResumeCtaLabel,
+  resolveResumeHref,
+  LOCAL_RESUME_HREF,
+} from './data/resume.js';
 
 const LOCAL_RESUME = '/documents/cameron-graham-resume.pdf';
 const localResumePath = join(process.cwd(), 'public/documents/cameron-graham-resume.pdf');
+const EXPECTED_PDF_SHA256 =
+  '83dd8c32bbba517725851aae280d319e547dfd863bf7e8e600f5e6a6e277cd23';
+const previewPath = join(
+  process.cwd(),
+  'src/assets/certs-and-resume/Cameron-Graham-Resume.webp'
+);
+
+const TEXT_EXTS = new Set([
+  '.js',
+  '.jsx',
+  '.ts',
+  '.tsx',
+  '.css',
+  '.html',
+  '.md',
+  '.json',
+  '.yml',
+  '.yaml',
+  '.txt',
+  '.svg',
+]);
 
 function renderWithRouter(node) {
   return render(createElement(MemoryRouter, null, node));
 }
 
-describe('AC-5: Resume and Contact CTAs', () => {
+function sha256File(path) {
+  return createHash('sha256').update(readFileSync(path)).digest('hex');
+}
+
+function collectTrackedTextHits(needle) {
+  const out = execSync('git ls-files', { encoding: 'utf8', cwd: process.cwd() })
+    .trim()
+    .split('\n')
+    .filter(Boolean);
+  const hits = [];
+  for (const rel of out) {
+    if (!TEXT_EXTS.has(extname(rel).toLowerCase())) continue;
+    const abs = join(process.cwd(), rel);
+    if (!existsSync(abs) || !statSync(abs).isFile()) continue;
+    const body = readFileSync(abs, 'utf8');
+    if (body.toLowerCase().includes(needle.toLowerCase())) {
+      hits.push(rel);
+    }
+  }
+  return hits;
+}
+
+describe('AC-5 / AC-26: Resume and Contact CTAs', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -25,22 +77,27 @@ describe('AC-5: Resume and Contact CTAs', () => {
     vi.useRealTimers();
   });
 
-  it('header exposes Resume and Contact controls', () => {
+  it('header exposes Resume/Download resume and Contact controls', () => {
     renderWithRouter(createElement(Header));
-    const contact = screen.getByRole('link', { name: /^Contact$/i });
-    expect(contact).toHaveAttribute('href', '/contact');
+    const contacts = screen.getAllByRole('link', { name: /^Contact$/i });
+    expect(contacts.length).toBeGreaterThan(0);
+    expect(contacts[0]).toHaveAttribute('href', '/contact');
 
-    const resume = screen.getByRole('link', { name: /Resume/i });
+    const label = getResumeCtaLabel();
+    const resume = screen.getByRole('link', { name: new RegExp(label, 'i') });
     expect(resume).toBeInTheDocument();
-    expect(resume.textContent).not.toMatch(/^Download/i);
+    if (!existsSync(localResumePath)) {
+      expect(resume.textContent).not.toMatch(/^Download/i);
+    }
   });
 
-  it('hero exposes Resume and Contact controls', () => {
+  it('hero exposes Resume/Download resume and Contact controls', () => {
     renderWithRouter(createElement(HeroSection));
     const contact = screen.getByRole('link', { name: /^Contact$/i });
     expect(contact).toHaveAttribute('href', '/contact');
 
-    const resume = screen.getByRole('link', { name: /^Resume$/i });
+    const label = getResumeCtaLabel();
+    const resume = screen.getByRole('link', { name: new RegExp(`^${label}$`, 'i') });
     expect(resume).toBeInTheDocument();
   });
 
@@ -49,13 +106,62 @@ describe('AC-5: Resume and Contact CTAs', () => {
       ? LOCAL_RESUME
       : resumeData.profile.links.resume;
 
+    expect(getResumeHref()).toBe(expected);
+
     renderWithRouter(createElement(Header));
-    const resume = screen.getByRole('link', { name: /Resume/i });
+    const label = getResumeCtaLabel(expected);
+    const resume = screen.getByRole('link', { name: new RegExp(label, 'i') });
     expect(resume.getAttribute('href')).toBe(expected);
 
     if (!existsSync(localResumePath)) {
       expect(resume.textContent).not.toMatch(/Download/i);
+    } else {
+      expect(resume.textContent).toMatch(/^Download resume$/i);
     }
+  });
+
+  it('AC-26: PDF branch labels Download resume; Doc fallback must not start with Download', () => {
+    expect(resolveResumeHref(true)).toBe(LOCAL_RESUME_HREF);
+    expect(getResumeCtaLabel(LOCAL_RESUME_HREF)).toBe('Download resume');
+    expect(getResumeCtaLabel(LOCAL_RESUME_HREF)).toMatch(/^Download/);
+
+    const docHref = resumeData.profile.links.resume;
+    expect(resolveResumeHref(false)).toBe(docHref);
+    const docLabel = getResumeCtaLabel(docHref);
+    expect(docLabel).toBe('Resume');
+    expect(docLabel).not.toMatch(/^Download/);
+  });
+
+  it('AC-26: shipped PDF hash matches Nov 23 resume; preview is 600×776 ≤80KB', async () => {
+    expect(existsSync(localResumePath)).toBe(true);
+    expect(sha256File(localResumePath)).toBe(EXPECTED_PDF_SHA256);
+    expect(sha256File(localResumePath).startsWith('83dd8c32bbba')).toBe(true);
+
+    expect(existsSync(previewPath)).toBe(true);
+    const meta = await sharp(previewPath).metadata();
+    expect(meta.width).toBe(600);
+    expect(meta.height).toBe(776);
+    const { size } = await import('fs').then((fs) => fs.promises.stat(previewPath));
+    expect(size).toBeLessThanOrEqual(80 * 1024);
+  });
+
+  it('AC-26: no repo-root resume PDFs; lost domain absent from tracked text', () => {
+    const rootEntries = readdirSync(process.cwd());
+    const rootResumePdfs = rootEntries.filter(
+      (name) =>
+        name.toLowerCase().endsWith('.pdf') &&
+        /resume/i.test(name)
+    );
+    expect(rootResumePdfs).toEqual([]);
+    expect(
+      existsSync(join(process.cwd(), 'Cameron Graham Full Stack Web Developer Resume (7).pdf'))
+    ).toBe(false);
+    expect(
+      existsSync(join(process.cwd(), 'Cameron Graham QA Automation Resume (1).pdf'))
+    ).toBe(false);
+
+    const banned = ['pixel', 'perfect', 'dev'].join('');
+    expect(collectTrackedTextHits(banned)).toEqual([]);
   });
 
   it('/contact shows email, GitHub, and LinkedIn already on the site', async () => {

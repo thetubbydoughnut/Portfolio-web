@@ -59,10 +59,15 @@
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   --border-radius: var(--radius-control);
   --transition-speed: var(--duration-mid);
-  --header-height: 60px;
+  --header-height: 4rem;
   --section-padding: 5rem 2rem;
-  --container-width: 1200px;
-  --font-main: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --container-width: 72rem;
+  --content-max-width: 72rem;
+  --shell-max-width: 90rem;
+  --font-sans: 'Instrument Sans', 'Instrument Sans Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Instrument Serif', 'Instrument Serif Fallback', ui-serif, Georgia, serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, monospace;
+  --font-main: var(--font-sans);
 }
 
 [data-theme="dark"] {

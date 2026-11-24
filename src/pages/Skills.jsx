@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { skillLogos, skillDescriptions, skillExamples, getLogoPath } from '../data/skillsData';
 import '../styles/Skills.css';
+import { PageFrame } from '../layout/PageFrame';
 
 const SKILL_CATEGORIES = [
   { id: 'frontend', name: 'Frontend' },
@@ -77,104 +77,90 @@ const Skills = () => {
   };
 
   return (
-    <section className="section skills-section">
-      <div className="skills-container">
-        <h2 className="section-title">Skills & Expertise</h2>
-        <p className="section-subtitle">
-          My technical skill set and proficiency levels
-        </p>
-
-        <div className="skills-categories">
-          <button
-            key="all"
-            className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
-            onClick={() => setActiveCategory('all')}
-          >
-            All Skills
-          </button>
-          {SKILL_CATEGORIES.map(category => (
+    <PageFrame
+      eyebrow="Toolkit"
+      title="Skills"
+      dek="Technical inventory grouped for recruiters."
+    >
+      <section className="section skills-section page-frame-section">
+        <div className="skills-container page-frame-container">
+          <div className="skills-categories">
             <button
-              key={category.id}
-              className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
-              onClick={() => setActiveCategory(category.id)}
+              key="all"
+              type="button"
+              className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
+              onClick={() => setActiveCategory('all')}
             >
-              {category.name}
+              All Skills
             </button>
-          ))}
-        </div>
+            {SKILL_CATEGORIES.map((category) => (
+              <button
+                key={category.id}
+                type="button"
+                className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
+                onClick={() => setActiveCategory(category.id)}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
 
-        <motion.div
-          className="skills-grid"
-          variants={{
-            hidden: { opacity: 0 },
-            show: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.05
-              }
-            }
-          }}
-          initial="hidden"
-          animate="show"
-        >
-          {getSkillsToShow().map((skill, index) => (
-            <motion.div
-              key={`${skill.category}-${skill.name}-${index}`}
-              className="skill-card"
-              variants={{
-                hidden: { opacity: 0, scale: 0.9 },
-                show: { opacity: 1, scale: 1 }
-              }}
-              whileHover={{ scale: 1.05 }}
-              onClick={() => isMobile && handleSkillInteraction(skill.name)}
-              onMouseEnter={() => !isMobile && handleSkillInteraction(skill.name)}
-              onMouseLeave={() => !isMobile && setShowDescription(null)}
-            >
-              <div className="skill-info">
-                <div className="skill-header">
-                  <img
-                    src={getLogoPath(skill.name)}
-                    alt={`${skill.name} logo`}
-                    className="skill-logo"
-                    loading="lazy"
-                    width="24"
-                    height="24"
-                    onError={(e) => {
-                      e.target.src = skillLogos.default;
-                      e.target.onerror = null;
-                    }}
-                  />
-                  <h3 className="skill-name">{skill.name}</h3>
-                </div>
-                <div className="skill-level-container">
-                  <div
-                    className="skill-level-bar"
-                    style={{ width: `${skill.level}%` }}
-                  />
-                  <span className="skill-level-text">{skill.level}%</span>
-                </div>
-              </div>
-              {showDescription === skill.name && (
-                <div className={`skill-description ${isMobile ? 'mobile' : ''}`}>
-                  {skill.description || skill.example || 'Description coming soon...'}
-                  {isMobile && (
-                    <button
-                      className="close-description"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowDescription(null);
+          <div className="skills-grid">
+            {getSkillsToShow().map((skill, index) => (
+              <div
+                key={`${skill.category}-${skill.name}-${index}`}
+                className="skill-card"
+                onClick={() => isMobile && handleSkillInteraction(skill.name)}
+                onMouseEnter={() => !isMobile && handleSkillInteraction(skill.name)}
+                onMouseLeave={() => !isMobile && setShowDescription(null)}
+              >
+                <div className="skill-info">
+                  <div className="skill-header">
+                    <img
+                      src={getLogoPath(skill.name)}
+                      alt={`${skill.name} logo`}
+                      className="skill-logo"
+                      loading="lazy"
+                      width="24"
+                      height="24"
+                      onError={(e) => {
+                        e.target.src = skillLogos.default;
+                        e.target.onerror = null;
                       }}
-                    >
-                      ×
-                    </button>
-                  )}
+                    />
+                    <h2 className="skill-name">{skill.name}</h2>
+                  </div>
+                  <div className="skill-level-container">
+                    <div
+                      className="skill-level-bar"
+                      style={{ width: `${skill.level}%` }}
+                    />
+                    <span className="skill-level-text">{skill.level}%</span>
+                  </div>
                 </div>
-              )}
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
+                {showDescription === skill.name && (
+                  <div className={`skill-description ${isMobile ? 'mobile' : ''}`}>
+                    {skill.description || skill.example || 'Description coming soon...'}
+                    {isMobile && (
+                      <button
+                        type="button"
+                        className="close-description"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowDescription(null);
+                        }}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </PageFrame>
   );
 };
 
