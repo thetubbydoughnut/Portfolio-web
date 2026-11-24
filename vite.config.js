@@ -24,6 +24,12 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.js',
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/tests/e2e/**',
+      '**/.{idea,git,cache,output,temp}/**',
+    ],
   },
   // Allow JSX/TSX in src (Vite 8: Oxc instead of esbuild)
   oxc: {
