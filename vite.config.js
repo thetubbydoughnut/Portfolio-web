@@ -41,6 +41,7 @@ export default defineConfig({
     emptyOutDir: true,
     minify: 'terser',
     cssMinify: true,
+    manifest: true,
     // Vite 8 / Rolldown: object-form manualChunks removed
     rolldownOptions: {
       output: {

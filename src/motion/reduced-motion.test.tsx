@@ -86,13 +86,28 @@ describe('AC-8: reduced motion / fallback budget', () => {
   it('R-3: useMotionBudget resubscribes when prefers-reduced-motion changes', () => {
     let reduced = false;
     const listeners = new Set<(ev: MediaQueryListEvent) => void>();
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 1280,
+    });
+    Object.defineProperty(navigator, 'hardwareConcurrency', {
+      configurable: true,
+      value: 8,
+    });
+    Object.defineProperty(navigator, 'deviceMemory', {
+      configurable: true,
+      value: 8,
+    });
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockImplementation((query: string) => ({
-        matches: query.includes('prefers-reduced-motion: reduce') ? reduced : false,
+        matches:
+          (query.includes('prefers-reduced-motion: reduce') && reduced) ||
+          (query.includes('pointer: fine') && true) ||
+          (query.includes('min-width: 1024') && true),
         media: query,
         addEventListener: (_type: string, cb: (ev: MediaQueryListEvent) => void) => {
-          listeners.add(cb);
+          if (query.includes('prefers-reduced-motion')) listeners.add(cb);
         },
         removeEventListener: (_type: string, cb: (ev: MediaQueryListEvent) => void) => {
           listeners.delete(cb);

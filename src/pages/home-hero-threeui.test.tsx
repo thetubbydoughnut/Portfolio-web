@@ -9,10 +9,25 @@ import { evaluateMotionBudget, resetMotionBudget } from '../motion/budget';
 import { ensureSharedDist, collectDistJs } from '../test/ensure-dist-build.js';
 
 function stubBudget(effectsOn: boolean) {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    value: effectsOn ? 1280 : 375,
+  });
+  Object.defineProperty(navigator, 'hardwareConcurrency', {
+    configurable: true,
+    value: effectsOn ? 8 : 4,
+  });
+  Object.defineProperty(navigator, 'deviceMemory', {
+    configurable: true,
+    value: effectsOn ? 8 : 2,
+  });
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({
-      matches: query.includes('prefers-reduced-motion: reduce') ? !effectsOn : false,
+      matches:
+        (query.includes('prefers-reduced-motion: reduce') && !effectsOn) ||
+        (query.includes('pointer: fine') && effectsOn) ||
+        (query.includes('min-width: 1024') && effectsOn),
       media: query,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
@@ -40,17 +55,23 @@ describe('AC-20: home hero ThreeUI', () => {
   });
 
   it('loads EmeraldHorizonBackground via subpath + React.lazy only', () => {
-    const src = readFileSync(
+    const heroSrc = readFileSync(
       join(process.cwd(), 'src/components/HeroThreeBackground.tsx'),
       'utf8'
     );
-    expect(src).toMatch(
+    const lazySrc = readFileSync(
+      join(process.cwd(), 'src/components/EmeraldHorizonLazy.tsx'),
+      'utf8'
+    );
+    expect(lazySrc).toMatch(
       /@designcodeio\/threeui\/components\/EmeraldHorizonBackground/
     );
-    expect(src).toMatch(/React\.lazy|lazy\(/);
-    expect(src).not.toMatch(/from ['"]@designcodeio\/threeui['"]/);
-    expect(src).not.toMatch(/threeui-cli/);
-    expect(src).not.toMatch(/lib-dist\/assets/);
+    expect(heroSrc).toMatch(/React\.lazy|lazy\(/);
+    expect(heroSrc).not.toMatch(/from ['"]@designcodeio\/threeui['"]/);
+    expect(heroSrc).not.toMatch(/import\s+['"]@designcodeio\/threeui\/style\.css['"]/);
+    expect(lazySrc).toMatch(/@designcodeio\/threeui\/style\.css/);
+    expect(heroSrc).not.toMatch(/threeui-cli/);
+    expect(heroSrc).not.toMatch(/lib-dist\/assets/);
   });
 
   it('shows static fallback under reduced-motion budget (no 3D)', () => {

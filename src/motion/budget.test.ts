@@ -17,10 +17,25 @@ describe('AC-19: shared motion/GPU budget helper', () => {
   }
 
   function stubMatchMedia(reduce: boolean) {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 1280,
+    });
+    Object.defineProperty(navigator, 'hardwareConcurrency', {
+      configurable: true,
+      value: 8,
+    });
+    Object.defineProperty(navigator, 'deviceMemory', {
+      configurable: true,
+      value: 8,
+    });
     vi.stubGlobal(
       'matchMedia',
       vi.fn().mockImplementation((query: string) => ({
-        matches: reduce && query.includes('prefers-reduced-motion'),
+        matches:
+          (reduce && query.includes('prefers-reduced-motion')) ||
+          (!reduce && query.includes('pointer: fine')) ||
+          (!reduce && query.includes('min-width: 1024')),
         media: query,
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),

@@ -2,7 +2,6 @@ import { useState, useEffect, useId, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import { Glass, Button, TabBar } from 'glisse';
-import 'glisse/styles.css';
 import profileHeaderImage from '../assets/images/cameron-profile-header.webp';
 import { resumeData, getResumeHref, getResumeCtaLabel } from '../data/resume';
 import resumePreview from '../assets/certs-and-resume/Cameron-Graham-Resume.webp';
@@ -55,6 +54,19 @@ const Header = () => {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isMenuOpen]);
+
+  // A3.5.6: Glisse CSS only on effects-on (keeps initial-route CSS on budget).
+  useEffect(() => {
+    if (!effectsOn) return undefined;
+    let cancelled = false;
+    import('glisse/styles.css').catch(() => {
+      /* non-fatal: static shell still works */
+    });
+    return () => {
+      cancelled = true;
+      void cancelled;
+    };
+  }, [effectsOn]);
 
   const activeNav =
     NAV_ITEMS.find((item) =>

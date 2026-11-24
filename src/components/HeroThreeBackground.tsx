@@ -3,17 +3,17 @@ import {
   lazy,
   Suspense,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
 import type { MotionBudget } from '../motion/budget';
-import '@designcodeio/threeui/style.css';
+import posterWebp from '../assets/images/hero-poster.webp';
+import posterAvif from '../assets/images/hero-poster.avif';
 
-const EmeraldHorizonBackground = lazy(() =>
-  import('@designcodeio/threeui/components/EmeraldHorizonBackground').then((m) => ({
-    default: m.EmeraldHorizonBackground,
-  }))
-);
+const EmeraldHorizonLazy = lazy(() => import('./EmeraldHorizonLazy'));
+
+const DPR_CAP = 1.5;
 
 type HeroThreeBackgroundProps = {
   budget: MotionBudget;
@@ -35,55 +35,154 @@ class LazyErrorCatch extends Component<
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="hero-stage-fallback" aria-hidden="true" data-hero-stage="error" />
-      );
+      return null;
     }
     return this.props.children;
   }
 }
 
+function HeroPoster() {
+  return (
+    <picture className="hero-stage-poster" data-hero-stage="poster" data-hero-poster="">
+      <source srcSet={posterAvif} type="image/avif" />
+      <img
+        src={posterWebp}
+        alt=""
+        aria-hidden="true"
+        width={1280}
+        height={720}
+        decoding="async"
+        fetchPriority="low"
+        className="hero-stage-poster-img"
+      />
+    </picture>
+  );
+}
+
 /**
- * Lazy ThreeUI Community hero stage (AC-20). Subpath import only; never the package root.
- * Chosen export: EmeraldHorizonBackground.
+ * Cap devicePixelRatio while ThreeUI mounts (package has no DPR prop;
+ * EmeraldHorizonBackground.js hardcodes min(dpr, 2)).
+ */
+function useDprCap(active: boolean) {
+  useEffect(() => {
+    if (!active) return undefined;
+    const desc = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
+    const current =
+      typeof window.devicePixelRatio === 'number' ? window.devicePixelRatio : 1;
+    Object.defineProperty(window, 'devicePixelRatio', {
+      configurable: true,
+      get: () => Math.min(current, DPR_CAP),
+    });
+    return () => {
+      if (desc) Object.defineProperty(window, 'devicePixelRatio', desc);
+      else delete (window as { devicePixelRatio?: number }).devicePixelRatio;
+    };
+  }, [active]);
+}
+
+/**
+ * Lazy ThreeUI Community hero stage (AC-20 / AC-31).
+ * Idle mount after load; pause offscreen/hidden; copper CSS grade; poster under canvas.
  */
 export function HeroThreeBackground({ budget }: HeroThreeBackgroundProps) {
-  const [ready, setReady] = useState(false);
+  const [idleReady, setIdleReady] = useState(false);
+  const [inView, setInView] = useState(true);
+  const [visible, setVisible] = useState(
+    () => typeof document === 'undefined' || !document.hidden
+  );
   const [failed, setFailed] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
 
+  const effectsOn = budget === 'effects-on';
+  const shouldMount =
+    effectsOn && idleReady && inView && visible && !failed;
+
+  useDprCap(shouldMount);
+
+  // Idle mount: after window load, then requestIdleCallback (2s timeout).
   useEffect(() => {
-    if (budget !== 'effects-on') {
-      setReady(false);
-      return;
+    if (!effectsOn) {
+      setIdleReady(false);
+      return undefined;
     }
-    // Defer past first paint so the ThreeUI chunk is not in the initial graph.
-    const id = window.requestAnimationFrame(() => {
-      setReady(true);
-    });
-    return () => window.cancelAnimationFrame(id);
-  }, [budget]);
 
-  if (budget !== 'effects-on' || failed || !ready) {
-    return (
-      <div
-        className="hero-stage-fallback"
-        aria-hidden="true"
-        data-hero-stage="fallback"
-      />
+    let idleId: number | undefined;
+    let timeoutId: number | undefined;
+    let cancelled = false;
+
+    const armIdle = () => {
+      const ric = window.requestIdleCallback;
+      if (typeof ric === 'function') {
+        idleId = ric(
+          () => {
+            if (!cancelled) setIdleReady(true);
+          },
+          { timeout: 2000 }
+        );
+      } else {
+        timeoutId = window.setTimeout(() => {
+          if (!cancelled) setIdleReady(true);
+        }, 1) as unknown as number;
+      }
+    };
+
+    if (document.readyState === 'complete') {
+      armIdle();
+    } else {
+      window.addEventListener('load', armIdle, { once: true });
+    }
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('load', armIdle);
+      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
+  }, [effectsOn]);
+
+  // Pause when hero leaves viewport.
+  useEffect(() => {
+    const node = rootRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') return undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry?.isIntersecting ?? true),
+      { root: null, threshold: 0.05 }
     );
-  }
+    io.observe(node);
+    return () => io.disconnect();
+  }, []);
+
+  // Pause when tab hidden.
+  useEffect(() => {
+    const onVis = () => setVisible(!document.hidden);
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
 
   return (
-    <div className="hero-stage-canvas" aria-hidden="true" data-hero-stage="threeui">
-      <Suspense
-        fallback={
-          <div className="hero-stage-fallback" aria-hidden="true" data-hero-stage="loading" />
-        }
-      >
-        <LazyErrorCatch onError={() => setFailed(true)}>
-          <EmeraldHorizonBackground />
-        </LazyErrorCatch>
-      </Suspense>
+    <div
+      ref={rootRef}
+      className="hero-stage-stack"
+      aria-hidden="true"
+      data-hero-dpr-cap={DPR_CAP}
+    >
+      <HeroPoster />
+      {shouldMount ? (
+        <div
+          className="hero-stage-canvas hero-stage-grade"
+          data-hero-stage="threeui"
+        >
+          <Suspense fallback={null}>
+            <LazyErrorCatch onError={() => setFailed(true)}>
+              <EmeraldHorizonLazy />
+            </LazyErrorCatch>
+          </Suspense>
+        </div>
+      ) : (
+        <div className="hero-stage-fallback" data-hero-stage="fallback" />
+      )}
     </div>
   );
 }
