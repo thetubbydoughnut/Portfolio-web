@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { resumeData, getResumeHref, getResumeCtaLabel } from '../data/resume';
 import '../styles/HeroSection.css';
@@ -14,6 +15,18 @@ const HeroSection = () => {
   const resumeHref = getResumeHref();
   const resumeLabel = getResumeCtaLabel(resumeHref);
   const budget = useMotionBudget();
+  // Defer portrait decode until after first paint so text owns LCP (A3.4).
+  const [showPortrait, setShowPortrait] = useState(false);
+  useEffect(() => {
+    const ric = window.requestIdleCallback;
+    let id;
+    if (typeof ric === 'function') {
+      id = ric(() => setShowPortrait(true), { timeout: 2000 });
+      return () => window.cancelIdleCallback?.(id);
+    }
+    id = window.setTimeout(() => setShowPortrait(true), 1);
+    return () => window.clearTimeout(id);
+  }, []);
 
   return (
     <PageFrame home>
@@ -47,27 +60,35 @@ const HeroSection = () => {
               </div>
             </div>
             <div className="hero-image-container">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcSet={`${profile480Avif} 480w, ${profile960Avif} 960w`}
-                  sizes="(max-width: 1023px) 480px, 960px"
+              {showPortrait ? (
+                <picture>
+                  <source
+                    type="image/avif"
+                    srcSet={`${profile480Avif} 480w, ${profile960Avif} 960w`}
+                    sizes="(max-width: 1023px) 480px, 960px"
+                  />
+                  <source
+                    type="image/webp"
+                    srcSet={`${profile480Webp} 480w, ${profile960Webp} 960w`}
+                    sizes="(max-width: 1023px) 480px, 960px"
+                  />
+                  <img
+                    src={profileFallback}
+                    alt={resumeData.profile.name}
+                    className="hero-image"
+                    width={960}
+                    height={1280}
+                    decoding="async"
+                    fetchPriority="low"
+                  />
+                </picture>
+              ) : (
+                <div
+                  className="hero-image hero-image--placeholder"
+                  role="img"
+                  aria-label={resumeData.profile.name}
                 />
-                <source
-                  type="image/webp"
-                  srcSet={`${profile480Webp} 480w, ${profile960Webp} 960w`}
-                  sizes="(max-width: 1023px) 480px, 960px"
-                />
-                <img
-                  src={profileFallback}
-                  alt={resumeData.profile.name}
-                  className="hero-image"
-                  width={960}
-                  height={1280}
-                  decoding="async"
-                  fetchPriority="low"
-                />
-              </picture>
+              )}
             </div>
           </div>
         </section>

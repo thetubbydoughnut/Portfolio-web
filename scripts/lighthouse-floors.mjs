@@ -41,35 +41,17 @@ function runOnce(url, formFactor) {
   const outDir = join(process.cwd(), 'node_modules/.cache/portfolio-lh');
   mkdirSync(outDir, { recursive: true });
   const outPath = join(outDir, `lh-${formFactor}-${Date.now()}.json`);
-  const screenEmulation =
-    formFactor === 'desktop'
-      ? {
-          mobile: false,
-          width: 1350,
-          height: 940,
-          deviceScaleFactor: 1,
-          disabled: false,
-        }
-      : {
-          mobile: true,
-          width: 412,
-          height: 823,
-          deviceScaleFactor: 1.75,
-          disabled: false,
-        };
 
+  // Use official presets so desktop does not inherit Slow-4G / 4× CPU.
+  const preset = formFactor === 'desktop' ? 'desktop' : 'perf';
   const args = [
     'lighthouse',
     url,
     '--quiet',
     '--chrome-flags=--headless --no-sandbox --disable-gpu',
+    `--preset=${preset}`,
     `--output=json`,
     `--output-path=${outPath}`,
-    `--form-factor=${formFactor}`,
-    `--screenEmulation.mobile=${screenEmulation.mobile}`,
-    `--screenEmulation.width=${screenEmulation.width}`,
-    `--screenEmulation.height=${screenEmulation.height}`,
-    `--screenEmulation.deviceScaleFactor=${screenEmulation.deviceScaleFactor}`,
     '--only-categories=performance,accessibility,best-practices,seo',
   ];
   const res = spawnSync('npx', ['--yes', ...args], {
@@ -92,6 +74,8 @@ function runOnce(url, formFactor) {
     tbtMs: audits['total-blocking-time']?.numericValue ?? NaN,
     cls: audits['cumulative-layout-shift']?.numericValue ?? NaN,
     lcpElement: audits['largest-contentful-paint-element']?.displayValue || '',
+    throttling: report.configSettings?.throttling,
+    formFactor: report.configSettings?.formFactor,
   };
 }
 
@@ -143,5 +127,9 @@ function main() {
   process.exit(rows.some((r) => !r.pass) ? 1 : 0);
 }
 
-const isDirect = process.argv[1] && process.argv[1].endsWith('lighthouse-floors.mjs');
-if (isDirect) main();
+try {
+  const self = join(process.argv[1] || '');
+  if (self.endsWith('lighthouse-floors.mjs')) main();
+} catch {
+  /* imported as library */
+}
