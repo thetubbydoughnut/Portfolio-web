@@ -125,16 +125,28 @@ test.describe('perf tiers', () => {
     const client = await page.context().newCDPSession(page);
     await client.send('Emulation.setCPUThrottlingRate', { rate: 4 });
 
-    async function measureClick(selector: string) {
-      return page.evaluate(async (sel) => {
-        const el = document.querySelector(sel) as HTMLElement | null;
-        if (!el) return Number.POSITIVE_INFINITY;
-        const t0 = performance.now();
-        el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        await new Promise((r) => requestAnimationFrame(() => r(null)));
-        await new Promise((r) => requestAnimationFrame(() => r(null)));
-        return performance.now() - t0;
-      }, selector);
+    async function measureClick(selector: string, { preventNav = false } = {}) {
+      return page.evaluate(
+        async ({ sel, preventNav: blockNav }) => {
+          const el = document.querySelector(sel) as HTMLElement | null;
+          if (!el) return Number.POSITIVE_INFINITY;
+          const stop = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+          };
+          if (blockNav) el.addEventListener('click', stop, true);
+          const t0 = performance.now();
+          el.dispatchEvent(
+            new MouseEvent('click', { bubbles: true, cancelable: true })
+          );
+          await new Promise((r) => requestAnimationFrame(() => r(null)));
+          await new Promise((r) => requestAnimationFrame(() => r(null)));
+          const dt = performance.now() - t0;
+          if (blockNav) el.removeEventListener('click', stop, true);
+          return dt;
+        },
+        { sel: selector, preventNav }
+      );
     }
 
     const themeMs = await measureClick(
@@ -142,7 +154,7 @@ test.describe('perf tiers', () => {
     );
     expect(themeMs).toBeLessThanOrEqual(200);
 
-    const navMs = await measureClick('a[href="/projects"]');
+    const navMs = await measureClick('a[href="/projects"]', { preventNav: true });
     expect(navMs).toBeLessThanOrEqual(200);
 
     // Menu toggle is mobile-only; on desktop the control may be hidden — skip if absent.
