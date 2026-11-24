@@ -71,9 +71,9 @@ describe('R-1/AI-1: App.css must not fight PageFrame / hero cascade (AC-25, AC-9
   it('computed: hero summary uses muted token, not legacy #4b5563; h1 not legacy 3rem', () => {
     loadCascadeSheets();
     const { h1, p, section } = mountFrameAndHero();
-    // #4b5563 → rgb(75, 85, 99); --color-text-muted dark → #A8A397 → rgb(168, 163, 151)
+    // #4b5563 → rgb(75, 85, 99); --color-text-muted dark (A3.3) → #B3AD9F
     expect(getComputedStyle(p).color).not.toBe('rgb(75, 85, 99)');
-    expect(getComputedStyle(p).color).toBe('rgb(168, 163, 151)');
+    expect(getComputedStyle(p).color).toBe('rgb(179, 173, 159)');
     // Legacy App.css `.hero-section h1 { font-size: 3rem }` → 48px; hero-name clamp tops out higher.
     expect(getComputedStyle(h1).fontSize).not.toBe('48px');
     expect(getComputedStyle(section).textAlign).not.toBe('center');

@@ -152,8 +152,11 @@
   align-items: center;
 }
 
-.nav-link.active,
 .nav-link:hover {
+  color: var(--color-link);
+}
+
+.nav-link.active {
   color: var(--color-accent);
 }
 
@@ -164,7 +167,7 @@
 
 .resume-download {
   white-space: nowrap;
-  color: var(--color-accent);
+  color: var(--color-link);
   font-weight: 600;
 }
 
@@ -226,7 +229,7 @@
 }
 
 .social-link:hover {
-  color: var(--color-accent);
+  color: var(--color-link);
 }
 
 @media (max-width: 1023px) {
