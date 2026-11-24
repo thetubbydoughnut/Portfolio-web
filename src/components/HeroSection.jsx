@@ -17,17 +17,13 @@ const HeroSection = () => {
   const budget = useMotionBudget();
   const effectsOn = budget === 'effects-on';
 
-  const typeMotion = effectsOn
-    ? {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        transition: { duration: 0.5, ease: 'easeOut' },
-      }
-    : {
-        initial: false,
-        animate: { opacity: 1 },
-        transition: { duration: 0 },
-      };
+  // LCP is the hero name — never start at opacity 0 (A3.4 LCP ≤ 2.5s).
+  const typeMotion = {
+    initial: false,
+    animate: { opacity: 1 },
+    transition: { duration: 0 },
+  };
+  void effectsOn;
 
   return (
     <PageFrame home>
