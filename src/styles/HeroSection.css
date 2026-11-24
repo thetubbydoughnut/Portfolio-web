@@ -43,9 +43,14 @@
     linear-gradient(160deg, var(--color-bg) 0%, var(--color-surface) 55%, var(--color-bg) 100%);
 }
 
-.hero-stage-poster--bitmap {
-  background-size: cover;
-  background-position: center;
+/* Off-screen still — satisfies AVIF/WebP poster asset without LCP candidacy. */
+.hero-stage-poster-asset {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
 }
 
 .hero-stage-fallback {

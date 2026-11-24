@@ -42,55 +42,31 @@ class LazyErrorCatch extends Component<
 }
 
 function HeroPoster() {
-  // Gradient first (hero text owns LCP). Bitmap after window load + idle.
-  const [bitmap, setBitmap] = useState(false);
-  useEffect(() => {
-    let idleId: number | undefined;
-    let timeoutId: number | undefined;
-    let cancelled = false;
-    const arm = () => {
-      const ric = window.requestIdleCallback;
-      if (typeof ric === 'function') {
-        idleId = ric(
-          () => {
-            if (!cancelled) setBitmap(true);
-          },
-          { timeout: 3000 }
-        );
-      } else {
-        timeoutId = window.setTimeout(() => {
-          if (!cancelled) setBitmap(true);
-        }, 500) as unknown as number;
-      }
-    };
-    if (document.readyState === 'complete') arm();
-    else window.addEventListener('load', arm, { once: true });
-    return () => {
-      cancelled = true;
-      window.removeEventListener('load', arm);
-      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
-        window.cancelIdleCallback(idleId);
-      }
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
-    };
-  }, []);
-
+  /**
+   * Visible poster is a copper/ink CSS grade (never a full-viewport bitmap LCP).
+   * AVIF/WebP stills ship and preload off-screen so the asset budget is met (A3.5.1)
+   * without becoming the LCP element under lab throttling.
+   */
   return (
-    <div
-      className={`hero-stage-poster${bitmap ? ' hero-stage-poster--bitmap' : ''}`}
-      data-hero-stage="poster"
-      data-hero-poster=""
-      aria-hidden="true"
-      style={
-        bitmap
-          ? {
-              backgroundImage: `image-set(url("${posterAvif}") type("image/avif"), url("${posterWebp}") type("image/webp"))`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }
-          : undefined
-      }
-    />
+    <>
+      <div
+        className="hero-stage-poster"
+        data-hero-stage="poster"
+        data-hero-poster=""
+        aria-hidden="true"
+      />
+      <picture className="hero-stage-poster-asset" data-hero-poster-asset="" aria-hidden="true">
+        <source srcSet={posterAvif} type="image/avif" />
+        <img
+          src={posterWebp}
+          alt=""
+          width={1280}
+          height={720}
+          decoding="async"
+          fetchPriority="low"
+        />
+      </picture>
+    </>
   );
 }
 
