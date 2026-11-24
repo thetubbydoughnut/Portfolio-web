@@ -42,13 +42,37 @@ class LazyErrorCatch extends Component<
 }
 
 function HeroPoster() {
-  // Paint a CSS gradient first so hero text can be LCP; attach the bitmap after.
+  // Gradient first (hero text owns LCP). Bitmap after window load + idle.
   const [bitmap, setBitmap] = useState(false);
   useEffect(() => {
-    const id = window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => setBitmap(true));
-    });
-    return () => window.cancelAnimationFrame(id);
+    let idleId: number | undefined;
+    let timeoutId: number | undefined;
+    let cancelled = false;
+    const arm = () => {
+      const ric = window.requestIdleCallback;
+      if (typeof ric === 'function') {
+        idleId = ric(
+          () => {
+            if (!cancelled) setBitmap(true);
+          },
+          { timeout: 3000 }
+        );
+      } else {
+        timeoutId = window.setTimeout(() => {
+          if (!cancelled) setBitmap(true);
+        }, 500) as unknown as number;
+      }
+    };
+    if (document.readyState === 'complete') arm();
+    else window.addEventListener('load', arm, { once: true });
+    return () => {
+      cancelled = true;
+      window.removeEventListener('load', arm);
+      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
