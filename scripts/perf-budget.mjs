@@ -10,7 +10,7 @@ import { join, basename } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '..');
+const ROOT = process.cwd();
 const DIST = join(ROOT, 'dist');
 
 /** A3.4 budgets (kB gzip). Do not lower without planner sign-off. */
@@ -150,8 +150,9 @@ function main() {
   process.exit(failed ? 1 : 0);
 }
 
-const isDirect =
-  process.argv[1] &&
-  fileURLToPath(import.meta.url) === process.argv[1];
-
-if (isDirect) main();
+try {
+  const self = fileURLToPath(import.meta.url);
+  if (process.argv[1] && self === process.argv[1]) main();
+} catch {
+  /* vitest / non-file URL loaders import the module for helpers only */
+}
