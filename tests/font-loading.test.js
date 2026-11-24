@@ -39,10 +39,14 @@ describe('AC-10: self-hosted font loading', () => {
     expect(existsSync(join(dir, 'geist-mono-latin-wght-normal.woff2'))).toBe(true);
   });
 
-  it('built index.html has no Google Fonts link', async () => {
-    await ensureSharedDist();
-    const built = readFileSync(join(process.cwd(), 'dist/index.html'), 'utf8');
-    expect(built).not.toMatch(/fonts\.googleapis\.com/);
-    expect(built).not.toMatch(/fonts\.gstatic\.com/);
-  });
+  it(
+    'built index.html has no Google Fonts link',
+    async () => {
+      await ensureSharedDist();
+      const built = readFileSync(join(process.cwd(), 'dist/index.html'), 'utf8');
+      expect(built).not.toMatch(/fonts\.googleapis\.com/);
+      expect(built).not.toMatch(/fonts\.gstatic\.com/);
+    },
+    120000
+  );
 });

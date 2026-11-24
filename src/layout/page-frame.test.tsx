@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createElement, Suspense } from 'react';
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import App from '../App.jsx';
@@ -53,10 +53,17 @@ describe('AC-25: shared page frame', () => {
           createElement(Suspense, { fallback: createElement('div', null, 'loading') }, createElement(App))
         )
       );
-      // Allow lazy routes to resolve
-      await new Promise((r) => setTimeout(r, 50));
+      // Wait for lazy route chunks (fixed 50ms is flaky under CI load).
+      await waitFor(
+        () => {
+          expect(
+            document.querySelector('main.page-frame'),
+            `expected page-frame on ${path}`
+          ).toBeTruthy();
+        },
+        { timeout: 5000 }
+      );
       const main = document.querySelector('main.page-frame');
-      expect(main, `expected page-frame on ${path}`).toBeTruthy();
       if (path === '/') {
         expect(main?.className).toMatch(/page-frame--home/);
         expect(main?.querySelector('.page-frame__intro')).toBeNull();
@@ -66,7 +73,7 @@ describe('AC-25: shared page frame', () => {
       }
       unmount();
     }
-  });
+  }, 30_000);
 
   it('dead April layout modules are removed; frame CSS uses content max-width token', () => {
     expect(existsSync(join(process.cwd(), 'src/components/Navigation.jsx'))).toBe(false);

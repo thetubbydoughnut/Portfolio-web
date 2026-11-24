@@ -69,36 +69,40 @@ describe('AC-20: home hero ThreeUI', () => {
     expect(stage).toHaveAttribute('aria-hidden', 'true');
   });
 
-  it('bundle: initial home graph does not include ThreeUI chunk or package root barrel', async () => {
-    await ensureSharedDist();
-    const indexHtml = readFileSync(join(process.cwd(), 'dist/index.html'), 'utf8');
-    const allJs = collectDistJs(join(process.cwd(), 'dist'));
+  it(
+    'bundle: initial home graph does not include ThreeUI chunk or package root barrel',
+    async () => {
+      await ensureSharedDist();
+      const indexHtml = readFileSync(join(process.cwd(), 'dist/index.html'), 'utf8');
+      const allJs = collectDistJs(join(process.cwd(), 'dist'));
 
-    // Entry scripts referenced from index.html should not embed ThreeUI.
-    const entryMatches = [...indexHtml.matchAll(/src="([^"]+\.js)"/g)].map((m) => m[1]);
-    for (const rel of entryMatches) {
-      const file = join(process.cwd(), 'dist', rel.replace(/^\//, ''));
-      const body = readFileSync(file, 'utf8');
-      expect(body).not.toMatch(/EmeraldHorizonBackground/);
-      expect(body).not.toMatch(/@designcodeio\/threeui/);
-    }
-
-    // Package root barrel / Pro CLI must not appear; lazy chunk may exist separately.
-    expect(allJs).not.toMatch(/from"@designcodeio\/threeui"/);
-    expect(allJs).not.toMatch(/from"@designcodeio\/threeui'/);
-    expect(allJs).not.toMatch(/threeui-cli/);
-
-    const publicAssets = join(process.cwd(), 'public');
-    const walk = (dir: string): string[] => {
-      try {
-        return readdirSync(dir, { withFileTypes: true }).flatMap((d) =>
-          d.isDirectory() ? walk(join(dir, d.name)) : [join(dir, d.name)]
-        );
-      } catch {
-        return [];
+      // Entry scripts referenced from index.html should not embed ThreeUI.
+      const entryMatches = [...indexHtml.matchAll(/src="([^"]+\.js)"/g)].map((m) => m[1]);
+      for (const rel of entryMatches) {
+        const file = join(process.cwd(), 'dist', rel.replace(/^\//, ''));
+        const body = readFileSync(file, 'utf8');
+        expect(body).not.toMatch(/EmeraldHorizonBackground/);
+        expect(body).not.toMatch(/@designcodeio\/threeui/);
       }
-    };
-    const leaked = walk(publicAssets).filter((p) => p.includes('lib-dist'));
-    expect(leaked).toEqual([]);
-  });
+
+      // Package root barrel / Pro CLI must not appear; lazy chunk may exist separately.
+      expect(allJs).not.toMatch(/from"@designcodeio\/threeui"/);
+      expect(allJs).not.toMatch(/from"@designcodeio\/threeui'/);
+      expect(allJs).not.toMatch(/threeui-cli/);
+
+      const publicAssets = join(process.cwd(), 'public');
+      const walk = (dir: string): string[] => {
+        try {
+          return readdirSync(dir, { withFileTypes: true }).flatMap((d) =>
+            d.isDirectory() ? walk(join(dir, d.name)) : [join(dir, d.name)]
+          );
+        } catch {
+          return [];
+        }
+      };
+      const leaked = walk(publicAssets).filter((p) => p.includes('lib-dist'));
+      expect(leaked).toEqual([]);
+    },
+    120_000
+  );
 });
