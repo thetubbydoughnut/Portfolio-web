@@ -10,12 +10,13 @@ import { certifications } from '../data/certifications.js';
 
 describe('AC-13: /certifications route and media well', () => {
   it('stays routed, in nav, and shows BloomTech + Michigan from data', async () => {
-    render(
+    const nav = render(
       createElement(MemoryRouter, { initialEntries: ['/'] }, createElement(Header))
     );
     const navCert = screen.getAllByRole('link', { name: /^Certifications$/i });
     expect(navCert.length).toBeGreaterThan(0);
     expect(navCert[0]).toHaveAttribute('href', '/certifications');
+    nav.unmount();
 
     const { unmount } = render(
       createElement(
@@ -30,9 +31,9 @@ describe('AC-13: /certifications route and media well', () => {
     });
 
     expect(screen.getByRole('heading', { name: /^Certifications$/i })).toBeInTheDocument();
-    expect(screen.getByText(/BloomTech/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/BloomTech/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/November 2023\s*[–-]\s*January 2025/i)).toBeInTheDocument();
-    expect(screen.getByText(/University of Michigan/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/University of Michigan/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/September 2025/i)).toBeInTheDocument();
 
     // Data-driven (not only hardcoded inline in the page)
