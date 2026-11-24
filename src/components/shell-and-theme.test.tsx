@@ -3,6 +3,8 @@ import { createElement } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import Header from './Header.jsx';
 import { THEME_STORAGE_KEY } from '../theme/theme';
 import { getResumeCtaLabel } from '../data/resume.js';
@@ -79,15 +81,39 @@ describe('AC-7: shell and theme', () => {
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
   });
 
-  it('mobile menu toggle discloses nav at narrow viewports', async () => {
+  it('mobile menu is a closed disclosure until opened; Escape closes it', async () => {
     const user = userEvent.setup();
     renderShell();
     const menuBtn = screen.getByRole('button', { name: /toggle navigation menu/i });
-    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
-    await user.click(menuBtn);
-    expect(menuBtn).toHaveAttribute('aria-expanded', 'true');
     const nav = document.getElementById(menuBtn.getAttribute('aria-controls') || '');
     expect(nav).toBeTruthy();
+
+    // Closed on load: not .active, aria-expanded false
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
+    expect(nav?.classList.contains('active')).toBe(false);
+
+    await user.click(menuBtn);
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'true');
+    expect(nav?.classList.contains('active')).toBe(true);
     expect(within(nav as HTMLElement).getAllByRole('link').length).toBeGreaterThan(0);
+
+    await user.keyboard('{Escape}');
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
+    expect(nav?.classList.contains('active')).toBe(false);
+
+    // Toggle open then close via button also leaves panel closed
+    await user.click(menuBtn);
+    expect(nav?.classList.contains('active')).toBe(true);
+    await user.click(menuBtn);
+    expect(menuBtn).toHaveAttribute('aria-expanded', 'false');
+    expect(nav?.classList.contains('active')).toBe(false);
+  });
+
+  it('App.css no longer forces .nav-links { display: flex } (F1 cascade)', () => {
+    const appCss = readFileSync(join(process.cwd(), 'src/App.css'), 'utf8');
+    expect(appCss).not.toMatch(/\.nav-links\s*\{[^}]*display\s*:\s*flex/s);
+    const headerCss = readFileSync(join(process.cwd(), 'src/styles/Header.css'), 'utf8');
+    expect(headerCss).toMatch(/header\.header\s+\.nav-links:not\(\.active\)/);
+    expect(headerCss).toMatch(/display:\s*none\s*!important/);
   });
 });

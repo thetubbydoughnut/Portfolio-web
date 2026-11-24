@@ -234,8 +234,17 @@
     display: flex;
   }
 
-  .nav-links {
-    display: none;
+  /* Closed by default; !important beats leftover equal-specificity rules. */
+  header.header .nav-links:not(.active) {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  header.header .nav-links.active {
+    display: flex !important;
+    visibility: visible;
+    pointer-events: auto;
     position: absolute;
     top: var(--header-height);
     left: 0;
@@ -247,10 +256,6 @@
     backdrop-filter: blur(var(--glass-blur));
     border-bottom: 1px solid var(--glass-border);
     gap: var(--space-3);
-  }
-
-  .nav-links.active {
-    display: flex;
   }
 
   .desktop-nav {
