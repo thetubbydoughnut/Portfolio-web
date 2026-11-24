@@ -60,7 +60,6 @@ function stubEnv(opts: TierOpts) {
   if (cores === undefined) {
     // omit
     try {
-      // @ts-expect-error allow delete
       delete (navigator as { hardwareConcurrency?: number }).hardwareConcurrency;
     } catch {
       Object.defineProperty(navigator, 'hardwareConcurrency', {
