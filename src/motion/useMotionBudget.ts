@@ -15,6 +15,13 @@ export function useMotionBudget(): MotionBudget {
 
   useEffect(() => {
     setBudget(evaluateMotionBudget());
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return undefined;
+    }
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => setBudget(evaluateMotionBudget());
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
   }, []);
 
   return budget;
