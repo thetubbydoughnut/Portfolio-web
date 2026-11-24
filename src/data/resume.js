@@ -69,6 +69,7 @@ export const resumeData = {
       company: "Continental Resources",
       location: "Oklahoma City, OK",
       period: "July 2026 – November 2026",
+      stack: "TypeScript, NestJS, Excel, Playwright, Vitest, Azure",
       description: [
         "Modernized internal land and asset management infrastructure by migrating mission-critical business workflows from a legacy low-code platform into a scalable TypeScript and NestJS monorepo.",
         "Engineered parity-focused core features across well search, well overview, ownership data entry, operator/interest details, and Quorum/SAP enterprise data integrations.",
@@ -84,6 +85,7 @@ export const resumeData = {
       url: "https://lpl3d.com",
       location: "Oklahoma City, OK",
       period: "October 2025 – Present",
+      stack: "React, TypeScript, Node.js, PostgreSQL, Stripe, EasyPost, n8n",
       description: [
         "Architected, built, and launched an end-to-end commercial full-stack e-commerce platform using React, TypeScript, Node.js, and PostgreSQL, maintaining 99.9% production availability across 25 dynamic routes.",
         "Designed and implemented a resilient 3-tier state management architecture combining TanStack Query with Context API, eliminating asynchronous race conditions between Stripe payment webhooks, relational database transactions, and client-side UI states.",
@@ -96,6 +98,7 @@ export const resumeData = {
       company: "Tatco Construction",
       location: "Remote / Oklahoma City, OK",
       period: "June 2025 – October 2025",
+      stack: "Python, FastAPI, PostgreSQL, TypeScript, React, Vite, Jest",
       description: [
         "Engineered BOLT 2.0, a custom full-stack internal CRM and operational project management platform, designing and implementing over 100 high-performance RESTful API endpoints using Python, FastAPI, and PostgreSQL.",
         "Translated complex Figma component hierarchies and user flows into a responsive, accessible client UI with TypeScript, React, and Vite.",
@@ -107,6 +110,7 @@ export const resumeData = {
       company: "American Dog Society",
       location: "Remote",
       period: "January 2025 – June 2025",
+      stack: "React, Design Systems, Accessibility",
       description: [
         "Spearheaded the frontend unification of two legacy web codebases into a single cohesive member portal.",
         "Built a shared, accessible Design System component library, improving cross-platform consistency and significantly reducing technical debt for the engineering team.",
