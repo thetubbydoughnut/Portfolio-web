@@ -120,14 +120,11 @@ describe('AC-22: inner pages glass + SplitText headings', () => {
         children: createElement('div', null, 'content'),
       })
     );
-    const heading = screen.getByRole('heading', { name: /^Skills$/i });
-    expect(heading).toBeInTheDocument();
-    // SplitText parent marks animated headings
-    expect(
-      heading.closest('[data-split-text]') ||
-        heading.getAttribute('data-split-text') !== null ||
-        heading.className.includes('split-parent')
-    ).toBeTruthy();
+    // SplitText loads async (keeps gsap off the initial-route graph)
+    await waitFor(() => {
+      const heading = screen.getByRole('heading', { name: /^Skills$/i });
+      expect(heading.className.includes('split-parent')).toBe(true);
+    });
   });
 
   it('under fallback budget, headings render as plain text (no stagger)', async () => {

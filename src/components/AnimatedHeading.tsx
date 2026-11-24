@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties, type ComponentType } from 'react';
 import { useMotionBudget } from '../motion/useMotionBudget';
-import SplitText from './react-bits/SplitText';
+import type { SplitTextProps } from './react-bits/SplitText';
 
 export type AnimatedHeadingProps = {
   text: string;
@@ -12,6 +12,7 @@ export type AnimatedHeadingProps = {
 /**
  * AC-22: section headings use vendored React Bits SplitText when effects-on;
  * under the motion fallback budget, render plain accessible text (no stagger).
+ * SplitText/gsap stay off the initial-route graph via dynamic import.
  */
 export function AnimatedHeading({
   text,
@@ -20,14 +21,30 @@ export function AnimatedHeading({
   textAlign = 'left',
 }: AnimatedHeadingProps) {
   const budget = useMotionBudget();
+  const [Split, setSplit] = useState<ComponentType<SplitTextProps> | null>(null);
 
-  if (budget !== 'effects-on') {
-    const Tag = as;
+  useEffect(() => {
+    if (budget !== 'effects-on') {
+      setSplit(null);
+      return undefined;
+    }
+    let cancelled = false;
+    import('./react-bits/SplitText').then((mod) => {
+      if (!cancelled) setSplit(() => mod.default);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [budget]);
+
+  const Tag = as;
+
+  if (budget !== 'effects-on' || !Split) {
     return <Tag className={className}>{text}</Tag>;
   }
 
   return (
-    <SplitText
+    <Split
       text={text}
       className={className}
       tag={as}
