@@ -45,11 +45,18 @@ test.describe('perf tiers', () => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="home-hero"]');
 
-    // Immediately after navigation, threeui stage should not be present yet
-    // (idle mount). Give a tiny tick then assert eventually mounts.
-    await page.waitForTimeout(50);
-    await page.waitForSelector('[data-hero-stage="threeui"]', {
-      timeout: 8000,
+    // Idle mount: threeui wrapper must not exist before load completes.
+    const early = await page.evaluate(() => ({
+      ready: document.readyState,
+      three: Boolean(document.querySelector('[data-hero-stage="threeui"]')),
+    }));
+    if (early.ready !== 'complete') {
+      expect(early.three).toBe(false);
+    }
+
+    // Wrapper can appear (Suspense) before the lazy canvas; wait for the canvas.
+    await page.waitForSelector('[data-hero-stage="threeui"] canvas', {
+      timeout: 10000,
     });
 
     const dprCap = await page.evaluate(() => {
