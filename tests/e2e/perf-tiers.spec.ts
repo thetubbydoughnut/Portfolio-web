@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 /**
  * AC-31: mobile profile must not request ThreeUI; desktop may after load+idle.
- * Also samples rAF deltas and a coarse INP proxy for theme toggle / menu / nav.
+ * INP proxy is its own test so the waived rAF assert cannot hide it (QA A-3 / Fix-4).
  */
 
 test.describe('perf tiers', () => {
@@ -17,7 +17,6 @@ test.describe('perf tiers', () => {
       }
     });
     await page.setViewportSize({ width: 375, height: 812 });
-    // Coarse pointer / mobile-like
     await page.emulateMedia({ media: 'screen' });
     await page.goto('/');
     await page.waitForSelector('[data-testid="home-hero"]');
@@ -45,7 +44,6 @@ test.describe('perf tiers', () => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="home-hero"]');
 
-    // Idle mount: threeui wrapper must not exist before load completes.
     const early = await page.evaluate(() => ({
       ready: document.readyState,
       three: Boolean(document.querySelector('[data-hero-stage="threeui"]')),
@@ -54,7 +52,6 @@ test.describe('perf tiers', () => {
       expect(early.three).toBe(false);
     }
 
-    // Wrapper can appear (Suspense) before the lazy canvas; wait for the canvas.
     await page.waitForSelector('[data-hero-stage="threeui"] canvas', {
       timeout: 10000,
     });
@@ -65,7 +62,6 @@ test.describe('perf tiers', () => {
       ) as HTMLCanvasElement | null;
       if (!canvas) return null;
       const rect = canvas.getBoundingClientRect();
-      // Backing store / CSS pixel ratio proxy
       const ratio = canvas.width / Math.max(1, rect.width);
       return ratio;
     });
@@ -73,9 +69,49 @@ test.describe('perf tiers', () => {
     expect(dprCap!).toBeLessThanOrEqual(1.5 + 0.05);
   });
 
-  test('desktop: rAF p95 ≤ 20ms over 5s after mount; INP proxy ≤ 200ms', async ({
-    page,
-  }) => {
+  // Waiver: Cameron / plan.md Amendment 3 (QA cycle-2 t1174s4945) — desktop
+  // rAF p95 ≤20 ms lab miss is accepted. Keep the assert but skip so it cannot
+  // hide the INP proxy test below.
+  test.skip(
+    'desktop: rAF p95 ≤ 20ms over 5s after mount (WAIVED — plan.md Amendment 3 / t1174s4945)',
+    async ({ page }) => {
+      await page.addInitScript(() => {
+        Object.defineProperty(navigator, 'hardwareConcurrency', {
+          get: () => 8,
+        });
+        Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
+      });
+      await page.setViewportSize({ width: 1280, height: 800 });
+      await page.goto('/');
+      await page.waitForSelector('[data-hero-stage="threeui"] canvas', {
+        timeout: 10000,
+      });
+
+      const frameStats = await page.evaluate(async () => {
+        const deltas: number[] = [];
+        let last = performance.now();
+        await new Promise<void>((resolve) => {
+          const start = performance.now();
+          const tick = (now: number) => {
+            deltas.push(now - last);
+            last = now;
+            if (now - start >= 5000) resolve();
+            else requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+        const sorted = [...deltas].sort((a, b) => a - b);
+        const p95 =
+          sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))];
+        const longTasks = deltas.filter((d) => d > 50).length;
+        return { p95, longTasks, samples: deltas.length };
+      });
+      expect(frameStats.p95).toBeLessThanOrEqual(20);
+      expect(frameStats.longTasks).toBeLessThanOrEqual(1);
+    }
+  );
+
+  test('desktop INP proxy: theme / nav / menu ≤ 200ms at 4× CPU', async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, 'hardwareConcurrency', {
         get: () => 8,
@@ -83,40 +119,16 @@ test.describe('perf tiers', () => {
       Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
     });
     await page.setViewportSize({ width: 1280, height: 800 });
-
     await page.goto('/');
-    await page.waitForSelector('[data-hero-stage="threeui"]', { timeout: 10000 });
+    await page.waitForSelector('[data-testid="home-hero"]');
 
-    // A3.4 frame-time sample is unthrottled lab rAF; 4× CPU applies to INP only.
-    const frameStats = await page.evaluate(async () => {
-      const deltas: number[] = [];
-      let last = performance.now();
-      await new Promise<void>((resolve) => {
-        const start = performance.now();
-        const tick = (now: number) => {
-          deltas.push(now - last);
-          last = now;
-          if (now - start >= 5000) resolve();
-          else requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-      });
-      const sorted = [...deltas].sort((a, b) => a - b);
-      const p95 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))];
-      const longTasks = deltas.filter((d) => d > 50).length;
-      return { p95, longTasks, samples: deltas.length };
-    });
-    expect(frameStats.p95).toBeLessThanOrEqual(20);
-    expect(frameStats.longTasks).toBeLessThanOrEqual(1);
-
-    // INP proxy (A3.4): theme toggle / nav click under 4× CPU throttle
     const client = await page.context().newCDPSession(page);
     await client.send('Emulation.setCPUThrottlingRate', { rate: 4 });
 
     async function measureClick(selector: string) {
       return page.evaluate(async (sel) => {
         const el = document.querySelector(sel) as HTMLElement | null;
-        if (!el) return 0;
+        if (!el) return Number.POSITIVE_INFINITY;
         const t0 = performance.now();
         el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         await new Promise((r) => requestAnimationFrame(() => r(null)));
@@ -132,5 +144,12 @@ test.describe('perf tiers', () => {
 
     const navMs = await measureClick('a[href="/projects"]');
     expect(navMs).toBeLessThanOrEqual(200);
+
+    // Menu toggle is mobile-only; on desktop the control may be hidden — skip if absent.
+    const menuVisible = await page.locator('.menu-toggle').isVisible();
+    if (menuVisible) {
+      const menuMs = await measureClick('.menu-toggle');
+      expect(menuMs).toBeLessThanOrEqual(200);
+    }
   });
 });
