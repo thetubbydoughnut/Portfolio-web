@@ -31,12 +31,19 @@ describe('AC-21: shell Glisse glass controls', () => {
   });
 
   it('imports glisse Glass/Button/TabBar in the shell source', () => {
-    const src = readFileSync(join(process.cwd(), 'src/components/Header.jsx'), 'utf8');
-    expect(src).toMatch(/from ['"]glisse['"]/);
-    expect(src).toMatch(/\bGlass\b/);
-    expect(src).toMatch(/\bButton\b/);
-    expect(src).toMatch(/\bTabBar\b/);
-    expect(src).not.toMatch(/glisse\/demo/i);
+    const chrome = readFileSync(
+      join(process.cwd(), 'src/components/GlisseChrome.jsx'),
+      'utf8'
+    );
+    const header = readFileSync(join(process.cwd(), 'src/components/Header.jsx'), 'utf8');
+    expect(chrome).toMatch(/from ['"]glisse['"]/);
+    expect(chrome).toMatch(/\bGlass\b/);
+    expect(chrome).toMatch(/\bButton\b/);
+    expect(chrome).toMatch(/\bTabBar\b/);
+    expect(chrome).not.toMatch(/glisse\/demo/i);
+    // A3.5.6: glisse stays off the static Header graph (dynamic import only).
+    expect(header).toMatch(/import\(['"]\.\/GlisseChrome/);
+    expect(header).not.toMatch(/from ['"]glisse['"]/);
   });
 
   it('keeps all primary routes under glass/static shell', () => {

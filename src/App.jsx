@@ -1,10 +1,10 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import Layout from './components/Layout';
 import Header from './components/Header';
 import PageTransition from './components/PageTransition';
 import ErrorBoundary from './components/ErrorBoundary';
+import { useMotionBudget } from './motion/useMotionBudget';
 import './App.css';
 
 // Lazy load pages
@@ -25,51 +25,91 @@ const Loading = () => (
 
 function App() {
   const location = useLocation();
+  const budget = useMotionBudget();
+  const effectsOn = budget === 'effects-on';
+  const [Presence, setPresence] = useState(null);
+
+  useEffect(() => {
+    if (!effectsOn) {
+      setPresence(null);
+      return undefined;
+    }
+    let cancelled = false;
+    import('./components/MotionPresence.jsx').then((mod) => {
+      if (!cancelled) setPresence(() => mod.default);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [effectsOn]);
+
+  const routes = (
+    <Routes location={location} key={location.pathname}>
+      <Route
+        path="/"
+        element={
+          <PageTransition>
+            <HeroSection />
+          </PageTransition>
+        }
+      />
+      <Route
+        path="/projects"
+        element={
+          <PageTransition>
+            <Projects />
+          </PageTransition>
+        }
+      />
+      <Route
+        path="/skills"
+        element={
+          <PageTransition>
+            <Skills />
+          </PageTransition>
+        }
+      />
+      <Route
+        path="/experience"
+        element={
+          <PageTransition>
+            <Experience />
+          </PageTransition>
+        }
+      />
+      <Route
+        path="/certifications"
+        element={
+          <PageTransition>
+            <Certifications />
+          </PageTransition>
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <PageTransition>
+            <Contact />
+          </PageTransition>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <PageTransition>
+            <NotFound />
+          </PageTransition>
+        }
+      />
+    </Routes>
+  );
 
   return (
     <ErrorBoundary>
       <Layout>
         <Header />
         <Suspense fallback={<Loading />}>
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={
-                <PageTransition>
-                  <HeroSection />
-                </PageTransition>
-              } />
-              <Route path="/projects" element={
-                <PageTransition>
-                  <Projects />
-                </PageTransition>
-              } />
-              <Route path="/skills" element={
-                <PageTransition>
-                  <Skills />
-                </PageTransition>
-              } />
-              <Route path="/experience" element={
-                <PageTransition>
-                  <Experience />
-                </PageTransition>
-              } />
-              <Route path="/certifications" element={
-                <PageTransition>
-                  <Certifications />
-                </PageTransition>
-              } />
-              <Route path="/contact" element={
-                <PageTransition>
-                  <Contact />
-                </PageTransition>
-              } />
-              <Route path="*" element={
-                <PageTransition>
-                  <NotFound />
-                </PageTransition>
-              } />
-            </Routes>
-          </AnimatePresence>
+          {Presence ? <Presence>{routes}</Presence> : routes}
         </Suspense>
       </Layout>
     </ErrorBoundary>

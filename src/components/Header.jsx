@@ -1,7 +1,6 @@
 import { useState, useEffect, useId, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
-import { Glass, Button, TabBar } from 'glisse';
 import profileHeaderImage from '../assets/images/cameron-profile-header.webp';
 import { resumeData, getResumeHref, getResumeCtaLabel } from '../data/resume';
 import resumePreview from '../assets/certs-and-resume/Cameron-Graham-Resume.webp';
@@ -30,6 +29,7 @@ const Header = () => {
   const resumeHref = getResumeHref();
   const resumeLabel = getResumeCtaLabel(resumeHref);
   const effectsOn = budget === 'effects-on';
+  const [glisseChrome, setGlisseChrome] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,16 +55,22 @@ const Header = () => {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isMenuOpen]);
 
-  // A3.5.6: Glisse CSS only on effects-on (keeps initial-route CSS on budget).
+  // A3.5.6: Glisse JS+CSS only on effects-on (keeps initial-route gzip on budget).
   useEffect(() => {
-    if (!effectsOn) return undefined;
+    if (!effectsOn) {
+      setGlisseChrome(null);
+      return undefined;
+    }
     let cancelled = false;
-    import('glisse/styles.css').catch(() => {
-      /* non-fatal: static shell still works */
-    });
+    Promise.all([import('./GlisseChrome.jsx'), import('glisse/styles.css')])
+      .then(([mod]) => {
+        if (!cancelled) setGlisseChrome(mod);
+      })
+      .catch(() => {
+        /* non-fatal: static shell still works */
+      });
     return () => {
       cancelled = true;
-      void cancelled;
     };
   }, [effectsOn]);
 
@@ -76,6 +82,8 @@ const Header = () => {
     )?.value ?? '/';
 
   const glassClass = effectsOn ? 'shell-glass shell-glass--live' : 'shell-glass shell-glass--static';
+  const GlisseNavBar = glisseChrome?.GlisseNavBar;
+  const GlisseThemeButton = glisseChrome?.GlisseThemeButton;
 
   return (
     <>
@@ -122,17 +130,14 @@ const Header = () => {
             aria-label="Primary"
           >
             <div className="nav-glass-wrap desktop-nav">
-              {effectsOn ? (
-                <Glass className="nav-glisse-bar" style={{ borderRadius: 'var(--radius-glass)' }}>
-                  <TabBar
-                    aria-label="Primary"
-                    items={NAV_ITEMS.map(({ value, label }) => ({ value, label }))}
-                    value={activeNav}
-                    onValueChange={(value) => {
-                      if (value) navigate(value);
-                    }}
-                  />
-                </Glass>
+              {effectsOn && GlisseNavBar ? (
+                <GlisseNavBar
+                  items={NAV_ITEMS.map(({ value, label }) => ({ value, label }))}
+                  value={activeNav}
+                  onValueChange={(value) => {
+                    if (value) navigate(value);
+                  }}
+                />
               ) : (
                 <ul className="nav-list-static">
                   {NAV_ITEMS.map(({ value, label }) => (
@@ -187,15 +192,11 @@ const Header = () => {
             </div>
 
             <div className="theme-toggle-wrap">
-              {effectsOn ? (
-                <Button
-                  type="button"
-                  variant="glass"
-                  aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-                  onClick={() => toggleTheme()}
-                >
-                  {theme === 'dark' ? 'Light' : 'Dark'}
-                </Button>
+              {effectsOn && GlisseThemeButton ? (
+                <GlisseThemeButton
+                  theme={theme}
+                  onToggle={() => toggleTheme()}
+                />
               ) : (
                 <button
                   type="button"
