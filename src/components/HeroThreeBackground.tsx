@@ -13,6 +13,7 @@ import posterAvif from '../assets/images/hero-poster.avif';
 
 const EmeraldHorizonLazy = lazy(() => import('./EmeraldHorizonLazy'));
 
+/** A3.5.3: package hardcodes min(dpr, 2) with no DPR prop — patch window.devicePixelRatio. */
 const DPR_CAP = 1.5;
 
 type HeroThreeBackgroundProps = {

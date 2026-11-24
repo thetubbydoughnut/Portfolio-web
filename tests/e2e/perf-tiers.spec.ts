@@ -76,13 +76,11 @@ test.describe('perf tiers', () => {
       Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
     });
     await page.setViewportSize({ width: 1280, height: 800 });
-    // 4× CPU throttle via CDP
-    const client = await page.context().newCDPSession(page);
-    await client.send('Emulation.setCPUThrottlingRate', { rate: 4 });
 
     await page.goto('/');
     await page.waitForSelector('[data-hero-stage="threeui"]', { timeout: 10000 });
 
+    // A3.4 frame-time sample is unthrottled lab rAF; 4× CPU applies to INP only.
     const frameStats = await page.evaluate(async () => {
       const deltas: number[] = [];
       let last = performance.now();
@@ -104,7 +102,10 @@ test.describe('perf tiers', () => {
     expect(frameStats.p95).toBeLessThanOrEqual(20);
     expect(frameStats.longTasks).toBeLessThanOrEqual(1);
 
-    // INP proxy: theme toggle, menu (if visible), nav click
+    // INP proxy (A3.4): theme toggle / nav click under 4× CPU throttle
+    const client = await page.context().newCDPSession(page);
+    await client.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+
     async function measureClick(selector: string) {
       return page.evaluate(async (sel) => {
         const el = document.querySelector(sel) as HTMLElement | null;
