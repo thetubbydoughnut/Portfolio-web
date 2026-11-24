@@ -47,6 +47,18 @@ function HeroPoster() {
    * AVIF/WebP stills ship and preload off-screen so the asset budget is met (A3.5.1)
    * without becoming the LCP element under lab throttling.
    */
+  // Defer still decode so Slow-4G bandwidth stays with fonts/JS for LCP text.
+  const [loadStill, setLoadStill] = useState(false);
+  useEffect(() => {
+    const ric = window.requestIdleCallback;
+    if (typeof ric === 'function') {
+      const id = ric(() => setLoadStill(true), { timeout: 4000 });
+      return () => window.cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(() => setLoadStill(true), 2000);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
     <>
       <div
@@ -55,17 +67,19 @@ function HeroPoster() {
         data-hero-poster=""
         aria-hidden="true"
       />
-      <picture className="hero-stage-poster-asset" data-hero-poster-asset="" aria-hidden="true">
-        <source srcSet={posterAvif} type="image/avif" />
-        <img
-          src={posterWebp}
-          alt=""
-          width={1280}
-          height={720}
-          decoding="async"
-          fetchPriority="low"
-        />
-      </picture>
+      {loadStill ? (
+        <picture className="hero-stage-poster-asset" data-hero-poster-asset="" aria-hidden="true">
+          <source srcSet={posterAvif} type="image/avif" />
+          <img
+            src={posterWebp}
+            alt=""
+            width={1280}
+            height={720}
+            decoding="async"
+            fetchPriority="low"
+          />
+        </picture>
+      ) : null}
     </>
   );
 }

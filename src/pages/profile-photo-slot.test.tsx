@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createElement } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import sharp from 'sharp';
 import HeroSection from '../components/HeroSection.jsx';
@@ -30,6 +30,17 @@ function webpHasExifChunk(buf: Buffer): boolean {
 }
 
 describe('AC-27: profile photo slot', () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      'requestIdleCallback',
+      (cb: IdleRequestCallback) =>
+        window.setTimeout(
+          () => cb({ didTimeout: false, timeRemaining: () => 16 } as IdleDeadline),
+          0
+        ) as unknown as number
+    );
+  });
+
   it('hero webp is exactly 960×1280 (3:4), ≤120 KB, with no EXIF/GPS RIFF chunks', async () => {
     expect(existsSync(HERO_PATH)).toBe(true);
     const meta = await sharp(HERO_PATH).metadata();
@@ -56,12 +67,14 @@ describe('AC-27: profile photo slot', () => {
     expect(meta.icc).toBeFalsy();
   });
 
-  it('hero and header imgs use explicit width/height; alt stays Cameron’s name', () => {
+  it('hero and header imgs use explicit width/height; alt stays Cameron’s name', async () => {
     render(createElement(MemoryRouter, null, createElement(HeroSection)));
-    const heroImg = screen.getByRole('img', { name: resumeData.profile.name });
-    expect(heroImg).toHaveAttribute('width', '960');
-    expect(heroImg).toHaveAttribute('height', '1280');
-    expect(heroImg.getAttribute('alt')).toBe(resumeData.profile.name);
+    await waitFor(() => {
+      const heroImg = screen.getByRole('img', { name: resumeData.profile.name });
+      expect(heroImg).toHaveAttribute('width', '960');
+      expect(heroImg).toHaveAttribute('height', '1280');
+      expect(heroImg.getAttribute('alt')).toBe(resumeData.profile.name);
+    });
 
     render(createElement(MemoryRouter, null, createElement(Header)));
     // Header mark uses the same name as alt
