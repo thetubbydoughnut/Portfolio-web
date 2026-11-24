@@ -9,9 +9,10 @@ describe('AC-10: self-hosted font loading', () => {
     expect(html).not.toMatch(/fonts\.googleapis\.com/);
     expect(html).not.toMatch(/fonts\.gstatic\.com/);
     expect(html).toMatch(/rel="preload"/);
+    // A3.5.8: preload only the display face used above the fold.
     expect(html).toMatch(/instrument-serif.*\.woff2/i);
-    expect(html).toMatch(/instrument-sans.*\.woff2/i);
-    expect(html).toMatch(/geist-mono.*\.woff2/i);
+    expect(html).not.toMatch(/rel="preload"[^>]+instrument-sans/i);
+    expect(html).not.toMatch(/rel="preload"[^>]+geist-mono/i);
   });
 
   it('token font families are Instrument Sans / Serif and Geist Mono', () => {

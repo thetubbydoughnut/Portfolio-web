@@ -57,21 +57,26 @@ export function measureDist(distRoot = DIST) {
     throw new Error(`missing ${indexPath}; run vite build first`);
   }
   const html = readFileSync(indexPath, 'utf8');
-  const jsHrefs = [...html.matchAll(/<script[^>]+src=["']([^"']+)["']/g)].map((m) =>
-    m[1].replace(/^\//, '')
-  );
+  const jsHrefs = [
+    ...html.matchAll(/<script[^>]+src=["']([^"']+)["']/g),
+    ...html.matchAll(/<link[^>]+rel=["']modulepreload["'][^>]+href=["']([^"']+)["']/g),
+    ...html.matchAll(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']modulepreload["']/g),
+  ].map((m) => m[1].replace(/^\//, ''));
   const cssHrefs = [...html.matchAll(/<link[^>]+href=["']([^"']+\.css)["']/g)].map((m) =>
     m[1].replace(/^\//, '')
   );
+  // de-dupe
+  const uniqJs = [...new Set(jsHrefs)];
+  const uniqCss = [...new Set(cssHrefs)];
 
   let jsKb = 0;
-  for (const rel of jsHrefs) {
+  for (const rel of uniqJs) {
     const file = join(distRoot, rel);
     if (existsSync(file)) jsKb += gzipKb(readFileSync(file));
   }
 
   let cssKb = 0;
-  for (const rel of cssHrefs) {
+  for (const rel of uniqCss) {
     const file = join(distRoot, rel);
     if (existsSync(file)) cssKb += gzipKb(readFileSync(file));
   }
@@ -97,8 +102,8 @@ export function measureDist(distRoot = DIST) {
     initialRouteCssKb: Number(cssKb.toFixed(2)),
     threeUiChunkKb: Number(threeKb.toFixed(2)),
     threeUiChunkFile: threeFile,
-    jsHrefs,
-    cssHrefs,
+    jsHrefs: uniqJs,
+    cssHrefs: uniqCss,
     manifestPresent: Boolean(readManifest()),
   };
 }
