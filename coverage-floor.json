@@ -1,0 +1,7 @@
+{
+  "statements": 62,
+  "measured": true,
+  "measuredStatementsPct": 64.95,
+  "measuredAt": "2026-11-25",
+  "source": "vitest run --coverage (v8); floor = measured integer 64 minus 2 for flake margin"
+}

@@ -1,17 +1,29 @@
 #!/usr/bin/env node
 /**
- * AC-18 / AC-31: Lighthouse home-route floors (median of 3 runs).
- * Requires a running preview URL as argv[2] (default http://127.0.0.1:4173/).
+ * AC-18: Lighthouse floors on every app route (median of 3 runs).
+ * Requires a running preview URL base as argv[2] (default http://127.0.0.1:4173).
  *
  * Usage:
- *   node scripts/lighthouse-floors.mjs [url] [--form-factor=mobile|desktop] [--force-prefers-reduced-motion]
+ *   node scripts/lighthouse-floors.mjs [baseUrl]
+ *   node scripts/lighthouse-floors.mjs [baseUrl] --form-factor=mobile|desktop [--force-prefers-reduced-motion] [--route=/]
+ *   node scripts/lighthouse-floors.mjs [baseUrl] --all
  *
- * Fallback path (A3.4): --force-prefers-reduced-motion raises the Performance
- * floor to ≥95 on mobile and desktop.
+ * Floors (Amendment 3 / A3.4 + AC-18 revised):
+ *   Performance: mobile effects-on ≥90, desktop effects-on ≥95, fallback ≥95
+ *   Accessibility / Best Practices / SEO ≥95 everywhere
  */
 import { spawnSync } from 'node:child_process';
 import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+
+export const ROUTES = [
+  '/',
+  '/experience',
+  '/skills',
+  '/projects',
+  '/contact',
+  '/certifications',
+];
 
 export const FLOORS = {
   mobile: {
@@ -49,21 +61,19 @@ function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
   const tag = forceReducedMotion ? 'fallback' : formFactor;
   const outPath = join(outDir, `lh-${tag}-${Date.now()}.json`);
 
-  // Use official presets so desktop does not inherit Slow-4G / 4× CPU.
   const preset = formFactor === 'desktop' ? 'desktop' : 'perf';
   const chromeFlags = [
     '--headless',
     '--no-sandbox',
     '--disable-gpu',
-    // Chromium switch used by QA fallback path.
     forceReducedMotion ? '--force-prefers-reduced-motion' : null,
   ]
     .filter(Boolean)
     .join(' ');
-  // Pin Lighthouse 13.6.0 to match QA cycle-2.
+  // Lighthouse 12.x per plan / baseline method (pin 12.6.x when available).
   const args = [
     '--yes',
-    'lighthouse@13.6.0',
+    'lighthouse@12.6.0',
     url,
     '--quiet',
     `--chrome-flags=${chromeFlags}`,
@@ -96,6 +106,7 @@ function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
     formFactor: report.configSettings?.formFactor,
     lighthouseVersion: report.lighthouseVersion,
     forceReducedMotion,
+    url,
   };
 }
 
@@ -127,32 +138,66 @@ export function evaluateFloors(summary, formFactor, { forceReducedMotion = false
   ];
 }
 
+function runSuite(baseUrl, formFactor, forceReducedMotion, routes) {
+  const results = [];
+  for (const route of routes) {
+    const url = new URL(route, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
+    const runs = [];
+    for (let i = 0; i < 3; i++) {
+      const once = runOnce(url, formFactor, { forceReducedMotion });
+      runs.push(once);
+      console.log(`run ${i + 1} ${route} ${formFactor}${forceReducedMotion ? ' fallback' : ''}:`, JSON.stringify(once));
+    }
+    const summary = summarizeRuns(runs);
+    const rows = evaluateFloors(summary, formFactor, { forceReducedMotion });
+    console.log(`median ${route} ${formFactor}${forceReducedMotion ? ' fallback' : ''}:`, JSON.stringify(summary));
+    for (const row of rows) {
+      console.log(
+        `${row.pass ? 'PASS' : 'FAIL'} ${route} ${row.id}: ${row.actual} (budget ${row.id.includes('Ms') || row.id === 'cls' ? '≤' : '≥'} ${row.budget})`
+      );
+    }
+    results.push({ route, formFactor, forceReducedMotion, runs, summary, rows });
+  }
+  return results;
+}
+
 function main() {
-  const url = process.argv[2] && !process.argv[2].startsWith('--')
-    ? process.argv[2]
-    : 'http://127.0.0.1:4173/';
+  const rawBase =
+    process.argv[2] && !process.argv[2].startsWith('--')
+      ? process.argv[2]
+      : 'http://127.0.0.1:4173';
+  const baseUrl = rawBase.replace(/\/$/, '') || 'http://127.0.0.1:4173';
   const ffArg = process.argv.find((a) => a.startsWith('--form-factor='));
-  const formFactor = ffArg ? ffArg.split('=')[1] : 'mobile';
+  const routeArg = process.argv.find((a) => a.startsWith('--route='));
   const forceReducedMotion = process.argv.includes('--force-prefers-reduced-motion');
-  const runs = [];
-  for (let i = 0; i < 3; i++) {
-    const once = runOnce(url, formFactor, { forceReducedMotion });
-    runs.push(once);
-    console.log(`run ${i + 1}:`, JSON.stringify(once));
+  const runAll = process.argv.includes('--all') || (!ffArg && !routeArg);
+
+  const artifactsDir = join(process.cwd(), 'artifacts/lighthouse');
+  mkdirSync(artifactsDir, { recursive: true });
+  const cacheDir = join(process.cwd(), 'node_modules/.cache/portfolio-lh');
+  mkdirSync(cacheDir, { recursive: true });
+
+  let allResults = [];
+  if (runAll) {
+    for (const formFactor of ['mobile', 'desktop']) {
+      for (const fallback of [false, true]) {
+        allResults = allResults.concat(
+          runSuite(baseUrl, formFactor, fallback, ROUTES)
+        );
+      }
+    }
+  } else {
+    const formFactor = ffArg ? ffArg.split('=')[1] : 'mobile';
+    const routes = routeArg ? [routeArg.split('=')[1]] : ['/'];
+    allResults = runSuite(baseUrl, formFactor, forceReducedMotion, routes);
   }
-  const summary = summarizeRuns(runs);
-  const rows = evaluateFloors(summary, formFactor, { forceReducedMotion });
-  console.log('median:', JSON.stringify(summary));
-  if (forceReducedMotion) {
-    console.log('path: fallback (--force-prefers-reduced-motion); performance floor ≥', FALLBACK_PERFORMANCE);
-  }
-  for (const row of rows) {
-    console.log(`${row.pass ? 'PASS' : 'FAIL'} ${row.id}: ${row.actual} (budget ${row.id.includes('Ms') || row.id === 'cls' ? '≤' : '≥'} ${row.budget})`);
-  }
-  const tag = forceReducedMotion ? `${formFactor}-fallback` : formFactor;
-  const out = join(process.cwd(), 'node_modules/.cache/portfolio-lh', `summary-${tag}.json`);
-  writeFileSync(out, JSON.stringify({ runs, summary, rows, forceReducedMotion }, null, 2));
-  process.exit(rows.some((r) => !r.pass) ? 1 : 0);
+
+  const out = join(artifactsDir, `summary-${Date.now()}.json`);
+  writeFileSync(out, JSON.stringify({ baseUrl, results: allResults }, null, 2));
+  writeFileSync(join(cacheDir, 'summary-latest.json'), JSON.stringify({ baseUrl, results: allResults }, null, 2));
+
+  const failed = allResults.some((r) => r.rows.some((row) => !row.pass));
+  process.exit(failed ? 1 : 0);
 }
 
 try {

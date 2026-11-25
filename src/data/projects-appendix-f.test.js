@@ -22,7 +22,8 @@ const FORBIDDEN = [
   /\bJOA\b/,
   /\bzero regressions\b/i,
   /\bhigh-volume\b/i,
-  /pixelperfectdev/i,
+  // Construct lost-domain needle so this test file itself is not flagged.
+  new RegExp(['pixel', 'perfect', 'dev'].join(''), 'i'),
   /github\.com\/(?!thetubbydoughnut\/Portfolio-web)/i,
 ];
 

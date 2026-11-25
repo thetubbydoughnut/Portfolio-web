@@ -28,5 +28,20 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Coverage
+        run: |
+          npm run test:coverage
+          node -e "
+          const fs = require('fs');
+          const floor = JSON.parse(fs.readFileSync('coverage-floor.json','utf8'));
+          const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json','utf8'));
+          const pct = Math.floor(summary.total.statements.pct);
+          if (pct < floor.statements) {
+            console.error('Coverage floor miss:', pct, '<', floor.statements);
+            process.exit(1);
+          }
+          console.log('Coverage statements', pct, '>= floor', floor.statements);
+          "
+
       - name: Build
         run: npm run build
