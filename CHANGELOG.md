@@ -7,14 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## 2026-11-25 — redesign-001 PR-4 follow-up (floors / audit)
-
-- Removed `lighthouse` from the lockfile; floors harness uses `npx lighthouse@12.6.0`.
-- Desktop effects-on Lighthouse floors clear with real SwiftShader WebGL evidence (probe records canvas mount on home).
-- Engagement-gated Glisse/SplitText/ThreeUI + cached WebGL budget probe for lab TBT.
-- npm audit high/critical parity with main `0206d16` (0 new).
-
-
 ## 2026-11-24 — redesign-001 PR-3 inner pages
 
 - Experience timeline on shared PageFrame with stack fields and CLR July–November 2026 (AC-11).
