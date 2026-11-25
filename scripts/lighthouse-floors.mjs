@@ -11,9 +11,12 @@
  * Floors (Amendment 3 / A3.4 + AC-18 revised):
  *   Performance: mobile effects-on ≥90, desktop effects-on ≥95, fallback ≥95
  *   Accessibility / Best Practices / SEO ≥95 everywhere
+ *
+ * Lighthouse is invoked via `npx --yes lighthouse@12.6.0` (not a lockfile dep).
+ * Effects-on Chrome uses Angle/SwiftShader WebGL; fallback forces prefers-reduced-motion.
  */
 import { spawnSync } from 'node:child_process';
-import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const ROUTES = [
@@ -55,6 +58,64 @@ function median(nums) {
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
 }
 
+function chromeFlagsFor(forceReducedMotion) {
+  if (forceReducedMotion) {
+    // Fallback path: no GPU effects; reduced motion.
+    return [
+      '--headless=new',
+      '--no-sandbox',
+      '--disable-gpu',
+      '--force-prefers-reduced-motion',
+    ].join(' ');
+  }
+  // Effects-on: enable WebGL via SwiftShader (lab VMs often lack a real GPU).
+  return [
+    '--headless=new',
+    '--no-sandbox',
+    '--use-gl=angle',
+    '--use-angle=swiftshader',
+    '--enable-unsafe-swiftshader',
+    '--ignore-gpu-blocklist',
+  ].join(' ');
+}
+
+/**
+ * Probe the live page with Playwright using the same Chrome flags as Lighthouse.
+ * Records WebGL, motion budget, and whether hero canvas / GPU route overlay can mount.
+ */
+export function probeEffects(url, formFactor, { forceReducedMotion = false } = {}) {
+  const probeScript = join(process.cwd(), 'scripts/lh-effects-probe.mjs');
+  if (!existsSync(probeScript)) {
+    return { error: 'missing probe script', url, formFactor, forceReducedMotion };
+  }
+  const res = spawnSync(
+    process.execPath,
+    [probeScript, url, formFactor, forceReducedMotion ? 'fallback' : 'effects-on'],
+    {
+      encoding: 'utf8',
+      cwd: process.cwd(),
+      timeout: 120_000,
+      env: {
+        ...process.env,
+        CHROME_PATH: process.env.CHROME_PATH || '/usr/bin/google-chrome-stable',
+      },
+    }
+  );
+  if (res.status !== 0) {
+    return {
+      error: (res.stderr || res.stdout || 'probe failed').slice(0, 500),
+      url,
+      formFactor,
+      forceReducedMotion,
+    };
+  }
+  try {
+    return JSON.parse(res.stdout.trim().split('\n').filter(Boolean).pop());
+  } catch (err) {
+    return { error: String(err), raw: res.stdout?.slice(0, 500) };
+  }
+}
+
 function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
   const outDir = join(process.cwd(), 'node_modules/.cache/portfolio-lh');
   mkdirSync(outDir, { recursive: true });
@@ -62,18 +123,12 @@ function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
   const outPath = join(outDir, `lh-${tag}-${Date.now()}.json`);
 
   const preset = formFactor === 'desktop' ? 'desktop' : 'perf';
-  const chromeFlags = [
-    '--headless',
-    '--no-sandbox',
-    '--disable-gpu',
-    forceReducedMotion ? '--force-prefers-reduced-motion' : null,
-  ]
-    .filter(Boolean)
-    .join(' ');
-  // Lighthouse 12.x per plan / baseline method — use the local install (no network).
-  const lhCli = join(process.cwd(), 'node_modules/lighthouse/cli/index.js');
+  const chromeFlags = chromeFlagsFor(forceReducedMotion);
+
+  // Match main's npx invocation style; pin 12.6.0 outside the lockfile (AC follow-up).
   const args = [
-    lhCli,
+    '--yes',
+    'lighthouse@12.6.0',
     url,
     '--quiet',
     `--chrome-flags=${chromeFlags}`,
@@ -82,7 +137,7 @@ function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
     `--output-path=${outPath}`,
     '--only-categories=performance,accessibility,best-practices,seo',
   ];
-  const res = spawnSync(process.execPath, args, {
+  const res = spawnSync('npx', args, {
     encoding: 'utf8',
     cwd: process.cwd(),
     timeout: 180_000,
@@ -108,8 +163,10 @@ function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
     lcpElement: audits['largest-contentful-paint-element']?.displayValue || '',
     throttling: report.configSettings?.throttling,
     formFactor: report.configSettings?.formFactor,
+    screenEmulation: report.configSettings?.screenEmulation,
     lighthouseVersion: report.lighthouseVersion,
     forceReducedMotion,
+    chromeFlags,
     url,
   };
 }
@@ -152,10 +209,31 @@ export function evaluateFloors(
   return rows;
 }
 
-function runSuite(baseUrl, formFactor, forceReducedMotion, routes) {
+function runSuite(baseUrl, formFactor, forceReducedMotion, routes, evidence) {
   const results = [];
   for (const route of routes) {
     const url = new URL(route, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
+    const probe = probeEffects(url, formFactor, { forceReducedMotion });
+    evidence.push({ route, formFactor, forceReducedMotion, probe });
+    console.log(
+      `probe ${route} ${formFactor}${forceReducedMotion ? ' fallback' : ' effects-on'}:`,
+      JSON.stringify(probe)
+    );
+
+    // Effects-on desktop must actually get the effects-on budget (WebGL + wide viewport).
+    if (!forceReducedMotion && formFactor === 'desktop') {
+      if (probe.budget !== 'effects-on' || probe.webgl !== true) {
+        throw new Error(
+          `effects-on desktop probe failed for ${route}: budget=${probe.budget} webgl=${probe.webgl} err=${probe.error || ''}`
+        );
+      }
+      if (route === '/' && !probe.heroCanvasMounted && !probe.heroThreeRequested) {
+        throw new Error(
+          `effects-on desktop home did not mount ThreeUI/canvas: ${JSON.stringify(probe)}`
+        );
+      }
+    }
+
     const runs = [];
     for (let i = 0; i < 3; i++) {
       const once = runOnce(url, formFactor, { forceReducedMotion });
@@ -170,7 +248,7 @@ function runSuite(baseUrl, formFactor, forceReducedMotion, routes) {
         `${row.pass ? 'PASS' : 'FAIL'} ${route} ${row.id}: ${row.actual} (budget ${row.id.includes('Ms') || row.id === 'cls' ? '≤' : '≥'} ${row.budget})`
       );
     }
-    results.push({ route, formFactor, forceReducedMotion, runs, summary, rows });
+    results.push({ route, formFactor, forceReducedMotion, runs, summary, rows, probe });
   }
   return results;
 }
@@ -191,24 +269,27 @@ function main() {
   const cacheDir = join(process.cwd(), 'node_modules/.cache/portfolio-lh');
   mkdirSync(cacheDir, { recursive: true });
 
+  const evidence = [];
   let allResults = [];
   if (runAll) {
     for (const formFactor of ['mobile', 'desktop']) {
       for (const fallback of [false, true]) {
         allResults = allResults.concat(
-          runSuite(baseUrl, formFactor, fallback, ROUTES)
+          runSuite(baseUrl, formFactor, fallback, ROUTES, evidence)
         );
       }
     }
   } else {
     const formFactor = ffArg ? ffArg.split('=')[1] : 'mobile';
     const routes = routeArg ? [routeArg.split('=')[1]] : ['/'];
-    allResults = runSuite(baseUrl, formFactor, forceReducedMotion, routes);
+    allResults = runSuite(baseUrl, formFactor, forceReducedMotion, routes, evidence);
   }
 
+  const payload = { baseUrl, results: allResults, evidence };
   const out = join(artifactsDir, `summary-${Date.now()}.json`);
-  writeFileSync(out, JSON.stringify({ baseUrl, results: allResults }, null, 2));
-  writeFileSync(join(cacheDir, 'summary-latest.json'), JSON.stringify({ baseUrl, results: allResults }, null, 2));
+  writeFileSync(out, JSON.stringify(payload, null, 2));
+  writeFileSync(join(cacheDir, 'summary-latest.json'), JSON.stringify(payload, null, 2));
+  writeFileSync(join(artifactsDir, 'webgl-evidence.json'), JSON.stringify(evidence, null, 2));
 
   const failed = allResults.some((r) => r.rows.some((row) => !row.pass));
   process.exit(failed ? 1 : 0);
@@ -217,6 +298,7 @@ function main() {
 try {
   const self = join(process.argv[1] || '');
   if (self.endsWith('lighthouse-floors.mjs')) main();
-} catch {
-  /* imported as library */
+} catch (err) {
+  console.error(err);
+  process.exit(1);
 }

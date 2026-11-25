@@ -97,17 +97,11 @@ Thumbs.db
 !README.md
 !CHANGELOG.md
 !CONTRIBUTING.md
-!TODO.md
 !docs/**/*.md
 !.github/PULL_REQUEST_TEMPLATE.md
-!Portfolio Website Development Plan.md
-!pr-body.md
 portfolio_employer_audit.md
 LPL_Case_Studies_and_Interview_Prep.md
 "Cameron Graham Full Stack Web Developer Resume (3).md"
-
-# Agent/local artifacts (keep untracked)
-/artifacts/
 
 # Broken legacy asset paths (old folder name with spaces)
 "src/assets/Certs and resume/"
