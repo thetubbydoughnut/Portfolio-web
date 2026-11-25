@@ -70,10 +70,10 @@ function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
   ]
     .filter(Boolean)
     .join(' ');
-  // Lighthouse 12.x per plan / baseline method (pin 12.6.x when available).
+  // Lighthouse 12.x per plan / baseline method — use the local install (no network).
+  const lhCli = join(process.cwd(), 'node_modules/lighthouse/cli/index.js');
   const args = [
-    '--yes',
-    'lighthouse@12.6.0',
+    lhCli,
     url,
     '--quiet',
     `--chrome-flags=${chromeFlags}`,
@@ -82,10 +82,14 @@ function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
     `--output-path=${outPath}`,
     '--only-categories=performance,accessibility,best-practices,seo',
   ];
-  const res = spawnSync('npx', args, {
+  const res = spawnSync(process.execPath, args, {
     encoding: 'utf8',
     cwd: process.cwd(),
     timeout: 180_000,
+    env: {
+      ...process.env,
+      CHROME_PATH: process.env.CHROME_PATH || '/usr/bin/google-chrome-stable',
+    },
   });
   if (res.status !== 0) {
     throw new Error(`lighthouse failed: ${res.stderr || res.stdout}`);
