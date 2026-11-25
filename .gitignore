@@ -95,19 +95,9 @@ Thumbs.db
 # Private / personal documents — do not commit to public repo
 *.md
 !README.md
-!CHANGELOG.md
-!CONTRIBUTING.md
-!TODO.md
-!docs/**/*.md
-!.github/PULL_REQUEST_TEMPLATE.md
-!Portfolio Website Development Plan.md
 portfolio_employer_audit.md
 LPL_Case_Studies_and_Interview_Prep.md
 "Cameron Graham Full Stack Web Developer Resume (3).md"
-
-# Local PR draft body + agent artifacts (keep untracked)
-/pr-body.md
-/artifacts/
 
 # Broken legacy asset paths (old folder name with spaces)
 "src/assets/Certs and resume/"

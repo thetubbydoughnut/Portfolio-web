@@ -5,45 +5,6 @@ import { ProjectSpotlightCard } from '../components/ProjectSpotlightCard';
 import { ProjectVisual } from '../components/ProjectVisual';
 import { ProjectsAtmosphere } from '../components/ProjectsAtmosphere';
 
-function ProjectLinks({ project }) {
-  const links = [];
-  if (project.html_url) {
-    links.push(
-      <a
-        key="repo"
-        href={project.html_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="project-link"
-      >
-        View on GitHub
-      </a>
-    );
-  }
-  if (project.homepage && project.homepage !== '/') {
-    links.push(
-      <a
-        key="live"
-        href={project.homepage}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="project-link live-link"
-      >
-        Live site
-      </a>
-    );
-  }
-  if (project.homepage === '/') {
-    links.push(
-      <a key="site" href="/" className="project-link live-link">
-        This site
-      </a>
-    );
-  }
-  if (links.length === 0) return null;
-  return <div className="project-links">{links}</div>;
-}
-
 const Projects = () => {
   return (
     <PageFrame
@@ -82,7 +43,35 @@ const Projects = () => {
                       </span>
                     ) : null}
                   </div>
-                  <ProjectLinks project={project} />
+                  {(project.html_url || project.homepage) ? (
+                    <div className="project-links">
+                      {project.html_url ? (
+                        <a
+                          href={project.html_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="project-link"
+                        >
+                          View on GitHub
+                        </a>
+                      ) : null}
+                      {project.homepage && project.homepage !== '/' ? (
+                        <a
+                          href={project.homepage}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="project-link live-link"
+                        >
+                          Live site
+                        </a>
+                      ) : null}
+                      {project.homepage === '/' ? (
+                        <a href="/" className="project-link live-link">
+                          This site
+                        </a>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </article>
               </ProjectSpotlightCard>
             ))}

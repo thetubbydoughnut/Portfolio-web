@@ -30,17 +30,6 @@ export default defineConfig({
       '**/tests/e2e/**',
       '**/.{idea,git,cache,output,temp}/**',
     ],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json-summary'],
-      reportsDirectory: './coverage',
-      include: ['src/**/*.{js,jsx,ts,tsx}'],
-      exclude: [
-        'src/**/*.test.{js,jsx,ts,tsx}',
-        'src/test/**',
-        'src/vite-env.d.ts',
-      ],
-    },
   },
   // Allow JSX/TSX in src (Vite 8: Oxc instead of esbuild)
   oxc: {

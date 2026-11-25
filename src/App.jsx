@@ -6,7 +6,6 @@ import PageTransition from './components/PageTransition';
 import ErrorBoundary from './components/ErrorBoundary';
 import HeroSection from './components/HeroSection';
 import { useMotionBudget } from './motion/useMotionBudget';
-import { RouteTransition } from './motion/RouteTransition';
 import './App.css';
 
 // Home hero is eager so LCP text is in the first paint graph (AC-18 / F1).
@@ -110,11 +109,9 @@ function App() {
     <ErrorBoundary>
       <Layout>
         <Header />
-        <RouteTransition>
-          <Suspense fallback={<Loading />}>
-            {Presence ? <Presence>{routes}</Presence> : routes}
-          </Suspense>
-        </RouteTransition>
+        <Suspense fallback={<Loading />}>
+          {Presence ? <Presence>{routes}</Presence> : routes}
+        </Suspense>
       </Layout>
     </ErrorBoundary>
   );

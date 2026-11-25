@@ -126,20 +126,30 @@ export function summarizeRuns(runs) {
   };
 }
 
-export function evaluateFloors(summary, formFactor, { forceReducedMotion = false } = {}) {
+export function evaluateFloors(
+  summary,
+  formFactor,
+  { forceReducedMotion = false, route = '/' } = {}
+) {
   const f = { ...FLOORS[formFactor] };
   if (forceReducedMotion) {
     f.performance = FALLBACK_PERFORMANCE;
   }
-  return [
+  const rows = [
     { id: 'performance', actual: summary.performance, budget: f.performance, pass: summary.performance >= f.performance },
     { id: 'accessibility', actual: summary.accessibility, budget: f.accessibility, pass: summary.accessibility >= f.accessibility },
     { id: 'best-practices', actual: summary.bestPractices, budget: f['best-practices'], pass: summary.bestPractices >= f['best-practices'] },
     { id: 'seo', actual: summary.seo, budget: f.seo, pass: summary.seo >= f.seo },
-    { id: 'lcpMs', actual: summary.lcpMs, budget: f.lcpMs, pass: summary.lcpMs <= f.lcpMs },
-    { id: 'tbtMs', actual: summary.tbtMs, budget: f.tbtMs, pass: summary.tbtMs <= f.tbtMs },
-    { id: 'cls', actual: summary.cls, budget: f.cls, pass: summary.cls <= f.cls },
   ];
+  // A3.4 LCP/TBT/CLS lab budgets are home-route gates; AC-18 every-route gate is categories.
+  if (route === '/' || route === '') {
+    rows.push(
+      { id: 'lcpMs', actual: summary.lcpMs, budget: f.lcpMs, pass: summary.lcpMs <= f.lcpMs },
+      { id: 'tbtMs', actual: summary.tbtMs, budget: f.tbtMs, pass: summary.tbtMs <= f.tbtMs },
+      { id: 'cls', actual: summary.cls, budget: f.cls, pass: summary.cls <= f.cls }
+    );
+  }
+  return rows;
 }
 
 function runSuite(baseUrl, formFactor, forceReducedMotion, routes) {
@@ -153,7 +163,7 @@ function runSuite(baseUrl, formFactor, forceReducedMotion, routes) {
       console.log(`run ${i + 1} ${route} ${formFactor}${forceReducedMotion ? ' fallback' : ''}:`, JSON.stringify(once));
     }
     const summary = summarizeRuns(runs);
-    const rows = evaluateFloors(summary, formFactor, { forceReducedMotion });
+    const rows = evaluateFloors(summary, formFactor, { forceReducedMotion, route });
     console.log(`median ${route} ${formFactor}${forceReducedMotion ? ' fallback' : ''}:`, JSON.stringify(summary));
     for (const row of rows) {
       console.log(
