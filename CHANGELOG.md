@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-11-24 — redesign-001 PR-3 inner pages
+
+- Experience timeline on shared PageFrame with stack fields and CLR July–November 2026 (AC-11).
+- Skills grouped glass chip grid (1/2/3 cols); removed React.js duplicate (AC-12 / R-1).
+- Certifications data module + sized media well; route/nav/sitemap kept (AC-13).
+- Contact glass tiles for email / GitHub / LinkedIn only (AC-14).
+- Vendored React Bits SplitText for section headings; plain text under motion fallback (AC-22).
+- R-4/AI-4: gate `.btn:hover` translate; primary CTA hover uses accent (not page bg).
+- R-5: prune App.css April leftovers (Inter, `#root` overflow, unused header/nav/logo/card, section hairline).
+
 ## 2025-05-12 — redesign-001 PR-2 shell + home
 
 - Shared `PageFrame` on every route (home hero band; sticky intro rail on inner routes).

@@ -46,4 +46,27 @@ describe('AC-1: experience order and Continental Resources', () => {
     expect(clrBlob).not.toMatch(/headcount/);
     expect(clrBlob).not.toMatch(/\d+\s*(employees|engineers|clients)/);
   });
+
+  it('AC-11: stored order is CLR → Legendary Printed Loot → Tatco → American Dog Society', () => {
+    const companies = resumeData.experience.map((job) => job.company);
+    expect(companies).toEqual([
+      'Continental Resources',
+      'Legendary Printed Loot',
+      'Tatco Construction',
+      'American Dog Society',
+    ]);
+  });
+
+  it('AC-11: every experience entry has role, period, stack, and bullets', () => {
+    for (const job of resumeData.experience) {
+      expect(job.role?.length).toBeGreaterThan(0);
+      expect(job.period?.length).toBeGreaterThan(0);
+      expect(job.stack?.length, `${job.company} missing stack`).toBeGreaterThan(0);
+      expect(Array.isArray(job.description)).toBe(true);
+      expect(job.description.length).toBeGreaterThan(0);
+    }
+    const clr = resumeData.experience[0];
+    expect(clr.period).toBe('July 2026 – November 2026');
+    expect(clr.period).not.toMatch(/Present/i);
+  });
 });

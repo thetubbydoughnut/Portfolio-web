@@ -187,4 +187,51 @@ describe('AC-5 / AC-26: Resume and Contact CTAs', () => {
     expect(document.body.textContent).not.toMatch(/661[-.\s]?972[-.\s]?5200/);
     expect(screen.queryByLabelText(/phone/i)).not.toBeInTheDocument();
   });
+
+  it('AC-14: /contact exposes email, GitHub, LinkedIn as glass tiles in PageFrame content', async () => {
+    renderWithRouter(createElement(Contact));
+    await act(async () => {
+      vi.advanceTimersByTime(1100);
+    });
+
+    expect(document.querySelector('main.page-frame--inner')).toBeTruthy();
+    const content = document.querySelector('.page-frame__content');
+    expect(content).toBeTruthy();
+
+    const tiles = content.querySelectorAll('[data-contact-tile]');
+    expect(tiles).toHaveLength(3);
+
+    for (const tile of tiles) {
+      expect(tile.className).toMatch(/glass/);
+    }
+
+    expect(screen.getByText(resumeData.profile.email)).toBeInTheDocument();
+    const github = screen.getByRole('link', { name: /thetubbydoughnut/i });
+    expect(github).toHaveAttribute('href', resumeData.profile.links.github);
+    const linkedin = screen.getByRole('link', { name: /Cameron Graham/i });
+    expect(linkedin).toHaveAttribute('href', resumeData.profile.links.linkedin);
+
+    // mailto and/or copy control for email
+    const mailto = document.querySelector('a[href^="mailto:"]');
+    const copyBtn = screen.queryByRole('button', { name: /copy|email/i });
+    expect(mailto || copyBtn || content.querySelector('[data-contact-email]')).toBeTruthy();
+  });
+
+  it('AC-14 negative: no phone, no form POST endpoint, old contact layout gone', async () => {
+    renderWithRouter(createElement(Contact));
+    await act(async () => {
+      vi.advanceTimersByTime(1100);
+    });
+
+    expect(document.body.textContent).not.toMatch(/661[-.\s]?972[-.\s]?5200/);
+    expect(document.querySelector('form')).toBeNull();
+    expect(document.querySelector('form[action]')).toBeNull();
+
+    const page = readFileSync(join(process.cwd(), 'src/pages/Contact.jsx'), 'utf8');
+    const css = readFileSync(join(process.cwd(), 'src/styles/Contact.css'), 'utf8');
+    expect(page).not.toMatch(/fetch\s*\(|axios|formspree|emailjs/i);
+    expect(css).not.toMatch(/min-height:\s*100vh/);
+    expect(css).toMatch(/--glass-/);
+    expect(page).toMatch(/data-contact-tile/);
+  });
 });

@@ -5,22 +5,15 @@ import { PageFrame } from '../layout/PageFrame';
 
 const Contact = () => {
   const [copied, setCopied] = useState(false);
-  const [copiedItem, setCopiedItem] = useState('');
 
-  const contactInfo = {
-    email: resumeData.profile.email,
-    github: resumeData.profile.links.github,
-    linkedin: resumeData.profile.links.linkedin,
-  };
+  const email = resumeData.profile.email;
+  const github = resumeData.profile.links.github;
+  const linkedin = resumeData.profile.links.linkedin;
 
-  const handleCopy = (text, item) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopiedItem(item);
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(email).then(() => {
       setCopied(true);
-      setTimeout(() => {
-        setCopied(false);
-        setCopiedItem('');
-      }, 2000);
+      setTimeout(() => setCopied(false), 2000);
     });
   };
 
@@ -30,63 +23,50 @@ const Contact = () => {
       title="Get in Touch"
       dek="Email, GitHub, and LinkedIn — already public on this site."
     >
-      <section className="section contact-section page-frame-section">
-        <div className="contact-container page-frame-container">
-          <div className="contact-grid">
-            <div className="contact-card">
-              <div className="contact-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
-              </div>
-              <h2>Email</h2>
-              <div className="contact-value" onClick={() => handleCopy(contactInfo.email, 'email')}>
-                {contactInfo.email}
-                <span className={`copy-tooltip ${copied && copiedItem === 'email' ? 'visible' : ''}`}>
-                  Copied!
-                </span>
-              </div>
-            </div>
-
-            <div className="contact-card">
-              <div className="contact-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-                </svg>
-              </div>
-              <h2>GitHub</h2>
-              <a
-                href={contactInfo.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="contact-link"
-              >
-                @thetubbydoughnut
-              </a>
-            </div>
-
-            <div className="contact-card">
-              <div className="contact-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                  <rect x="2" y="9" width="4" height="12" />
-                  <circle cx="4" cy="4" r="2" />
-                </svg>
-              </div>
-              <h2>LinkedIn</h2>
-              <a
-                href={contactInfo.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="contact-link"
-              >
-                Cameron Graham
-              </a>
-            </div>
-          </div>
+      <div className="contact-tiles" data-contact-tiles>
+        <div
+          className="contact-tile glass-panel"
+          data-contact-tile="email"
+          data-contact-email
+        >
+          <h2 className="contact-tile-title">Email</h2>
+          <a className="contact-tile-value" href={`mailto:${email}`}>
+            {email}
+          </a>
+          <button
+            type="button"
+            className="contact-copy"
+            onClick={handleCopyEmail}
+            aria-label="Copy email address"
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
         </div>
-      </section>
+
+        <div className="contact-tile glass-panel" data-contact-tile="github">
+          <h2 className="contact-tile-title">GitHub</h2>
+          <a
+            href={github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="contact-tile-value"
+          >
+            @thetubbydoughnut
+          </a>
+        </div>
+
+        <div className="contact-tile glass-panel" data-contact-tile="linkedin">
+          <h2 className="contact-tile-title">LinkedIn</h2>
+          <a
+            href={linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="contact-tile-value"
+          >
+            Cameron Graham
+          </a>
+        </div>
+      </div>
     </PageFrame>
   );
 };

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { AnimatedHeading } from '../components/AnimatedHeading';
 import './PageFrame.css';
 
 export type PageFrameProps = {
@@ -16,6 +17,7 @@ export type PageFrameProps = {
 /**
  * Shared page frame (AC-25). Inner routes: sticky left intro + content.
  * Home: shell + children only (hero band provided by the page).
+ * AC-22: page titles use AnimatedHeading (SplitText / plain fallback).
  */
 export function PageFrame({
   eyebrow,
@@ -37,7 +39,9 @@ export function PageFrame({
       <div className="page-frame__grid">
         <header className="page-frame__intro">
           {eyebrow ? <p className="page-frame__eyebrow">{eyebrow}</p> : null}
-          {title ? <h1 className="page-frame__title">{title}</h1> : null}
+          {title ? (
+            <AnimatedHeading text={title} as="h1" className="page-frame__title" />
+          ) : null}
           {dek ? <p className="page-frame__dek">{dek}</p> : null}
         </header>
         <div className="page-frame__content">{children}</div>
