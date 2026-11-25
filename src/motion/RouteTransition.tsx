@@ -3,6 +3,8 @@
  * Uses gl-transition + vendored directional.glsl only. Falls back to
  * opacity/instant when budget is fallback, capture fails, or WebGL throws.
  * Overlay WebGL context is disposed after each transition (≤ 600ms).
+ *
+ * gl-transition is dynamic-imported so it stays off the initial-route graph.
  */
 import {
   useEffect,
@@ -12,21 +14,25 @@ import {
   type CSSProperties,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import createTransition from 'gl-transition';
 import { useMotionBudget } from './useMotionBudget';
-import directionalGlsl from './shaders/directional.glsl?raw';
 
 const MAX_MS = 600;
-
-const DIRECTIONAL = {
-  glsl: directionalGlsl.replace(/^\/\/.*$/gm, '').trim(),
-  defaultParams: { direction: [0, 1] },
-  paramsTypes: { direction: 'vec2' },
-};
 
 type GLTextureLike = {
   bind: (unit: number) => number;
   shape: [number, number];
+};
+
+type TransitionApi = {
+  draw: (
+    progress: number,
+    from: GLTextureLike,
+    to: GLTextureLike,
+    width?: number,
+    height?: number,
+    params?: Record<string, unknown>
+  ) => void;
+  dispose: () => void;
 };
 
 function makeColorTexture(
@@ -103,7 +109,7 @@ export function RouteTransition({ children }: RouteTransitionProps) {
 
     let disposed = false;
     let raf = 0;
-    let transitionApi: { draw: Function; dispose: () => void } | null = null;
+    let transitionApi: TransitionApi | null = null;
     let fromTex: (GLTextureLike & { dispose: () => void }) | null = null;
     let toTex: (GLTextureLike & { dispose: () => void }) | null = null;
     let buffer: WebGLBuffer | null = null;
@@ -144,71 +150,89 @@ export function RouteTransition({ children }: RouteTransitionProps) {
       running.current = false;
     };
 
-    try {
-      if (!canvas) throw new Error('no canvas');
-      const width = Math.max(2, window.innerWidth);
-      const height = Math.max(2, window.innerHeight);
-      canvas.width = width;
-      canvas.height = height;
-      canvas.style.opacity = '1';
-      canvas.style.pointerEvents = 'none';
+    (async () => {
+      try {
+        if (!canvas) throw new Error('no canvas');
+        const [{ default: createTransition }, glslMod] = await Promise.all([
+          import('gl-transition'),
+          import('./shaders/directional.glsl?raw'),
+        ]);
+        const directionalGlsl = String(glslMod.default || glslMod)
+          .replace(/^\/\/.*$/gm, '')
+          .trim();
+        const DIRECTIONAL = {
+          glsl: directionalGlsl,
+          defaultParams: { direction: [0, 1] },
+          paramsTypes: { direction: 'vec2' },
+        };
 
-      const gl =
-        (canvas.getContext('webgl', { premultipliedAlpha: false }) as WebGLRenderingContext | null) ||
-        (canvas.getContext('experimental-webgl') as WebGLRenderingContext | null);
-      if (!gl) throw new Error('no webgl');
-
-      buffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      gl.bufferData(
-        gl.ARRAY_BUFFER,
-        new Float32Array([-1, -1, -1, 4, 4, -1]),
-        gl.STATIC_DRAW
-      );
-      gl.viewport(0, 0, width, height);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-      const rgb = readThemeRgb();
-      const rgb2: [number, number, number, number] = [
-        Math.min(255, rgb[0] + 18),
-        Math.min(255, rgb[1] + 18),
-        Math.min(255, rgb[2] + 22),
-        255,
-      ];
-      fromTex = makeColorTexture(gl, rgb);
-      toTex = makeColorTexture(gl, rgb2);
-      transitionApi = createTransition(gl, DIRECTIONAL, { resizeMode: 'cover' });
-      setMode('gpu');
-
-      const start = performance.now();
-      const tick = (now: number) => {
         if (disposed) return;
-        const t = Math.min(1, (now - start) / MAX_MS);
-        try {
-          transitionApi?.draw(t, fromTex, toTex, width, height, {
-            direction: [0, -1],
-          });
-        } catch {
-          cleanup();
-          setMode('fade');
-          return;
-        }
-        if (t < 1) {
-          raf = requestAnimationFrame(tick);
-        } else {
-          cleanup();
-        }
-      };
-      raf = requestAnimationFrame(tick);
-      // Hard dispose cap at duration-route
-      window.setTimeout(cleanup, MAX_MS + 50);
-    } catch {
-      cleanup();
-      setMode('fade');
-      window.setTimeout(() => {
-        running.current = false;
-      }, 160);
-    }
+
+        const width = Math.max(2, window.innerWidth);
+        const height = Math.max(2, window.innerHeight);
+        canvas.width = width;
+        canvas.height = height;
+        canvas.style.opacity = '1';
+        canvas.style.pointerEvents = 'none';
+
+        const gl =
+          (canvas.getContext('webgl', {
+            premultipliedAlpha: false,
+          }) as WebGLRenderingContext | null) ||
+          (canvas.getContext('experimental-webgl') as WebGLRenderingContext | null);
+        if (!gl) throw new Error('no webgl');
+
+        buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array([-1, -1, -1, 4, 4, -1]),
+          gl.STATIC_DRAW
+        );
+        gl.viewport(0, 0, width, height);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+        const rgb = readThemeRgb();
+        const rgb2: [number, number, number, number] = [
+          Math.min(255, rgb[0] + 18),
+          Math.min(255, rgb[1] + 18),
+          Math.min(255, rgb[2] + 22),
+          255,
+        ];
+        fromTex = makeColorTexture(gl, rgb);
+        toTex = makeColorTexture(gl, rgb2);
+        transitionApi = createTransition(gl, DIRECTIONAL, { resizeMode: 'cover' });
+        setMode('gpu');
+
+        const start = performance.now();
+        const tick = (now: number) => {
+          if (disposed) return;
+          const t = Math.min(1, (now - start) / MAX_MS);
+          try {
+            transitionApi?.draw(t, fromTex!, toTex!, width, height, {
+              direction: [0, -1],
+            });
+          } catch {
+            cleanup();
+            setMode('fade');
+            return;
+          }
+          if (t < 1) {
+            raf = requestAnimationFrame(tick);
+          } else {
+            cleanup();
+          }
+        };
+        raf = requestAnimationFrame(tick);
+        window.setTimeout(cleanup, MAX_MS + 50);
+      } catch {
+        cleanup();
+        setMode('fade');
+        window.setTimeout(() => {
+          running.current = false;
+        }, 160);
+      }
+    })();
 
     return cleanup;
   }, [location.pathname, effectsOn]);

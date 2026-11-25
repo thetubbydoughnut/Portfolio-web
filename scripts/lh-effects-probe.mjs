@@ -70,8 +70,26 @@ async function main() {
   });
 
   await page.goto(url, { waitUntil: 'networkidle', timeout: 60_000 });
-  // Idle mount + budget evaluate
-  await page.waitForTimeout(formFactor === 'desktop' && !forceReducedMotion ? 3500 : 1500);
+  // Engagement-gated heavy mounts: synthesize a pointer so ThreeUI/Glisse/SplitText can warm.
+  if (formFactor === 'desktop' && !forceReducedMotion) {
+    await page.mouse.move(640, 400);
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.dispatchEvent('body', 'pointerdown', { bubbles: true });
+    // load → idle (≤2s) → warmup → ThreeUI chunk
+    await page.waitForTimeout(5000);
+    if (new URL(url).pathname === '/' || new URL(url).pathname === '') {
+      try {
+        await page.waitForSelector('[data-hero-stage="threeui"] canvas, .hero-stage-canvas canvas', {
+          timeout: 10_000,
+        });
+      } catch {
+        /* recorded below as heroCanvasMounted:false */
+      }
+    }
+  } else {
+    await page.waitForTimeout(1500);
+  }
 
   const probe = await page.evaluate(() => {
     let webgl = false;

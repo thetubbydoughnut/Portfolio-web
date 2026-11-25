@@ -17,6 +17,9 @@ export function createMotionBudgetState(): MotionBudgetState {
 
 let sharedState: MotionBudgetState = createMotionBudgetState();
 
+/** Cache WebGL probe — SwiftShader getContext can cost ~300ms each call. */
+let webglCapable: boolean | null = null;
+
 export function getMotionBudget(): MotionBudget {
   return sharedState.budget;
 }
@@ -29,15 +32,32 @@ function prefersReducedMotion(): boolean {
 }
 
 function canCreateWebGLContext(): boolean {
-  if (typeof document === 'undefined') return false;
+  if (webglCapable !== null) return webglCapable;
+  if (typeof document === 'undefined') {
+    webglCapable = false;
+    return false;
+  }
   try {
     const canvas = document.createElement('canvas');
+    // Prefer webgl1 first (cheaper probe under software GL than webgl2).
     const gl =
-      canvas.getContext('webgl2') ||
       canvas.getContext('webgl') ||
-      canvas.getContext('experimental-webgl');
-    return Boolean(gl);
+      canvas.getContext('experimental-webgl') ||
+      canvas.getContext('webgl2');
+    const ok = Boolean(gl);
+    if (gl && typeof (gl as WebGLRenderingContext).getExtension === 'function') {
+      try {
+        (gl as WebGLRenderingContext)
+          .getExtension('WEBGL_lose_context')
+          ?.loseContext();
+      } catch {
+        /* ignore */
+      }
+    }
+    webglCapable = ok;
+    return ok;
   } catch {
+    webglCapable = false;
     return false;
   }
 }
@@ -123,4 +143,5 @@ export function evaluateMotionBudget(
 /** Reset shared state (tests / HMR). */
 export function resetMotionBudget(): void {
   sharedState = createMotionBudgetState();
+  webglCapable = null;
 }

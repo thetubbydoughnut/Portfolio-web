@@ -6,6 +6,7 @@ import { resumeData, getResumeHref, getResumeCtaLabel } from '../data/resume';
 import resumePreview from '../assets/certs-and-resume/Cameron-Graham-Resume.webp';
 import { useTheme } from '../theme/useTheme';
 import { useMotionBudget } from '../motion/useMotionBudget';
+import { whenEffectsWarmed } from '../motion/effectsWarmup';
 import '../styles/Header.css';
 
 const NAV_ITEMS = [
@@ -55,22 +56,25 @@ const Header = () => {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isMenuOpen]);
 
-  // A3.5.6: Glisse JS+CSS only on effects-on (keeps initial-route gzip on budget).
+  // A3.5.6: Glisse JS+CSS only on effects-on; engagement-gated for cold-load TBT.
   useEffect(() => {
     if (!effectsOn) {
       setGlisseChrome(null);
       return undefined;
     }
     let cancelled = false;
-    Promise.all([import('./GlisseChrome.jsx'), import('glisse/styles.css')])
-      .then(([mod]) => {
-        if (!cancelled) setGlisseChrome(mod);
-      })
-      .catch(() => {
-        /* non-fatal: static shell still works */
-      });
+    const stop = whenEffectsWarmed(() => {
+      Promise.all([import('./GlisseChrome.jsx'), import('glisse/styles.css')])
+        .then(([mod]) => {
+          if (!cancelled) setGlisseChrome(mod);
+        })
+        .catch(() => {
+          /* non-fatal: static shell still works */
+        });
+    });
     return () => {
       cancelled = true;
+      stop();
     };
   }, [effectsOn]);
 

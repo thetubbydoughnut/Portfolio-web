@@ -52,6 +52,12 @@ test.describe('perf tiers', () => {
       expect(early.three).toBe(false);
     }
 
+    // Heavy ThreeUI mount is engagement-gated (cold-load TBT); synthesize pointer after load.
+    await page.waitForFunction(() => document.readyState === 'complete');
+    await page.mouse.move(640, 400);
+    await page.mouse.down();
+    await page.mouse.up();
+
     await page.waitForSelector('[data-hero-stage="threeui"] canvas', {
       timeout: 10000,
     });

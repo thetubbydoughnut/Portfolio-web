@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { MotionBudget } from '../motion/budget';
+import { whenEffectsWarmed } from '../motion/effectsWarmup';
 import posterWebp from '../assets/images/hero-poster.webp';
 import posterAvif from '../assets/images/hero-poster.avif';
 
@@ -125,7 +126,7 @@ export function HeroThreeBackground({ budget }: HeroThreeBackgroundProps) {
 
   useDprCap(shouldMount);
 
-  // Idle mount: after window load, then requestIdleCallback (2s timeout).
+  // AC-31: after load + idle, then engagement/warmup gate (keeps ThreeUI off cold-load TBT).
   useEffect(() => {
     if (!effectsOn) {
       setIdleReady(false);
@@ -135,20 +136,20 @@ export function HeroThreeBackground({ budget }: HeroThreeBackgroundProps) {
     let idleId: number | undefined;
     let timeoutId: number | undefined;
     let cancelled = false;
+    let stopWarm: (() => void) | undefined;
 
     const armIdle = () => {
       const ric = window.requestIdleCallback;
-      if (typeof ric === 'function') {
-        idleId = ric(
-          () => {
-            if (!cancelled) setIdleReady(true);
-          },
-          { timeout: 2000 }
-        );
-      } else {
-        timeoutId = window.setTimeout(() => {
+      const afterIdle = () => {
+        if (cancelled) return;
+        stopWarm = whenEffectsWarmed(() => {
           if (!cancelled) setIdleReady(true);
-        }, 1) as unknown as number;
+        });
+      };
+      if (typeof ric === 'function') {
+        idleId = ric(afterIdle, { timeout: 2000 });
+      } else {
+        timeoutId = window.setTimeout(afterIdle, 1) as unknown as number;
       }
     };
 
@@ -161,13 +162,13 @@ export function HeroThreeBackground({ budget }: HeroThreeBackgroundProps) {
     return () => {
       cancelled = true;
       window.removeEventListener('load', armIdle);
+      stopWarm?.();
       if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
         window.cancelIdleCallback(idleId);
       }
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);
     };
   }, [effectsOn]);
-
   // Pause when hero leaves viewport.
   useEffect(() => {
     const node = rootRef.current;

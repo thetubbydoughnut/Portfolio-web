@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties, type ComponentType } from 'react';
 import { useMotionBudget } from '../motion/useMotionBudget';
+import { whenEffectsWarmed } from '../motion/effectsWarmup';
 import type { SplitTextProps } from './react-bits/SplitText';
 
 export type AnimatedHeadingProps = {
@@ -29,11 +30,15 @@ export function AnimatedHeading({
       return undefined;
     }
     let cancelled = false;
-    import('./react-bits/SplitText').then((mod) => {
-      if (!cancelled) setSplit(() => mod.default);
+    // Engagement-gated: keeps gsap off the cold-load TBT window (AC-22 still mounts after warm).
+    const stop = whenEffectsWarmed(() => {
+      import('./react-bits/SplitText').then((mod) => {
+        if (!cancelled) setSplit(() => mod.default);
+      });
     });
     return () => {
       cancelled = true;
+      stop();
     };
   }, [budget]);
 

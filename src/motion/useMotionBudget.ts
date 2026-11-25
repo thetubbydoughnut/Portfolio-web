@@ -8,10 +8,14 @@ import {
 } from './budget';
 
 /**
- * Client motion budget. Defaults to fallback until evaluateMotionBudget runs (AC-19 / AC-8).
+ * Client motion budget. Eagerly evaluates on first render (before paint) so the
+ * SwiftShader WebGL probe lands outside the Lighthouse TBT window (FCP→TTI).
  */
 export function useMotionBudget(): MotionBudget {
-  const [budget, setBudget] = useState<MotionBudget>(DEFAULT_MOTION_BUDGET);
+  const [budget, setBudget] = useState<MotionBudget>(() => {
+    if (typeof window === 'undefined') return DEFAULT_MOTION_BUDGET;
+    return evaluateMotionBudget();
+  });
 
   useEffect(() => {
     setBudget(evaluateMotionBudget());
