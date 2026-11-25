@@ -23,15 +23,17 @@ describe('AC-3: curated projects and no client token', () => {
   it('exports exactly the curated projects list', () => {
     expect(Array.isArray(projects)).toBe(true);
     const names = projects.map((p) => p.name);
+    expect(names[0]).toMatch(/Internal land and asset platform/i);
     expect(names).toEqual(
       expect.arrayContaining([
+        expect.stringMatching(/Internal land and asset platform/i),
         expect.stringMatching(/Legendary Printed Loot/i),
         expect.stringMatching(/BOLT\s*2\.0/i),
         expect.stringMatching(/SaaP/i),
         expect.stringMatching(/[Pp]ortfolio/),
       ])
     );
-    expect(projects.length).toBe(4);
+    expect(projects.length).toBe(5);
   });
 
   it('includes LPL homepage https://lpl3d.com', () => {
