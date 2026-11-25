@@ -105,8 +105,8 @@ portfolio_employer_audit.md
 LPL_Case_Studies_and_Interview_Prep.md
 "Cameron Graham Full Stack Web Developer Resume (3).md"
 
-# Local PR draft body + agent artifacts (keep untracked)
-/pr-body.md
+# Agent/local artifacts (keep untracked). pr-body.md is intentionally not listed
+# here so it stays a plain untracked file for the PR draft workflow.
 /artifacts/
 
 # Broken legacy asset paths (old folder name with spaces)
