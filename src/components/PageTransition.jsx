@@ -1,5 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 import { useMotionBudget } from '../motion/useMotionBudget';
 
 const PageTransitionMotion = lazy(() => import('./PageTransitionMotion'));
@@ -7,6 +8,14 @@ const PageTransitionMotion = lazy(() => import('./PageTransitionMotion'));
 const PageTransition = ({ children }) => {
   const budget = useMotionBudget();
   const effectsOn = budget === 'effects-on';
+  const location = useLocation();
+  // Keep framer-motion off the cold-load TBT window; enable after first in-app nav.
+  const [firstPath] = useState(() => location.pathname);
+  const [allowMotion, setAllowMotion] = useState(false);
+
+  useEffect(() => {
+    if (location.pathname !== firstPath) setAllowMotion(true);
+  }, [location.pathname, firstPath]);
 
   // AC-8: under fallback, opacity-only or instant — no translate/scale.
   if (!effectsOn) {
@@ -15,6 +24,18 @@ const PageTransition = ({ children }) => {
         style={{ width: '100%', height: '100%' }}
         data-motion-budget={budget}
         data-page-transition="instant"
+      >
+        {children}
+      </div>
+    );
+  }
+
+  if (!allowMotion) {
+    return (
+      <div
+        style={{ width: '100%', height: '100%' }}
+        data-motion-budget={budget}
+        data-page-transition="deferred"
       >
         {children}
       </div>

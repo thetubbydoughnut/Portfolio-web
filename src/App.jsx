@@ -6,6 +6,7 @@ import PageTransition from './components/PageTransition';
 import ErrorBoundary from './components/ErrorBoundary';
 import HeroSection from './components/HeroSection';
 import { useMotionBudget } from './motion/useMotionBudget';
+import { RouteTransition } from './motion/RouteTransition';
 import './App.css';
 
 // Home hero is eager so LCP text is in the first paint graph (AC-18 / F1).
@@ -30,8 +31,16 @@ function App() {
   const effectsOn = budget === 'effects-on';
   const [Presence, setPresence] = useState(null);
 
+  // Load AnimatePresence only after the first in-app navigation so framer-motion
+  // stays out of the initial-route TBT window on effects-on desktop.
+  const [allowPresence, setAllowPresence] = useState(false);
+  const firstPath = useState(() => location.pathname)[0];
   useEffect(() => {
-    if (!effectsOn) {
+    if (location.pathname !== firstPath) setAllowPresence(true);
+  }, [location.pathname, firstPath]);
+
+  useEffect(() => {
+    if (!effectsOn || !allowPresence) {
       setPresence(null);
       return undefined;
     }
@@ -42,7 +51,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [effectsOn]);
+  }, [effectsOn, allowPresence]);
 
   const routes = (
     <Routes location={location} key={location.pathname}>
@@ -109,9 +118,11 @@ function App() {
     <ErrorBoundary>
       <Layout>
         <Header />
-        <Suspense fallback={<Loading />}>
-          {Presence ? <Presence>{routes}</Presence> : routes}
-        </Suspense>
+        <RouteTransition>
+          <Suspense fallback={<Loading />}>
+            {Presence ? <Presence>{routes}</Presence> : routes}
+          </Suspense>
+        </RouteTransition>
       </Layout>
     </ErrorBoundary>
   );

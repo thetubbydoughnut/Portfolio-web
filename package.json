@@ -9,16 +9,19 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:secrets": "vitest run scripts/no-client-secrets.test.js",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "perf:budget": "node scripts/perf-budget.mjs",
-    "perf:lighthouse": "node scripts/lighthouse-floors.mjs"
+    "perf:lighthouse": "node scripts/lighthouse-floors.mjs",
+    "test:lighthouse": "node scripts/lighthouse-floors.mjs"
   },
   "dependencies": {
     "@designcodeio/threeui": "1.2.0",
     "@gsap/react": "2.1.2",
     "framer-motion": "^11.0.0",
+    "gl-transition": "2.1.0",
     "glisse": "0.6.0",
     "gsap": "3.13.0",
     "react": "^18.2.0",
@@ -38,6 +41,7 @@
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "5.2.0",
+    "@vitest/coverage-v8": "4.1.1",
     "autoprefixer": "10.7.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.55.0",

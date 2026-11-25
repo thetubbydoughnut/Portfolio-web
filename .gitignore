@@ -95,6 +95,10 @@ Thumbs.db
 # Private / personal documents — do not commit to public repo
 *.md
 !README.md
+!CHANGELOG.md
+!CONTRIBUTING.md
+!docs/**/*.md
+!.github/PULL_REQUEST_TEMPLATE.md
 portfolio_employer_audit.md
 LPL_Case_Studies_and_Interview_Prep.md
 "Cameron Graham Full Stack Web Developer Resume (3).md"
