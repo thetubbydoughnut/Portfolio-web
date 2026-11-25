@@ -4,4 +4,4 @@
   "measuredStatementsPct": 63.3,
   "measuredAt": "2026-11-25",
   "source": "vitest run --coverage (v8); floor kept at 62 after AC-18 warmup gate remeasure (63.3%)"
-}}
+}
