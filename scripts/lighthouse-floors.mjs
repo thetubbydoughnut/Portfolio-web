@@ -120,55 +120,68 @@ function runOnce(url, formFactor, { forceReducedMotion = false } = {}) {
   const outDir = join(process.cwd(), 'node_modules/.cache/portfolio-lh');
   mkdirSync(outDir, { recursive: true });
   const tag = forceReducedMotion ? 'fallback' : formFactor;
-  const outPath = join(outDir, `lh-${tag}-${Date.now()}.json`);
-
   const preset = formFactor === 'desktop' ? 'desktop' : 'perf';
   const chromeFlags = chromeFlagsFor(forceReducedMotion);
 
   // Match main's npx invocation style; pin 12.6.0 outside the lockfile (AC follow-up).
-  const args = [
-    '--yes',
-    'lighthouse@12.6.0',
-    url,
-    '--quiet',
-    `--chrome-flags=${chromeFlags}`,
-    `--preset=${preset}`,
-    `--output=json`,
-    `--output-path=${outPath}`,
-    '--only-categories=performance,accessibility,best-practices,seo',
-  ];
-  const res = spawnSync('npx', args, {
-    encoding: 'utf8',
-    cwd: process.cwd(),
-    timeout: 180_000,
-    env: {
-      ...process.env,
-      CHROME_PATH: process.env.CHROME_PATH || '/usr/bin/google-chrome-stable',
-    },
-  });
-  if (res.status !== 0) {
-    throw new Error(`lighthouse failed: ${res.stderr || res.stdout}`);
+  // Retry transient NO_FCP / chrome flake (lab contention with preview rebuilds).
+  const maxAttempts = 3;
+  let lastErr = '';
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const outPath = join(outDir, `lh-${tag}-${Date.now()}-${attempt}.json`);
+    const args = [
+      '--yes',
+      'lighthouse@12.6.0',
+      url,
+      '--quiet',
+      `--chrome-flags=${chromeFlags}`,
+      `--preset=${preset}`,
+      `--output=json`,
+      `--output-path=${outPath}`,
+      '--only-categories=performance,accessibility,best-practices,seo',
+    ];
+    const res = spawnSync('npx', args, {
+      encoding: 'utf8',
+      cwd: process.cwd(),
+      timeout: 180_000,
+      env: {
+        ...process.env,
+        CHROME_PATH: process.env.CHROME_PATH || '/usr/bin/google-chrome-stable',
+      },
+    });
+    if (res.status === 0 && existsSync(outPath)) {
+      const report = JSON.parse(readFileSync(outPath, 'utf8'));
+      const cats = report.categories || {};
+      const audits = report.audits || {};
+      return {
+        performance: Math.round((cats.performance?.score ?? 0) * 100),
+        accessibility: Math.round((cats.accessibility?.score ?? 0) * 100),
+        bestPractices: Math.round((cats['best-practices']?.score ?? 0) * 100),
+        seo: Math.round((cats.seo?.score ?? 0) * 100),
+        lcpMs: audits['largest-contentful-paint']?.numericValue ?? NaN,
+        tbtMs: audits['total-blocking-time']?.numericValue ?? NaN,
+        cls: audits['cumulative-layout-shift']?.numericValue ?? NaN,
+        lcpElement: audits['largest-contentful-paint-element']?.displayValue || '',
+        throttling: report.configSettings?.throttling,
+        formFactor: report.configSettings?.formFactor,
+        screenEmulation: report.configSettings?.screenEmulation,
+        lighthouseVersion: report.lighthouseVersion,
+        forceReducedMotion,
+        chromeFlags,
+        url,
+      };
+    }
+    lastErr = res.stderr || res.stdout || 'lighthouse failed';
+    const transient = /NO_FCP|not paint any content|ECONNREFUSED|target closed/i.test(
+      lastErr
+    );
+    if (!transient || attempt === maxAttempts) break;
+    console.warn(`lighthouse retry ${attempt}/${maxAttempts} for ${url}: ${lastErr.slice(0, 180)}`);
+    spawnSync(process.execPath, ['-e', 'Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,2000)'], {
+      timeout: 5000,
+    });
   }
-  const report = JSON.parse(readFileSync(outPath, 'utf8'));
-  const cats = report.categories || {};
-  const audits = report.audits || {};
-  return {
-    performance: Math.round((cats.performance?.score ?? 0) * 100),
-    accessibility: Math.round((cats.accessibility?.score ?? 0) * 100),
-    bestPractices: Math.round((cats['best-practices']?.score ?? 0) * 100),
-    seo: Math.round((cats.seo?.score ?? 0) * 100),
-    lcpMs: audits['largest-contentful-paint']?.numericValue ?? NaN,
-    tbtMs: audits['total-blocking-time']?.numericValue ?? NaN,
-    cls: audits['cumulative-layout-shift']?.numericValue ?? NaN,
-    lcpElement: audits['largest-contentful-paint-element']?.displayValue || '',
-    throttling: report.configSettings?.throttling,
-    formFactor: report.configSettings?.formFactor,
-    screenEmulation: report.configSettings?.screenEmulation,
-    lighthouseVersion: report.lighthouseVersion,
-    forceReducedMotion,
-    chromeFlags,
-    url,
-  };
+  throw new Error(`lighthouse failed: ${lastErr}`);
 }
 
 export function summarizeRuns(runs) {
