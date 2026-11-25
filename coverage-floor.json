@@ -1,7 +1,7 @@
 {
   "statements": 62,
   "measured": true,
-  "measuredStatementsPct": 64.95,
+  "measuredStatementsPct": 63.3,
   "measuredAt": "2026-11-25",
-  "source": "vitest run --coverage (v8); floor = measured integer 64 minus 2 for flake margin"
-}
+  "source": "vitest run --coverage (v8); floor kept at 62 after AC-18 warmup gate remeasure (63.3%)"
+}}

@@ -9,6 +9,8 @@ const FALLBACK_MS = 60_000;
 
 let warmed = false;
 let armed = false;
+/** Vitest sets MODE=test; tests may flip this to exercise the production path. */
+let syncWarmInTests = import.meta.env.MODE === 'test';
 
 function markWarm() {
   if (warmed) return;
@@ -40,16 +42,22 @@ export function resetEffectsWarmup(): void {
   armed = false;
 }
 
+/** Test-only: when false, whenEffectsWarmed uses the production engagement path. */
+export function setSyncWarmInTests(value: boolean): void {
+  syncWarmInTests = value;
+}
+
 /**
  * Subscribe to warmup. Immediately arms engagement listeners.
- * Under Vitest (MODE=test), warms synchronously so existing tests stay snappy.
+ * Under Vitest (MODE=test), warms synchronously so existing tests stay snappy
+ * unless setSyncWarmInTests(false) is used.
  */
 export function whenEffectsWarmed(cb: () => void): () => void {
   if (typeof window === 'undefined') {
     cb();
     return () => {};
   }
-  if (import.meta.env.MODE === 'test') {
+  if (syncWarmInTests) {
     warmed = true;
     cb();
     return () => {};
